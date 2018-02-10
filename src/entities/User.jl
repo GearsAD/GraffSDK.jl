@@ -1,3 +1,6 @@
+"""
+The structure used for user requests.
+"""
 mutable struct UserRequest
   id::String
   name::String
@@ -8,6 +11,9 @@ mutable struct UserRequest
   billingId::String
 end
 
+"""
+The response structure for user calls.
+"""
 mutable struct UserResponse
   id::String
   name::String
@@ -21,6 +27,9 @@ mutable struct UserResponse
   links::Dict{String, String}
 end
 
+"""
+Runtime configuration parameters for connecting to the streaming API.
+"""
 mutable struct KafkaConfig
     ip::String
     port::String
@@ -29,10 +38,16 @@ mutable struct KafkaConfig
     poseUpdateNotificationChannelName::String
 end
 
+"""
+Runtime configuration parameters for connecting to the Synchrony API.
+"""
 mutable struct UserConfig
     kafkaConfig::KafkaConfig
 end
 
+"""
+Standardized error response for any request. This is returned if any requests fail server-side.
+"""
 struct ErrorResponse
     message::String
     returnCode::Int
