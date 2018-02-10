@@ -36,11 +36,11 @@ include("./entities/Cyphon.jl")
 export SynchronyConfig
 export AuthRequest, AuthResponse, authenticate, refreshToken
 export UserRequest, UserResponse, KafkaConfig, UserConfig, ErrorResponse, createUser, getUser, updateUser, deleteUser, getUserConfig
+export RobotRequest, RobotResponse, RobotsResponse, getRobots, getRobot, createRobot, updateRobot, deleteRobot
 # For testing
 export _unmarshallWithLinks
 
 # Internal definitions
-robotsEndpoint = "api/v0/users/{1}/robots/{2}"
 sessionsEndpoint = "api/v0/robots/{1}/sessions/{2}"
 nodeEndpoint = "api/v0/robots/{1}/sessions/{2}/nodes/{3}"
 dataEndpoint = "api/v0/robots/{1}/sessions/{2}/nodes/{3}/bigData/{4}"

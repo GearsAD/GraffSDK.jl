@@ -59,7 +59,7 @@ function deleteUser(config::SynchronyConfig, auth::AuthResponse, userId::String)
     url = "$(config.apiEndpoint):$(config.apiPort)/$(format(userEndpoint, userId))"
     response = delete(url; headers = Dict("token" => auth.token))
     if(statuscode(response) != 200)
-        error("Error getting user, received $(statuscode(response)) with body '$(readstring(response))'.")
+        error("Error deleting user, received $(statuscode(response)) with body '$(readstring(response))'.")
     else
         return _unmarshallWithLinks(readstring(response), UserResponse)
     end
@@ -75,7 +75,7 @@ function getUserConfig(config::SynchronyConfig, auth::AuthResponse, userId::Stri
     url = "$(config.apiEndpoint):$(config.apiPort)/$(format(configEndpoint, userId))"
     response = get(url; headers = Dict("token" => auth.token))
     if(statuscode(response) != 200)
-        error("Error getting user, received $(statuscode(response)) with body '$(readstring(response))'.")
+        error("Error getting user configuration, received $(statuscode(response)) with body '$(readstring(response))'.")
     else
         return Unmarshal.unmarshal(UserConfig, JSON.parse(readstring(response)))
     end
