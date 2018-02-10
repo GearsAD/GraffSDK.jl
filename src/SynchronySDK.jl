@@ -31,7 +31,7 @@ function authorize(config::SynchronyConfig, authRequest::AuthRequest)::AuthRespo
     if(statuscode(response) != 200)
         error("Error authorizing, received $(statuscode(response)) with body '$(readstring(response))'.")
     else
-        return Unmarshal(AuthResponse, JSON.parse(readstring(response)))
+        return Unmarshal.unmarshal(AuthResponse, JSON.parse(readstring(response)))
     end
 end
 
@@ -41,7 +41,7 @@ function refreshToken(config::SynchronyConfig, authResponse::AuthResponse)::Auth
     if(statuscode(response) != 200)
         error("Error authorizing, received $(statuscode(response)) with body '$(readstring(response))'.")
     else
-        return Unmarshal(AuthResponse, JSON.parse(readstring(response)))
+        return Unmarshal.unmarshal(AuthResponse, JSON.parse(readstring(response)))
     end
 end
 
