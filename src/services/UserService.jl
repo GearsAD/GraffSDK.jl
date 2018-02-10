@@ -52,6 +52,7 @@ end
 """
     deleteUser(auth::AuthResponse, userId::String)::UserResponse
 Delete a user given a user ID.
+NOTE: All robots must be deleted first, the call will fail if robots are still associated to the user.
 Return: The deleted user.
 """
 function deleteUser(config::SynchronyConfig, auth::AuthResponse, userId::String)::UserResponse
