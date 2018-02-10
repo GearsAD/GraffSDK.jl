@@ -12,11 +12,10 @@ Return: Returns the created user.
 function createUser(config::SynchronyConfig, auth::AuthResponse, user::UserRequest)::UserResponse
     url = "$(config.apiEndpoint):$(config.apiPort)/$(format(userEndpoint, user.id))"
     response = post(url; headers = Dict("token" => auth.token), data=JSON.json(user))
-    @show response
     if(statuscode(response) != 200)
         error("Error creating user, received $(statuscode(response)) with body '$(readstring(response))'.")
     else
-        return Unmarshal.unmarshal(UserResponse, JSON.parse(readstring(response)))
+        return _unmarshallWithLinks(readstring(response), UserResponse)
     end
 end
 
@@ -31,7 +30,7 @@ function getUser(config::SynchronyConfig, auth::AuthResponse, userId::String)::U
     if(statuscode(response) != 200)
         error("Error getting user, received $(statuscode(response)) with body '$(readstring(response))'.")
     else
-        return Unmarshal.unmarshal(UserResponse, JSON.parse(readstring(response)))
+        return _unmarshallWithLinks(readstring(response), UserResponse)
     end
 end
 
@@ -46,7 +45,7 @@ function updateUser(config::SynchronyConfig, auth::AuthResponse, user::UserReque
     if(statuscode(response) != 200)
         error("Error updating user, received $(statuscode(response)) with body '$(readstring(response))'.")
     else
-        return Unmarshal.unmarshal(UserResponse, JSON.parse(readstring(response)))
+        return _unmarshallWithLinks(readstring(response), UserResponse)
     end
 end
 
@@ -61,7 +60,7 @@ function deleteUser(config::SynchronyConfig, auth::AuthResponse, userId::String)
     if(statuscode(response) != 200)
         error("Error getting user, received $(statuscode(response)) with body '$(readstring(response))'.")
     else
-        return Unmarshal.unmarshal(UserResponse, JSON.parse(readstring(response)))
+        return _unmarshallWithLinks(readstring(response), UserResponse)
     end
 end
 

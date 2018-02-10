@@ -31,7 +31,7 @@ end
 # During runtime, we would skip step 3a and just retrieve the configuration
 # for our user. This contains all the parameters required to ingest or retrieve
 # data from the system.
-runtimeConfig = getUserConfig(auth, newUser.id)
+runtimeConfig = getUserConfig(synchronyConfig, auth, newUser.id)
 
 # 4. Robot creation and retrieval
 # TODO
