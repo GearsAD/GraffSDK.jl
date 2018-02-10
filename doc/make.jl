@@ -6,7 +6,12 @@ makedocs(
     sitename = "Synchrony SDK",
     pages = Any[
         "Home" => "index.md",
-        "Function Calls" => "func_ref.md",
+        "Getting Started" => "getting_started.md",
+        "Auth Service" => "ref_auth.md",
+        "User Service" => "ref_user.md",
+        "Robot Service" => "ref_robot.md",
+        "Session Service" => "ref_session.md",
+        "Cyphon Service" => "ref_cyphon.md",
         "Reference" => "reference.md"
     ]
     # html_prettyurls = !("local" in ARGS),
