@@ -26,6 +26,6 @@ end
 A list of robots provided by the /robots request.
 """
 struct RobotsResponse
-    robots::Vector{RobotModel}
+    robots::Vector{RobotResponse}
     links::Dict{String, String}
 end
