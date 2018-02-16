@@ -44,11 +44,3 @@ Runtime configuration parameters for connecting to the Synchrony API.
 mutable struct UserConfig
     kafkaConfig::KafkaConfig
 end
-
-"""
-Standardized error response for any request. This is returned if any requests fail server-side.
-"""
-struct ErrorResponse
-    message::String
-    returnCode::Int
-end

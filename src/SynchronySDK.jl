@@ -7,7 +7,7 @@ using Formatting
 # Utility functions
 """
     _unmarshallWithLinks(responseBody::String, t::Type)
-Internal fix for Unmarshall not being able to deserialize dictionaries.
+Internal fix for Unmarshal not being able to deserialize dictionaries.
 https://github.com/lwabeke/Unmarshal.jl/issues/9
 """
 function _unmarshallWithLinks(responseBody::String, t::Type)
@@ -28,15 +28,20 @@ include("./services/AuthService.jl")
 include("./entities/User.jl")
 include("./services/UserService.jl")
 
-include("./entities/Session.jl")
 include("./entities/Robot.jl")
+include("./services/RobotService.jl")
+
+include("./entities/Session.jl")
+include("./services/SessionService.jl")
+
 include("./entities/Cyphon.jl")
 
 # Exports
-export SynchronyConfig
+export SynchronyConfig, ErrorResponse
 export AuthRequest, AuthResponse, authenticate, refreshToken
-export UserRequest, UserResponse, KafkaConfig, UserConfig, ErrorResponse, createUser, getUser, updateUser, deleteUser, getUserConfig
+export UserRequest, UserResponse, KafkaConfig, UserConfig, createUser, getUser, updateUser, deleteUser, getUserConfig
 export RobotRequest, RobotResponse, RobotsResponse, getRobots, getRobot, createRobot, updateRobot, deleteRobot
+export SessionDetailsRequest, SessionDetailsResponse, createSession
 # For testing
 export _unmarshallWithLinks
 

@@ -4,7 +4,7 @@ using SynchronySDK
 
 # 1. Get a Synchrony configuration
 # Assume that you're running in local directory
-configFile = open("synchronyConfig.json")
+configFile = open("synchronyConfig_Local.json")
 configData = JSON.parse(readstring(configFile))
 close(configFile)
 synchronyConfig = Unmarshal.unmarshal(SynchronyConfig, configData)
@@ -21,9 +21,10 @@ auth = authenticate(synchronyConfig, authRequest)
 # how a user is associated with an organization.
 newUser = UserRequest("NewUser", "Bob Zacowski", "email@email.com", "N/A", "Student", "Student", string(Base.Random.uuid4()))
 retUser = createUser(synchronyConfig, auth, newUser)
+@show retUser
 # Now we can get it as well if we want
 getUser = getUser(synchronyConfig, auth, newUser.id)
-if (retUser != getUser)
+if (JSON.json(retUser) != JSON.json(getUser))
     error("Hmm, users should match")
 end
 
@@ -32,6 +33,3 @@ end
 # for our user. This contains all the parameters required to ingest or retrieve
 # data from the system.
 runtimeConfig = getUserConfig(synchronyConfig, auth, newUser.id)
-
-# 4. Robot creation and retrieval
-# TODO
