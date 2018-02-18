@@ -19,12 +19,12 @@ auth = authenticate(synchronyConfig, authRequest)
 # 3a. Robot creation and retrieval
 # Creating a bot allows us to create session data for that robot.
 # and associate it with data sessions
-newRobot = RobotRequest("NewRobot", "Test New Robot", "A test robot", "Active")
+newRobot = RobotRequest("NewRobot2", "Test New Robot", "A test robot", "Active")
 retRobot = createRobot(synchronyConfig, auth, userId, newRobot)
 @show retRobot
 # Now we can get it as well if we want
-getRobot = getRobot(synchronyConfig, auth, userId, newRobot.id)
-if (JSON.json(retRobot) != JSON.json(getRobot))
+getRobotDetails = getRobot(synchronyConfig, auth, userId, newRobot.id)
+if (JSON.json(retRobot) != JSON.json(getRobotDetails))
     error("Hmm, robots should match")
 end
 

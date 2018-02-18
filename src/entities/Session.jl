@@ -15,7 +15,7 @@ mutable struct SessionDetailsResponse
   description::String
   robotId::String
   userId::String
-  nodeCount::String
+  nodeCount::Int
   createdTimestamp::String
   links::Dict{String, String}
 end
