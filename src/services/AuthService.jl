@@ -1,5 +1,8 @@
 include("../entities/Auth.jl")
 
+# For unit tests
+using Mocking
+
 authEndpoint = "api/v0/auth"
 
 """
@@ -9,7 +12,9 @@ Return: The authentication token.
 """
 function authenticate(config::SynchronyConfig, authRequest::AuthRequest)::AuthResponse
     url = "$(config.apiEndpoint):$(config.apiPort)/$authEndpoint/authenticate"
-    response = post(url; data=JSON.json(authRequest))
+    @show url
+    response = @mock post(url; data=JSON.json(authRequest))
+    @show response
     if(statuscode(response) != 200)
         error("Error authorizing, received $(statuscode(response)) with body '$(readstring(response))'.")
     else
@@ -24,7 +29,7 @@ Return: The updated token.
 """
 function refreshToken(config::SynchronyConfig, authResponse::AuthResponse)::AuthResponse
     url = "$(config.apiEndpoint):$(config.apiPort)/$authEndpoint/refreshtoken"
-    response = post(url; data=JSON.json(authResponse))
+    response = @mock post(url; data=JSON.json(authResponse))
     if(statuscode(response) != 200)
         error("Error authorizing, received $(statuscode(response)) with body '$(readstring(response))'.")
     else
