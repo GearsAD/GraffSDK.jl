@@ -3,6 +3,7 @@ include("../entities/Session.jl")
 
 sessionsEndpoint = "api/v0/users/{1}/robots/{2]/sessions}"
 sessionEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}"
+odoEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/odometry"
 
 """
     getSessions(config::SynchronyConfig, auth::AuthResponse, userId::String, robotId::String)::SessionsResponse
@@ -53,5 +54,20 @@ function createSession(config::SynchronyConfig, auth::AuthResponse, userId::Stri
         error("Error creating session, received $(statuscode(response)) with body '$(readstring(response))'.")
     else
         return _unmarshallWithLinks(readstring(response), SessionDetailsResponse)
+    end
+end
+
+"""
+    addOdometryMeasurement(config::SynchronyConfig, auth::AuthResponse, userId::String, robotId::String, session::SessionDetailsRequest)::SessionDetailsResponse
+Create a session in Synchrony and associate it with the given robot+user.
+Return: Returns the created session.
+"""
+function addOdometryMeasurement(config::SynchronyConfig, auth::AuthResponse, userId::String, robotId::String, sessionId::String, addOdoRequest::AddOdometryRequest)::AddOdometryResponse
+    url = "$(config.apiEndpoint):$(config.apiPort)/$(format(odoEndpoint, userId, robotId, sessionId))"
+    response = post(url; headers = Dict("token" => auth.token), data=JSON.json(addOdoRequest))
+    if(statuscode(response) != 200)
+        error("Error creating odometry, received $(statuscode(response)) with body '$(readstring(response))'.")
+    else
+        return AddOdometryResponse() #_unmarshallWithLinks(readstring(response), AddOdometryResponse)
     end
 end

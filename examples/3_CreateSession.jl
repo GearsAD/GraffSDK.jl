@@ -14,13 +14,13 @@ close(configFile)
 synchronyConfig = Unmarshal.unmarshal(SynchronyConfig, configData)
 
 # 2. Authorizing ourselves for requests
-authRequest = AuthRequest("user", "apiKey")
+authRequest = AuthRequest(userId, "apiKey")
 auth = authenticate(synchronyConfig, authRequest)
 
 # 3a. Create session
 # Creating a session allows us to ingest data and start refining the factor graph.
 # We can also mine data across all our robots and our sessions.
-newSession = SessionDetailsRequest("TestHexagonalDrive7", "A test dataset demonstrating data ingestion for a wheeled vehicle driving in a hexagon.")
+newSession = SessionDetailsRequest("TestHexagonalDrive9", "A test dataset demonstrating data ingestion for a wheeled vehicle driving in a hexagon.")
 retSession = createSession(synchronyConfig, auth, userId, robotId, newSession)
 @show retSession
 # Now we can get it as well if we want

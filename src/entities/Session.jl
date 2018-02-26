@@ -20,12 +20,18 @@ mutable struct SessionDetailsResponse
   links::Dict{String, String}
 end
 
+"""
+The structure used to briefly describe a node in a response.
+"""
 struct NodeResponse
     id::Int
     name::String
     links::Dict{String, String}
 end
 
+"""
+The structure used to return a complete big data element in a response.
+"""
 struct BigDataElementResponse
     id::String
     sourceName::String
@@ -36,6 +42,9 @@ struct BigDataElementResponse
     links::Dict{String, String}
 end
 
+"""
+The structure describing a complete node in a response.
+"""
 struct NodeDetailsResponse
     id::Int
     name::String
@@ -44,4 +53,21 @@ struct NodeDetailsResponse
     labels::Vector{String}
     bigData::Vector{BigDataElementResponse}
     links::Dict{String, String}
+end
+
+"""
+The structure describing a high-level add-odometry request.
+"""
+struct AddOdometryRequest
+    timestamp::String
+    deltaMeasurement::Vector{Float64}
+    pOdo::Array{Float64, 2}
+    N::Nullable{Int64}
+    AddOdometryRequest(deltaMeasurement::Vector{Float64}, pOdo::Array{Float64, 2}) = new(string(Dates.Time(now(Dates.UTC))), deltaMeasurement, pOdo, nothing)
+end
+
+"""
+The structure describing the response to the add-odometry request.
+"""
+struct AddOdometryResponse
 end
