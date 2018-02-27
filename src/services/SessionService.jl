@@ -1,46 +1,50 @@
 include("../entities/Auth.jl")
 include("../entities/Session.jl")
 
-sessionsEndpoint = "api/v0/users/{1}/robots/{2]/sessions}"
+sessionsEndpoint = "api/v0/users/{1}/robots/{2}/sessions"
 sessionEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}"
+nodesEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/nodes"
+nodeEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/nodes/{4}"
 odoEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/odometry"
 
 """
     getSessions(config::SynchronyConfig, auth::AuthResponse, userId::String, robotId::String)::SessionsResponse
-Gets all robots managed by the specified user.
-Return: A vector of robots for a given user.
+Gets all sessions for a given robot.
+Return: A vector of sessions for a given robot.
 """
-function getRobots(config::SynchronyConfig, auth::AuthResponse, userId::String)::RobotsResponse
-    url = "$(config.apiEndpoint):$(config.apiPort)/$(format(robotsEndpoint, userId))"
+function getSessions(config::SynchronyConfig, auth::AuthResponse, userId::String, robotId::String)::SessionsResponse
+    url = "$(config.apiEndpoint):$(config.apiPort)/$(format(sessionsEndpoint, userId, robotId))"
+    @show url
     response = get(url; headers = Dict("token" => auth.token))
     if(statuscode(response) != 200)
-        error("Error getting robots, received $(statuscode(response)) with body '$(readstring(response))'.")
+        error("Error getting sessions, received $(statuscode(response)) with body '$(readstring(response))'.")
     else
         # Some manual effort done here because it's a vector response.
-        rawRobots = JSON.parse(readstring(response))
-        robots = RobotsResponse(Vector{RobotResponse}(), rawRobots["links"])
-        for robot in rawRobots["robots"]
-            robot = _unmarshallWithLinks(JSON.json(robot), RobotResponse)
-            push!(robots.robots, robot)
+        rawSessions = JSON.parse(readstring(response))
+        @show rawSessions
+        sessions = SessionsResponse(Vector{SessionResponse}(), rawSessions["links"])
+        for session in rawSessions["sessions"]
+            session = _unmarshallWithLinks(JSON.json(session), SessionResponse)
+            push!(sessions.sessions, session)
         end
-        return robots
+        return sessions
     end
 end
 
-# """
-#     getRobot(config::SynchronyConfig, auth::AuthResponse, userId::String, robotId::String)::RobotResponse
-# Get a specific robot given a user ID and a robot ID.
-# Return: The robot for the provided user ID and robot ID.
-# """
-# function getRobot(config::SynchronyConfig, auth::AuthResponse, userId::String, robotId::String)::RobotResponse
-#     url = "$(config.apiEndpoint):$(config.apiPort)/$(format(robotEndpoint, userId, robotId))"
-#     response = get(url; headers = Dict("token" => auth.token))
-#     if(statuscode(response) != 200)
-#         error("Error getting robot, received $(statuscode(response)) with body '$(readstring(response))'.")
-#     else
-#         return _unmarshallWithLinks(readstring(response), RobotResponse)
-#     end
-# end
+"""
+    getSession(config::SynchronyConfig, auth::AuthResponse, userId::String, robotId::String, sessionId::String)::SessionDetailsResponse
+Get a specific session given a user ID, robot ID, and session ID.
+Return: The session details for the provided user ID, robot ID, and session ID.
+"""
+function getSession(config::SynchronyConfig, auth::AuthResponse, userId::String, robotId::String, sessionId::String)::SessionDetailsResponse
+    url = "$(config.apiEndpoint):$(config.apiPort)/$(format(sessionEndpoint, userId, robotId, sessionId))"
+    response = get(url; headers = Dict("token" => auth.token))
+    if(statuscode(response) != 200)
+        error("Error getting session, received $(statuscode(response)) with body '$(readstring(response))'.")
+    else
+        return _unmarshallWithLinks(readstring(response), SessionDetailsResponse)
+    end
+end
 
 """
     createSession(config::SynchronyConfig, auth::AuthResponse, userId::String, robotId::String, session::SessionDetailsRequest)::SessionDetailsResponse

@@ -41,14 +41,9 @@ export SynchronyConfig, ErrorResponse
 export AuthRequest, AuthResponse, authenticate, refreshToken
 export UserRequest, UserResponse, KafkaConfig, UserConfig, createUser, getUser, updateUser, deleteUser, getUserConfig
 export RobotRequest, RobotResponse, RobotsResponse, getRobots, getRobot, createRobot, updateRobot, deleteRobot
-export SessionDetailsRequest, SessionDetailsResponse, createSession
+export SessionDetailsRequest, SessionDetailsResponse, createSession, getSessions, getSession
 export AddOdometryRequest, AddOdometryResponse, addOdometryMeasurement
 # For testing
 export _unmarshallWithLinks
-
-# Internal definitions
-sessionsEndpoint = "api/v0/robots/{1}/sessions/{2}"
-nodeEndpoint = "api/v0/robots/{1}/sessions/{2}/nodes/{3}"
-dataEndpoint = "api/v0/robots/{1}/sessions/{2}/nodes/{3}/bigData/{4}"
 
 end

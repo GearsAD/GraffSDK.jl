@@ -1,3 +1,12 @@
+mutable struct SessionResponse
+    id::String
+    links::Dict{String, String}
+end
+
+mutable struct SessionsResponse
+    sessions::Vector{SessionResponse}
+    links::Dict{String, String}
+end
 
 """
 The structure used for detailed session requests.
