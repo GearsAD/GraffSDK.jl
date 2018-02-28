@@ -33,3 +33,7 @@ end
 # Just for example's sake - let's retrieve all sessions associated with out robot
 sessions = getSessions(synchronyConfig, auth, userId, robotId)
 @show sessions
+
+# Get all nodes for our session
+nodes = getNodes(synchronyConfig, auth, userId, robotId, newSession.id)
+@show nodes

@@ -14,14 +14,12 @@ Return: A vector of sessions for a given robot.
 """
 function getSessions(config::SynchronyConfig, auth::AuthResponse, userId::String, robotId::String)::SessionsResponse
     url = "$(config.apiEndpoint):$(config.apiPort)/$(format(sessionsEndpoint, userId, robotId))"
-    @show url
     response = get(url; headers = Dict("token" => auth.token))
     if(statuscode(response) != 200)
         error("Error getting sessions, received $(statuscode(response)) with body '$(readstring(response))'.")
     else
         # Some manual effort done here because it's a vector response.
         rawSessions = JSON.parse(readstring(response))
-        @show rawSessions
         sessions = SessionsResponse(Vector{SessionResponse}(), rawSessions["links"])
         for session in rawSessions["sessions"]
             session = _unmarshallWithLinks(JSON.json(session), SessionResponse)
@@ -60,6 +58,29 @@ function createSession(config::SynchronyConfig, auth::AuthResponse, userId::Stri
         return _unmarshallWithLinks(readstring(response), SessionDetailsResponse)
     end
 end
+
+"""
+    getNodes(config::SynchronyConfig, auth::AuthResponse, userId::String, robotId::String, sessionId::String)::NodesResponse
+Gets all nodes for a given session.
+Return: A vector of nodes for a given robot.
+"""
+function getNodes(config::SynchronyConfig, auth::AuthResponse, userId::String, robotId::String, sessionId::String)::NodesResponse
+    url = "$(config.apiEndpoint):$(config.apiPort)/$(format(nodesEndpoint, userId, robotId, sessionId))"
+    response = get(url; headers = Dict("token" => auth.token))
+    if(statuscode(response) != 200)
+        error("Error getting sessions, received $(statuscode(response)) with body '$(readstring(response))'.")
+    else
+        # Some manual effort done here because it's a vector response.
+        rawNodes = JSON.parse(readstring(response))
+        nodes = NodesResponse(Vector{NodeResponse}(), rawNodes["links"])
+        for node in rawNodes["nodes"]
+            node = _unmarshallWithLinks(JSON.json(node), NodeResponse)
+            push!(nodes.nodes, node)
+        end
+        return nodes
+    end
+end
+
 
 """
     addOdometryMeasurement(config::SynchronyConfig, auth::AuthResponse, userId::String, robotId::String, session::SessionDetailsRequest)::SessionDetailsResponse

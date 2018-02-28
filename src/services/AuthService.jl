@@ -12,7 +12,6 @@ Return: The authentication token.
 """
 function authenticate(config::SynchronyConfig, authRequest::AuthRequest)::AuthResponse
     url = "$(config.apiEndpoint):$(config.apiPort)/$authEndpoint/authenticate"
-    @show url
     response = @mock post(url; data=JSON.json(authRequest))
     @show response
     if(statuscode(response) != 200)

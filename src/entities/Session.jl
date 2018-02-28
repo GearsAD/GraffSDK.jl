@@ -32,16 +32,25 @@ end
 """
 The structure used to briefly describe a node in a response.
 """
-struct NodeResponse
+mutable struct NodeResponse
     id::Int
     name::String
     links::Dict{String, String}
 end
 
 """
+The structure used to briefly describe a set of nodes in a response.
+"""
+mutable struct NodesResponse
+    nodes::Vector{NodeResponse}
+    links::Dict{String, String}
+end
+
+
+"""
 The structure used to return a complete big data element in a response.
 """
-struct BigDataElementResponse
+mutable struct BigDataElementResponse
     id::String
     sourceName::String
     description::String
@@ -54,7 +63,7 @@ end
 """
 The structure describing a complete node in a response.
 """
-struct NodeDetailsResponse
+mutable struct NodeDetailsResponse
     id::Int
     name::String
     properties::Dict{String, Any}
