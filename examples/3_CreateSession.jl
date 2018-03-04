@@ -37,3 +37,5 @@ sessions = getSessions(synchronyConfig, auth, userId, robotId)
 # Get all nodes for our session
 nodes = getNodes(synchronyConfig, auth, userId, robotId, newSession.id)
 @show nodes
+# Get a specific node
+nodeDetails = getNode(synchronyConfig, auth, userId, robotId, newSession.id, nodes.nodes[1].id)

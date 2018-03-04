@@ -67,7 +67,7 @@ mutable struct NodeDetailsResponse
     id::Int
     name::String
     properties::Dict{String, Any}
-    packed::Any
+    packed::Dict{String, Any}
     labels::Vector{String}
     bigData::Vector{BigDataElementResponse}
     links::Dict{String, String}

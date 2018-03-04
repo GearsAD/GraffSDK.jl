@@ -81,6 +81,23 @@ function getNodes(config::SynchronyConfig, auth::AuthResponse, userId::String, r
     end
 end
 
+"""
+    getNode(config::SynchronyConfig, auth::AuthResponse, userId::String, robotId::String, sessionId::String, nodeId::Int)::NodeDetailsResponse
+Gets a node's details.
+Return: A node's details.
+"""
+function getNode(config::SynchronyConfig, auth::AuthResponse, userId::String, robotId::String, sessionId::String, nodeId::Int)::NodeDetailsResponse
+    url = "$(config.apiEndpoint):$(config.apiPort)/$(format(nodeEndpoint, userId, robotId, sessionId, nodeId))"
+    response = get(url; headers = Dict("token" => auth.token))
+    if(statuscode(response) != 200)
+        error("Error getting sessions, received $(statuscode(response)) with body '$(readstring(response))'.")
+    else
+        # Some manual effort done
+        rawNode = JSON.parse(readstring(response))
+        node = NodeDetailsResponse(rawNode["id"], rawNode["name"], rawNode["properties"], rawNode["packed"], rawNode["labels"], rawNode["bigData"], rawNode["links"])
+        return node
+    end
+end
 
 """
     addOdometryMeasurement(config::SynchronyConfig, auth::AuthResponse, userId::String, robotId::String, session::SessionDetailsRequest)::SessionDetailsResponse

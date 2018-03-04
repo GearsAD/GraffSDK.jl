@@ -42,7 +42,7 @@ export AuthRequest, AuthResponse, authenticate, refreshToken
 export UserRequest, UserResponse, KafkaConfig, UserConfig, createUser, getUser, updateUser, deleteUser, getUserConfig
 export RobotRequest, RobotResponse, RobotsResponse, getRobots, getRobot, createRobot, updateRobot, deleteRobot
 export SessionDetailsRequest, SessionDetailsResponse, createSession, getSessions, getSession
-export NodeResponse, NodesResponse, BigDataElementResponse, NodeDetailsResponse, getNodes
+export NodeResponse, NodesResponse, BigDataElementResponse, NodeDetailsResponse, getNodes, getNode
 export AddOdometryRequest, AddOdometryResponse, addOdometryMeasurement
 # For testing
 export _unmarshallWithLinks

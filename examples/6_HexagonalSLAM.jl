@@ -8,7 +8,7 @@ using SynchronySDK
 # 0. Constants
 userId = "NewUser"
 robotId = "NewRobot"
-sessionId = "TestHexagonalDrive10"
+sessionId = "TestHexagonalDehann"
 
 # 1. Get a Synchrony configuration
 # Assume that you're running in local directory
