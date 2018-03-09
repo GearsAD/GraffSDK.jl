@@ -1,4 +1,7 @@
 {
   "apiEndpoint":"http://localhost",
-  "apiPort":8000
+  "apiPort":8000,
+  "clientId":"",
+  "clientSecret":"",
+  "userId":"NewUser"
 }

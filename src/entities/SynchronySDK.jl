@@ -4,6 +4,9 @@ Configuration structure for Synchrony, it defines the Synchrony Web API endpoint
 struct SynchronyConfig
     apiEndpoint::String
     apiPort::Int
+    userId::String
+    clientId::String
+    clientSecret::String
 end
 
 """

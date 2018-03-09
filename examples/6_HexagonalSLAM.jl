@@ -6,32 +6,50 @@ using JSON, Unmarshal
 using SynchronySDK
 
 # 0. Constants
-userId = "NewUser"
-robotId = "NewRobot"
-sessionId = "TestHexagonalDehann"
+robotId = "NewRobot14"
+sessionId = "HexagonalDrive15"
 
 # 1. Get a Synchrony configuration
 # Assume that you're running in local directory
+cd("/home/gearsad/.julia/v0.6/SynchronySDK/examples")
 configFile = open("synchronyConfig_Local.json")
 configData = JSON.parse(readstring(configFile))
 close(configFile)
 synchronyConfig = Unmarshal.unmarshal(SynchronyConfig, configData)
 
-# 2. Authorizing ourselves for requests
-authRequest = AuthRequest(userId, "apiKey")
-auth = authenticate(synchronyConfig, authRequest)
+# 2. Confirm that the robot already exists, create if it doesn't.
+robot = nothing
+if(SynchronySDK.isRobotExisting(synchronyConfig, robotId))
+    println(" --- Robot '$robotId' already exists, retrieving it...")
+    robot = getRobot(synchronyConfig, robotId)
+else
+    # Create a new one
+    println(" --- Robot '$robotId' doesn't exist, creating it...")
+    newRobot = RobotRequest(robotId, "My New Bot", "Description of my neat robot", "Active")
+    robot = createRobot(synchronyConfig, newRobot)
+end
+println(robot)
 
-# 3. Initialize+create session.
-newSession = SessionDetailsRequest(sessionId, "A test dataset demonstrating data ingestion for a wheeled vehicle driving in a hexagon.")
-retSession = createSession(synchronyConfig, auth, userId, robotId, newSession)
-@show retSession
+# 3. Create or retrieve the session.
+# Get sessions, if it already exists, add to it.
+session = nothing
+if(SynchronySDK.isSessionExisting(synchronyConfig, robotId, sessionId))
+    println(" --- Session '$sessionId' already exists for robot '$robotId', retrieving it...")
+    session = getSession(synchronyConfig, robotId, sessionId)
+else
+    # Create a new one
+    println(" --- Session '$sessionId' doesn't exist for robot '$robotId', creating it...")
+    newSessionRequest = SessionDetailsRequest(sessionId, "A test dataset demonstrating data ingestion for a wheeled vehicle driving in a hexagon.")
+    session = createSession(synchronyConfig, robotId, newSessionRequest)
+end
+println(session)
 
-# 2. Drive around in a hexagon
+# 3. Drive around in a hexagon
 for i in 0:5
     deltaMeasurement = [10.0;0;pi/3]
     pOdo = Float64[[0.1 0 0] [0 0.1 0] [0 0 0.1]]
     newOdometryMeasurement = AddOdometryRequest(deltaMeasurement, pOdo)
-    odoResponse = addOdometryMeasurement(synchronyConfig, auth, userId, robotId, sessionId, newOdometryMeasurement)
+    odoResponse = addOdometryMeasurement(synchronyConfig, robotId, sessionId, newOdometryMeasurement)
 end
 
 # 3. Now let's get all the nodes for the session.

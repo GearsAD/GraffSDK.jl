@@ -22,9 +22,6 @@ end
 # Includes
 include("./entities/SynchronySDK.jl")
 
-include("./entities/Auth.jl")
-include("./services/AuthService.jl")
-
 include("./entities/User.jl")
 include("./services/UserService.jl")
 
@@ -38,7 +35,6 @@ include("./entities/Cyphon.jl")
 
 # Exports
 export SynchronyConfig, ErrorResponse
-export AuthRequest, AuthResponse, authenticate, refreshToken
 export UserRequest, UserResponse, KafkaConfig, UserConfig, createUser, getUser, updateUser, deleteUser, getUserConfig
 export RobotRequest, RobotResponse, RobotsResponse, getRobots, getRobot, createRobot, updateRobot, deleteRobot
 export SessionDetailsRequest, SessionDetailsResponse, createSession, getSessions, getSession

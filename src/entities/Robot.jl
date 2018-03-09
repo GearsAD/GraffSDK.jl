@@ -1,3 +1,4 @@
+import Base.show
 
 """
 The structure used for robot requests.
@@ -20,6 +21,10 @@ mutable struct RobotResponse
   links::Dict{String, String}
   createdTimestamp::String
   lastUpdatedTimestamp::String
+end
+
+function show(io::IO, obj::RobotResponse)
+    print("\r\nRobot: \r\n - ID: $(obj.id)\r\n  - Name: $(obj.name)\r\n  - Desc: $(obj.description)\r\n  - Status: $(obj.status)")
 end
 
 """
