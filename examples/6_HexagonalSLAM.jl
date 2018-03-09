@@ -6,11 +6,12 @@ using JSON, Unmarshal
 using SynchronySDK
 
 # 0. Constants
-robotId = "NewRobot14"
-sessionId = "HexagonalDrive15"
+robotId = "NewRobot"
+sessionId = "HexagonalDrive"
 
 # 1. Get a Synchrony configuration
 # Assume that you're running in local directory
+println(" - Retrieving Synchrony Configuration...")
 cd("/home/gearsad/.julia/v0.6/SynchronySDK/examples")
 configFile = open("synchronyConfig_Local.json")
 configData = JSON.parse(readstring(configFile))
@@ -18,13 +19,14 @@ close(configFile)
 synchronyConfig = Unmarshal.unmarshal(SynchronyConfig, configData)
 
 # 2. Confirm that the robot already exists, create if it doesn't.
+println(" - Creating or retrieving robot '$robotId'...")
 robot = nothing
 if(SynchronySDK.isRobotExisting(synchronyConfig, robotId))
-    println(" --- Robot '$robotId' already exists, retrieving it...")
+    println(" -- Robot '$robotId' already exists, retrieving it...")
     robot = getRobot(synchronyConfig, robotId)
 else
     # Create a new one
-    println(" --- Robot '$robotId' doesn't exist, creating it...")
+    println(" -- Robot '$robotId' doesn't exist, creating it...")
     newRobot = RobotRequest(robotId, "My New Bot", "Description of my neat robot", "Active")
     robot = createRobot(synchronyConfig, newRobot)
 end
@@ -32,28 +34,35 @@ println(robot)
 
 # 3. Create or retrieve the session.
 # Get sessions, if it already exists, add to it.
+println(" - Creating or retrieving data session '$sessionId' for robot...")
 session = nothing
 if(SynchronySDK.isSessionExisting(synchronyConfig, robotId, sessionId))
-    println(" --- Session '$sessionId' already exists for robot '$robotId', retrieving it...")
+    println(" -- Session '$sessionId' already exists for robot '$robotId', retrieving it...")
     session = getSession(synchronyConfig, robotId, sessionId)
 else
     # Create a new one
-    println(" --- Session '$sessionId' doesn't exist for robot '$robotId', creating it...")
+    println(" -- Session '$sessionId' doesn't exist for robot '$robotId', creating it...")
     newSessionRequest = SessionDetailsRequest(sessionId, "A test dataset demonstrating data ingestion for a wheeled vehicle driving in a hexagon.")
     session = createSession(synchronyConfig, robotId, newSessionRequest)
 end
 println(session)
 
-# 3. Drive around in a hexagon
+# 4. Drive around in a hexagon
+println(" - Adding hexagonal driving pattern to session...")
 for i in 0:5
     deltaMeasurement = [10.0;0;pi/3]
     pOdo = Float64[[0.1 0 0] [0 0.1 0] [0 0 0.1]]
+    println(" - Measurement $i: Adding new odometry measurement '$deltaMeasurement'...")
     newOdometryMeasurement = AddOdometryRequest(deltaMeasurement, pOdo)
-    odoResponse = addOdometryMeasurement(synchronyConfig, robotId, sessionId, newOdometryMeasurement)
+    @time odoResponse = addOdometryMeasurement(synchronyConfig, robotId, sessionId, newOdometryMeasurement)
 end
 
-# 3. Now let's get all the nodes for the session.
+# 5. Now retrieve the dataset
+println(" - Retrieving all data for session $sessionId...")
+nodes = getNodes(synchronyConfig, robotId, sessionId)
+println(" -- Node list:\r\n$nodes")
 
+# Time to draw some data!
 
 # 3.
 # # Graphs.plot(fg.g)

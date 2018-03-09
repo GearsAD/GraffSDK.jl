@@ -29,6 +29,10 @@ mutable struct SessionDetailsResponse
   links::Dict{String, String}
 end
 
+function show(io::IO, obj::SessionDetailsResponse)
+    print("\r\nSession: \r\n - ID: $(obj.id)\r\n  - Description: $(obj.description)\r\n  - Node count: $(obj.nodeCount)")
+end
+
 """
 The structure used to briefly describe a node in a response.
 """
@@ -38,12 +42,20 @@ mutable struct NodeResponse
     links::Dict{String, String}
 end
 
+function show(io::IO, obj::NodeResponse)
+    print("\r\nNode: \r\n - ID: $(obj.id)\r\n  - Name: $(obj.name)")
+end
+
 """
 The structure used to briefly describe a set of nodes in a response.
 """
 mutable struct NodesResponse
     nodes::Vector{NodeResponse}
     links::Dict{String, String}
+end
+
+function show(io::IO, obj::NodesResponse)
+    print("\r\n$(obj.nodes)")
 end
 
 
