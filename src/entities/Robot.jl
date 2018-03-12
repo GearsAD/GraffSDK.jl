@@ -1,4 +1,4 @@
-import Base.show
+# import Base: show
 
 """
 The structure used for robot requests.
@@ -23,9 +23,9 @@ mutable struct RobotResponse
   lastUpdatedTimestamp::String
 end
 
-function show(io::IO, obj::RobotResponse)
-    print("\r\nRobot: \r\n - ID: $(obj.id)\r\n  - Name: $(obj.name)\r\n  - Desc: $(obj.description)\r\n  - Status: $(obj.status)")
-end
+# function show(io::IO, obj::RobotResponse)
+#     print("\r\nRobot: \r\n - ID: $(obj.id)\r\n  - Name: $(obj.name)\r\n  - Desc: $(obj.description)\r\n  - Status: $(obj.status)")
+# end
 
 """
 A list of robots provided by the /robots request.

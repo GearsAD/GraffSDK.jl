@@ -4,6 +4,7 @@ using SynchronySDK
 
 # 1. Get a Synchrony configuration
 # Assume that you're running in local directory
+cd("/home/gearsad/.julia/v0.6/SynchronySDK/examples")
 configFile = open("synchronyConfig.json")
 configData = JSON.parse(readstring(configFile))
 close(configFile)
@@ -15,8 +16,8 @@ synchronyConfig = Unmarshal.unmarshal(SynchronyConfig, configData)
 # and associate it with data sessions
 # Note that we'll create this for you normally, but providing it here to demonstrate
 # how a user is associated with an organization.
-newUser = UserRequest("NewUser", "NewUser", "email@email.com", "N/A", "Student", "Student", string(Base.Random.uuid4()))
-retUser = createUser(synchronyConfig, auth, newUser)
+newUser = UserRequest("Nicole", "NewUser", "email@email.com", "N/A", "Student", "Student", string(Base.Random.uuid4()))
+retUser = createUser(synchronyConfig, newUser)
 @show retUser
 # Now we can get it as well if we want
 getUser = getUser(synchronyConfig, auth, newUser.id)

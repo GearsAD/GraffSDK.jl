@@ -3,6 +3,7 @@ module SynchronySDK
 # Imports
 using Requests, JSON, Unmarshal
 using Formatting
+using Graphs
 
 # Utility functions
 """
@@ -33,14 +34,26 @@ include("./services/SessionService.jl")
 
 include("./entities/Cyphon.jl")
 
+# Exported functions
+function nodeDetail2ExVertex(nodeDetails::SynchronySDK.NodeDetailsResponse)::Graphs.ExVertex
+    vert = Graphs.ExVertex(nodeDetails.sessionIndex, nodeDetails.name)
+    vert.attributes = Graphs.AttributeDict()
+    vert.attributes = nodeDetails.properties
+
+    # populate the data container
+    vert.attributes["data"] = nodeDetails.packed
+    return vert
+end
+
 # Exports
 export SynchronyConfig, ErrorResponse
 export UserRequest, UserResponse, KafkaConfig, UserConfig, createUser, getUser, updateUser, deleteUser, getUserConfig
 export RobotRequest, RobotResponse, RobotsResponse, getRobots, getRobot, createRobot, updateRobot, deleteRobot
-export SessionDetailsRequest, SessionDetailsResponse, createSession, getSessions, getSession
+export SessionDetailsRequest, SessionDetailsResponse, createSession, getSessions, getSession, putReady
 export NodeResponse, NodesResponse, BigDataElementResponse, NodeDetailsResponse, getNodes, getNode
 export AddOdometryRequest, AddOdometryResponse, addOdometryMeasurement
+export VariableRequest, VariableResponse, BearingRangeRequest, BearingRangeResponse, DistributionRequest, addVariable, addBearingRangeFactor
 # For testing
 export _unmarshallWithLinks
-
+export nodeDetail2ExVertex
 end
