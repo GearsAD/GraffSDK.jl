@@ -1,3 +1,5 @@
+# import Base: show
+
 mutable struct SessionResponse
     id::String
     links::Dict{String, String}
@@ -29,22 +31,22 @@ mutable struct SessionDetailsResponse
   links::Dict{String, String}
 end
 
-function show(io::IO, obj::SessionDetailsResponse)
-    print("\r\nSession: \r\n - ID: $(obj.id)\r\n  - Description: $(obj.description)\r\n  - Node count: $(obj.nodeCount)")
-end
+# function show(io::IO, obj::SessionDetailsResponse)
+#     print("\r\nSession: \r\n - ID: $(obj.id)\r\n  - Description: $(obj.description)\r\n  - Node count: $(obj.nodeCount)")
+# end
 
 """
 The structure used to briefly describe a node in a response.
 """
 mutable struct NodeResponse
     id::Int
-    name::String
+    label::String
     links::Dict{String, String}
 end
 
-function show(io::IO, obj::NodeResponse)
-    print("\r\nNode: \r\n - ID: $(obj.id)\r\n  - Name: $(obj.name)")
-end
+# function show(io::IO, obj::NodeResponse)
+#     print("\r\nNode: \r\n - ID: $(obj.id)\r\n  - Name: $(obj.name)")
+# end
 
 """
 The structure used to briefly describe a set of nodes in a response.
@@ -54,9 +56,9 @@ mutable struct NodesResponse
     links::Dict{String, String}
 end
 
-function show(io::IO, obj::NodesResponse)
-    print("\r\n$(obj.nodes)")
-end
+# function show(io::IO, obj::NodesResponse)
+#     print("\r\n$(obj.nodes)")
+# end
 
 
 """
@@ -77,7 +79,8 @@ The structure describing a complete node in a response.
 """
 mutable struct NodeDetailsResponse
     id::Int
-    name::String
+    label::String
+    sessionIndex::Int
     properties::Dict{String, Any}
     packed::Dict{String, Any}
     labels::Vector{String}
@@ -100,4 +103,32 @@ end
 The structure describing the response to the add-odometry request.
 """
 struct AddOdometryResponse
+end
+
+struct VariableRequest
+    label::String
+    variableType::String
+    N::Nullable{Int64}
+    labels::Vector{String}
+end
+
+struct VariableResponse
+end
+
+struct DistributionRequest
+    distType::String
+    params::Vector{Float64}
+end
+
+"""
+A 2D bearing range request body.
+"""
+struct BearingRangeRequest
+    pose2Id::String
+    point2Id::String
+    bearing::DistributionRequest
+    range::DistributionRequest
+end
+
+struct BearingRangeResponse
 end
