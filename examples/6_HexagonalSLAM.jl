@@ -12,7 +12,7 @@ sessionId = "Hackathon"
 # 1. Get a Synchrony configuration
 # Assume that you're running in local directory
 println(" - Retrieving Synchrony Configuration...")
-cd("/home/gearsad/.julia/v0.6/SynchronySDK/examples")
+cd(joinpath(Pkg.dir("SynchronySDK"),"examples"))
 configFile = open("synchronyConfig_Local.json")
 configData = JSON.parse(readstring(configFile))
 close(configFile)
