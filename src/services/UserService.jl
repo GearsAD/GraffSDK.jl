@@ -1,4 +1,5 @@
 include("../entities/User.jl")
+using Mocking
 
 userEndpoint = "api/v0/users/{1}"
 configEndpoint = "api/v0/users/{1}/config"
@@ -10,7 +11,7 @@ Return: Returns the created user.
 """
 function createUser(config::SynchronyConfig, user::UserRequest)::UserResponse
     url = "$(config.apiEndpoint):$(config.apiPort)/$(format(userEndpoint, user.id))"
-    response = post(url; headers = Dict(), data=JSON.json(user))
+    response = @mock post(url; headers = Dict(), data=JSON.json(user))
     if(statuscode(response) != 200)
         error("Error creating user, received $(statuscode(response)) with body '$(readstring(response))'.")
     else
@@ -25,7 +26,7 @@ Return: The user for the given user ID.
 """
 function getUser(config::SynchronyConfig, userId::String)::UserResponse
     url = "$(config.apiEndpoint):$(config.apiPort)/$(format(userEndpoint, userId))"
-    response = get(url; headers = Dict())
+    response = @mock get(url; headers = Dict())
     if(statuscode(response) != 200)
         error("Error getting user, received $(statuscode(response)) with body '$(readstring(response))'.")
     else
@@ -40,7 +41,7 @@ Return: The updated user from the service.
 """
 function updateUser(config::SynchronyConfig, user::UserRequest)::UserResponse
     url = "$(config.apiEndpoint):$(config.apiPort)/$(format(userEndpoint, user.id))"
-    response = put(url; headers = Dict(), data=JSON.json(user))
+    response = @mock put(url; headers = Dict(), data=JSON.json(user))
     if(statuscode(response) != 200)
         error("Error updating user, received $(statuscode(response)) with body '$(readstring(response))'.")
     else
@@ -56,7 +57,7 @@ Return: The deleted user.
 """
 function deleteUser(config::SynchronyConfig, userId::String)::UserResponse
     url = "$(config.apiEndpoint):$(config.apiPort)/$(format(userEndpoint, userId))"
-    response = delete(url; headers = Dict())
+    response = @mock delete(url; headers = Dict())
     if(statuscode(response) != 200)
         error("Error deleting user, received $(statuscode(response)) with body '$(readstring(response))'.")
     else
@@ -72,7 +73,7 @@ Return: The user config.
 """
 function getUserConfig(config::SynchronyConfig, userId::String)::UserConfig
     url = "$(config.apiEndpoint):$(config.apiPort)/$(format(configEndpoint, userId))"
-    response = get(url; headers = Dict())
+    response = @mock get(url; headers = Dict())
     if(statuscode(response) != 200)
         error("Error getting user configuration, received $(statuscode(response)) with body '$(readstring(response))'.")
     else

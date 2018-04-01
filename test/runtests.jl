@@ -14,43 +14,67 @@ j = JSON.parse(test)
 user = _unmarshallWithLinks(test, UserResponse)
 @test JSON.json(user) == JSON.json(user)
 
-facts("Auth API") do
+mockConfig = SynchronyConfig("http://mock", 9000, "", "", "")
+
+
+facts("User API") do
     # Arrange
-    mockConfig = SynchronyConfig("http://mock", 9000)
-    mockResponse = Response(200, "{\"token\":\"MockToken\", \"refreshToken\":\"MockRefresh\"}")
+    mockResponse = Response(200, "{\"id\": \"\",\"name\": \"GearsAD\",\"email\": \"\",\"address\": \"\",\"organization\": \"\",\"licenseType\": \"\",\"billingId\": \"\",\"createdTimestamp\": \"\",\"lastUpdatedTimestamp\": \"\",\"links\": {\"self\": \"https://api.synchronysandbox.com/mocking\"}}")
     mockErrorResponse = Response(500)
-    mockAuthRequest = AuthRequest("mockUser", "mockApiKey")
-    mockAuthResponse = AuthResponse("mockUser", "mockRefresh")
-    postMock = @patch post(url::String; data::String="") = mockResponse
-    postErrorMock = @patch post(url::String; data::String="") = mockErrorResponse
+    mockUserRequest = UserRequest("mockId", "GearsAD", "", "", "", "", "")
+
+    # Generate our mocks for the actual REST calls
+    postMock = @patch post(url::String; headers=Dict{Any,Any}(), data::String="") = mockResponse
+    getMock = @patch get(url::String; headers=Dict{Any,Any}()) = mockResponse
+    putMock = @patch put(url::String; headers=Dict{Any,Any}(), data::String="") = mockResponse
+    deleteMock = @patch delete(url::String; headers=Dict{Any,Any}(), data::String="") = mockResponse
+    postErrorMock = @patch post(url::String; headers=Dict{Any,Any}(), data::String="") = mockErrorResponse
 
     # Success criteria
     apply(postMock) do
-        context("Getting a token") do
+        context("createUser") do
             # Act
-            mockToken = authenticate(mockConfig, mockAuthRequest)
+            callResponse = createUser(mockConfig, mockUserRequest)
             # Assert
-            @fact mockToken.token --> "MockToken"
-            @fact mockToken.refreshToken --> "MockRefresh"
-        end
-
-        context("Refreshing a token") do
-            # Act
-            mockToken = refreshToken(mockConfig, mockAuthResponse)
-            # Assert
-            @fact mockToken.token --> "MockToken"
-            @fact mockToken.refreshToken --> "MockRefresh"
+            @fact callResponse.name --> "GearsAD"
         end
     end
-    apply(postErrorMock) do
-        context("Failure mode - Getting a token") do
-            # Act & Assert
-            @fact_throws ErrorException authenticate(mockConfig, mockAuthRequest)
-        end
-
-        context("Failure mode - Refreshing a token") do
-            # Act & Assert
-            @fact_throws ErrorException refreshToken(mockConfig, mockAuthResponse)
+    apply(getMock) do
+        context("getUser") do
+            # Act
+            callResponse = getUser(mockConfig, "GearsAD")
+            # Assert
+            @fact callResponse.name --> "GearsAD"
         end
     end
+    apply(putMock) do
+        context("getUser") do
+            # Act
+            callResponse = updateUser(mockConfig, mockUserRequest)
+            # Assert
+            @fact callResponse.name --> "GearsAD"
+        end
+    end
+    apply(deleteMock) do
+        context("deleteUser") do
+            # Act
+            callResponse = deleteUser(mockConfig, "GearsAD")
+            # Assert
+            @fact callResponse.name --> "GearsAD"
+        end
+    end
+#        updateUser
+#        deleteUser
+#        getUserConfig
+    # apply(postErrorMock) do
+    #     context("Failure mode - Getting a token") do
+    #         # Act & Assert
+    #         @fact_throws ErrorException authenticate(mockConfig, mockAuthRequest)
+    #     end
+    #
+    #     context("Failure mode - Refreshing a token") do
+    #         # Act & Assert
+    #         @fact_throws ErrorException refreshToken(mockConfig, mockAuthResponse)
+    #     end
+    # end
 end
