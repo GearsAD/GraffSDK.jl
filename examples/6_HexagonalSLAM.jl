@@ -6,13 +6,13 @@ using JSON, Unmarshal
 using SynchronySDK
 
 # 0. Constants
-robotId = "NewRobot"
-sessionId = "HexagonalDrive"
+robotId = "PixieBot"
+sessionId = "Hackathon"
 
 # 1. Get a Synchrony configuration
 # Assume that you're running in local directory
 println(" - Retrieving Synchrony Configuration...")
-cd("/home/gearsad/.julia/v0.6/SynchronySDK/examples")
+cd(joinpath(Pkg.dir("SynchronySDK"),"examples"))
 configFile = open("synchronyConfig_Local.json")
 configData = JSON.parse(readstring(configFile))
 close(configFile)
@@ -56,11 +56,60 @@ for i in 0:5
     newOdometryMeasurement = AddOdometryRequest(deltaMeasurement, pOdo)
     @time odoResponse = addOdometryMeasurement(synchronyConfig, robotId, sessionId, newOdometryMeasurement)
 end
+#
+# # 5. Now retrieve the dataset
+# println(" - Retrieving all data for session $sessionId...")
+nodes = getNodes(synchronyConfig, robotId, sessionId);
+# println(" -- Node list:\r\n$nodes")
 
-# 5. Now retrieve the dataset
-println(" - Retrieving all data for session $sessionId...")
-nodes = getNodes(synchronyConfig, robotId, sessionId)
-println(" -- Node list:\r\n$nodes")
+# By NeoID
+node = getNode( synchronyConfig, robotId, sessionId, nodes.nodes[1].id);
+# By Synchrony label
+node = getNode( synchronyConfig, robotId, sessionId, nodes.nodes[1].label);
+
+# 6. Now lets add a couple landmarks
+# Ref: https://github.com/dehann/RoME.jl/blob/master/examples/Slam2dExample.jl#L35
+newLandmark = VariableRequest("l1", "Point2", nothing, ["LANDMARK"])
+response = addVariable(synchronyConfig, robotId, sessionId, newLandmark)
+newBearingRangeFactor = BearingRangeRequest("x1", "l1",
+                          DistributionRequest("Normal", Float64[0; 0.1]),
+                          DistributionRequest("Normal", Float64[20; 1.0]))
+addBearingRangeFactor(synchronyConfig, robotId, sessionId, newBearingRangeFactor)
+newBearingRangeFactor2 = BearingRangeRequest("x7", "l1",
+                           DistributionRequest("Normal", Float64[0; 0.1]),
+                           DistributionRequest("Normal", Float64[20; 1.0]))
+addBearingRangeFactor(synchronyConfig, robotId, sessionId, newBearingRangeFactor2)
+
+# 7. Now let's tell the solver to pick up on all the latest changes.
+#TODO: WIP!
+putReady(synchronyConfig, robotId, sessionId, true)
+
+# TODO
+# using IncrementalInference
+# # .............................................................................
+#
+# X1 = getNode( synchronyConfig, robotId, sessionId, 10814);
+# X1Ex = nodeDetail2ExVertex(X1)
+# getData(X1Ex)
+#
+#
+# # function convert(::Type{BearingRangeRequest}, br::Pose2DPoint2DBearingRange)
+#
+#
+# X2 = getNode( synchronyConfig, robotId, sessionId, 10391);
+# X2Ex = nodeDetail2ExVertex(X2)
+# getData(X2Ex)
+
+
+
+
+
+
+
+
+
+
+0
 
 # Time to draw some data!
 
