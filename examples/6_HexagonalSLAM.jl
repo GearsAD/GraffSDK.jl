@@ -6,7 +6,7 @@ using JSON, Unmarshal
 using SynchronySDK
 
 # 0. Constants
-robotId = "PixieBot"
+robotId = "NewRobot"
 sessionId = "Hackathon"
 
 # 1. Get a Synchrony configuration
@@ -84,32 +84,6 @@ addBearingRangeFactor(synchronyConfig, robotId, sessionId, newBearingRangeFactor
 #TODO: WIP!
 putReady(synchronyConfig, robotId, sessionId, true)
 
-# TODO
-# using IncrementalInference
-# # .............................................................................
-#
-# X1 = getNode( synchronyConfig, robotId, sessionId, 10814);
-# X1Ex = nodeDetail2ExVertex(X1)
-# getData(X1Ex)
-#
-#
-# # function convert(::Type{BearingRangeRequest}, br::Pose2DPoint2DBearingRange)
-#
-#
-# X2 = getNode( synchronyConfig, robotId, sessionId, 10391);
-# X2Ex = nodeDetail2ExVertex(X2)
-# getData(X2Ex)
-
-
-
-
-
-
-
-
-
-
-0
 
 # Time to draw some data!
 
