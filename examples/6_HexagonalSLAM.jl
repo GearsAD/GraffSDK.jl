@@ -13,7 +13,7 @@ sessionId = "Hackathon"
 # Assume that you're running in local directory
 println(" - Retrieving Synchrony Configuration...")
 cd(joinpath(Pkg.dir("SynchronySDK"),"examples"))
-configFile = open("synchronyConfig_Local.json")
+configFile = open("synchronyConfig.json")
 configData = JSON.parse(readstring(configFile))
 close(configFile)
 synchronyConfig = Unmarshal.unmarshal(SynchronyConfig, configData)
@@ -59,7 +59,7 @@ end
 #
 # # 5. Now retrieve the dataset
 # println(" - Retrieving all data for session $sessionId...")
-nodes = getNodes(synchronyConfig, robotId, sessionId);
+@time nodes = getNodes(synchronyConfig, robotId, sessionId);
 # println(" -- Node list:\r\n$nodes")
 
 # By NeoID
@@ -81,9 +81,9 @@ newBearingRangeFactor2 = BearingRangeRequest("x7", "l1",
 addBearingRangeFactor(synchronyConfig, robotId, sessionId, newBearingRangeFactor2)
 
 # 7. Now let's tell the solver to pick up on all the latest changes.
-#TODO: WIP!
 putReady(synchronyConfig, robotId, sessionId, true)
 
+#TODO: WIP!
 
 # Time to draw some data!
 
