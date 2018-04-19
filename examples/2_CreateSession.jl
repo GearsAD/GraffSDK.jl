@@ -3,8 +3,7 @@ using JSON, Unmarshal
 using SynchronySDK
 
 # 0. Constants
-userId = "Dehann"
-robotId = "Njord"
+robotId = "NewRobot"
 
 # 1. Get a Synchrony configuration
 # Assume that you're running in local directory

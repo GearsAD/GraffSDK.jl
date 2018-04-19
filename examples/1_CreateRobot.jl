@@ -2,7 +2,7 @@ using Base
 using JSON, Unmarshal
 using SynchronySDK
 
-robotId = "NewRobot"
+robotId = "NewRobotSamWithConfig"
 
 # 1. Get a Synchrony configuration
 # Assume that you're running in local directory
@@ -28,3 +28,9 @@ end
 # Just for example's sake - let's retrieve all robots associated with our user
 robots = getRobots(synchronyConfig)
 @show robots
+
+# 3. Set some user configuration parameters for the robot
+robotConfig = getRobotConfig(synchronyConfig, newRobot.id)
+testConfiguration = Dict{String, String}("myUserConfigSetting" => "Testing", "MoreSettings" => "Store your robot settings here!")
+updatedConfig = updateRobotConfig(synchronyConfig, newRobot.id, testConfiguration)
+refreshedConfig = getRobotConfig(synchronyConfig, newRobot.id)

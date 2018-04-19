@@ -7,13 +7,13 @@ using SynchronySDK
 
 # 0. Constants
 robotId = "NewRobot"
-sessionId = "Hackathon"
+sessionId = "SamNotSolved"
 
 # 1. Get a Synchrony configuration
 # Assume that you're running in local directory
 println(" - Retrieving Synchrony Configuration...")
 cd(joinpath(Pkg.dir("SynchronySDK"),"examples"))
-configFile = open("synchronyConfig.json")
+configFile = open("synchronyConfig_Local.json")
 configData = JSON.parse(readstring(configFile))
 close(configFile)
 synchronyConfig = Unmarshal.unmarshal(SynchronyConfig, configData)
