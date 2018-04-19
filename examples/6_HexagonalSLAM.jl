@@ -7,7 +7,7 @@ using SynchronySDK
 
 # 0. Constants
 robotId = "NewRobot"
-sessionId = "SamNotSolved"
+sessionId = "HexagonalDrive"
 
 # 1. Get a Synchrony configuration
 # Assume that you're running in local directory

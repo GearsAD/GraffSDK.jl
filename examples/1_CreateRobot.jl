@@ -2,12 +2,12 @@ using Base
 using JSON, Unmarshal
 using SynchronySDK
 
-robotId = "NewRobotSamWithConfig"
+robotId = "NewRobot"
 
 # 1. Get a Synchrony configuration
 # Assume that you're running in local directory
 cd(joinpath(Pkg.dir("SynchronySDK"),"examples"))
-configFile = open("synchronyConfig_Local.json")
+configFile = open("synchronyConfig.json")
 configData = JSON.parse(readstring(configFile))
 close(configFile)
 synchronyConfig = Unmarshal.unmarshal(SynchronyConfig, configData)
