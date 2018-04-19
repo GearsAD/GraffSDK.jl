@@ -71,7 +71,7 @@ Return: The updated robot from the service.
 """
 function updateRobot(config::SynchronyConfig, robot::RobotRequest)::RobotResponse
     url = "$(config.apiEndpoint):$(config.apiPort)/$(format(robotEndpoint, config.userId, robot.id))"
-    response = put(url; headers = Dict(), data=JSON.json(robot))
+    response = Requests.put(url; headers = Dict(), data=JSON.json(robot))
     if(statuscode(response) != 200)
         error("Error updating robot, received $(statuscode(response)) with body '$(readstring(response))'.")
     else
@@ -91,5 +91,35 @@ function deleteRobot(config::SynchronyConfig, robotId::String)::RobotResponse
         error("Error deleting robot, received $(statuscode(response)) with body '$(readstring(response))'.")
     else
         return _unmarshallWithLinks(readstring(response), RobotResponse)
+    end
+end
+
+"""
+    getRobotConfig(config::SynchronyConfig, robotId::String)::Dict{Any, Any}
+Will retrieve the robot configuration (user settings) for the given robot ID.
+Return: The robot config for the provided user ID and robot ID.
+"""
+function getRobotConfig(config::SynchronyConfig, robotId::String)::Dict{Any, Any}
+    url = "$(config.apiEndpoint):$(config.apiPort)/$(format(robotEndpoint, config.userId, robotId))/config"
+    response = get(url; headers = Dict())
+    if(statuscode(response) != 200)
+        error("Error getting robot, received $(statuscode(response)) with body '$(readstring(response))'.")
+    else
+        return JSON.parse(readstring(response))
+    end
+end
+
+"""
+    updateRobotConfig(config::SynchronyConfig, robotId::String, robotConfig::Dict{String, String})::Dict{Any, Any}
+Update a robot configuration.
+Return: The updated robot configuration from the service.
+"""
+function updateRobotConfig(config::SynchronyConfig, robotId::String, robotConfig::Dict{String, String})::Dict{Any, Any}
+    url = "$(config.apiEndpoint):$(config.apiPort)/$(format(robotEndpoint, config.userId, robotId))/config"
+    response = Requests.put(url; headers = Dict(), data=JSON.json(robotConfig))
+    if(statuscode(response) != 200)
+        error("Error updating robot config, received $(statuscode(response)) with body '$(readstring(response))'.")
+    else
+        return JSON.parse(readstring(response))
     end
 end

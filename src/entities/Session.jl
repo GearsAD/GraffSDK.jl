@@ -14,21 +14,23 @@ end
 The structure used for detailed session requests.
 """
 mutable struct SessionDetailsRequest
-  id::String
-  description::String
+    id::String
+    description::String
 end
 
 """
 The structure used for detailed session responses.
 """
 mutable struct SessionDetailsResponse
-  id::String
-  description::String
-  robotId::String
-  userId::String
-  nodeCount::Int
-  createdTimestamp::String
-  links::Dict{String, String}
+    id::String
+    description::String
+    robotId::String
+    userId::String
+    nodeCount::Int
+    createdTimestamp::String
+    lastSolvedTimestamp::String # Can remove nullable as soon as we stabilize.
+    isSolverEnabled::Int # If 1 then the ad-hoc solver will pick up on it, otherwise will ignore this session.
+    links::Dict{String, String}
 end
 
 # function show(io::IO, obj::SessionDetailsResponse)

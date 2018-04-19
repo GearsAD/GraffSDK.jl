@@ -48,7 +48,7 @@ end
 # Exports
 export SynchronyConfig, ErrorResponse
 export UserRequest, UserResponse, KafkaConfig, UserConfig, createUser, getUser, updateUser, deleteUser, getUserConfig
-export RobotRequest, RobotResponse, RobotsResponse, getRobots, getRobot, createRobot, updateRobot, deleteRobot
+export RobotRequest, RobotResponse, RobotsResponse, getRobots, getRobot, createRobot, updateRobot, deleteRobot, getRobotConfig, updateRobotConfig
 export SessionDetailsRequest, SessionDetailsResponse, createSession, getSessions, getSession, putReady
 export NodeResponse, NodesResponse, BigDataElementResponse, NodeDetailsResponse, getNodes, getNode
 export AddOdometryRequest, AddOdometryResponse, addOdometryMeasurement
