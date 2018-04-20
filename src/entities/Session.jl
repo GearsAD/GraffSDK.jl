@@ -16,6 +16,8 @@ The structure used for detailed session requests.
 mutable struct SessionDetailsRequest
     id::String
     description::String
+    initialPoseType::Nullable{String}
+    SessionDetailsRequest(id::String, description::String; initialPoseType::String = nothing) = new(id, description, initialPoseType)
 end
 
 """
