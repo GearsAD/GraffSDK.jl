@@ -34,6 +34,8 @@ include("./services/SessionService.jl")
 
 include("./entities/Cyphon.jl")
 
+include("./YouCanMove.jl")
+
 # Exported functions
 function nodeDetail2ExVertex(nodeDetails::SynchronySDK.NodeDetailsResponse)::Graphs.ExVertex
     vert = Graphs.ExVertex(nodeDetails.sessionIndex, nodeDetails.name)
