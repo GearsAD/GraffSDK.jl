@@ -4,6 +4,7 @@ module SynchronySDK
 using Requests, JSON, Unmarshal
 using Formatting
 using Graphs
+using DocStringExtensions
 
 # Utility functions
 """
