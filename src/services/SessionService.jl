@@ -1,9 +1,9 @@
-include("../entities/Session.jl")
-
 sessionsEndpoint = "api/v0/users/{1}/robots/{2}/sessions"
 sessionEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}"
 nodesEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/nodes"
 nodeEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/nodes/{4}"
+bigDataEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/nodes/{4}/data"
+bigDataElementEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/nodes/{4}/data/{5}"
 nodeLabelledEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/nodes/labelled/{4}"
 odoEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/odometry"
 sessionReadyEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/ready/{4}"
@@ -11,7 +11,7 @@ variableEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/variables/{4}"
 bearingRangeEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/factors/bearingrange"
 
 """
-    getSessions(config::SynchronyConfig, robotId::String)::SessionsResponse
+$(SIGNATURES)
 Gets all sessions for the current robot.
 Return: A vector of sessions for the current robot.
 """
@@ -33,7 +33,7 @@ function getSessions(config::SynchronyConfig, robotId::String)::SessionsResponse
 end
 
 """
-    isSessionExisting(config::SynchronyConfig, robotId::String, sessionId::String)::Bool
+$(SIGNATURES)
 Return: Returns true if the session exists already.
 """
 function isSessionExisting(config::SynchronyConfig, robotId::String, sessionId::String)::Bool
@@ -42,7 +42,7 @@ function isSessionExisting(config::SynchronyConfig, robotId::String, sessionId::
 end
 
 """
-    getSession(config::SynchronyConfig, robotId::String, sessionId::String)::SessionDetailsResponse
+$(SIGNATURES)
 Get a specific session given a user ID, robot ID, and session ID.
 Return: The session details for the provided user ID, robot ID, and session ID.
 """
@@ -57,11 +57,11 @@ function getSession(config::SynchronyConfig, robotId::String, sessionId::String)
 end
 
 """
-    createSession(config::SynchronyConfig, robotId::String, session::SessionDetailsRequest)::SessionDetailsResponse
+$(SIGNATURES)
 Create a session in Synchrony and associate it with the given robot+user.
 Return: Returns the created session.
 """
-function createSession(config::SynchronyConfig, robotId::String, session::SessionDetailsRequest)::SessionDetailsResponse
+function addSession(config::SynchronyConfig, robotId::String, session::SessionDetailsRequest)::SessionDetailsResponse
     url = "$(config.apiEndpoint):$(config.apiPort)/$(format(sessionEndpoint, config.userId, robotId, session.id))"
     response = post(url; headers = Dict(), data=JSON.json(session))
     if(statuscode(response) != 200)
@@ -72,7 +72,7 @@ function createSession(config::SynchronyConfig, robotId::String, session::Sessio
 end
 
 """
-    getNodes(config::SynchronyConfig, robotId::String, sessionId::String)::NodesResponse
+$(SIGNATURES)
 Gets all nodes for a given session.
 Return: A vector of nodes for a given robot.
 """
@@ -94,7 +94,7 @@ function getNodes(config::SynchronyConfig, robotId::String, sessionId::String)::
 end
 
 """
-    getNode(config::SynchronyConfig, robotId::String, sessionId::String, nodeIdOrLabel::Union{Int, String})::NodeDetailsResponse
+$(SIGNATURES)
 Gets a node's details by either its ID or name.
 Return: A node's details.
 """
@@ -115,7 +115,7 @@ function getNode(config::SynchronyConfig, robotId::String, sessionId::String, no
 end
 
 """
-    putReady(config::SynchronyConfig, robotId::String, sessionId::String, isReady::Bool)::Void
+$(SIGNATURES)
 Set the ready status for a session.
 """
 function putReady(config::SynchronyConfig, robotId::String, sessionId::String, isReady::Bool)::Void
@@ -129,7 +129,7 @@ function putReady(config::SynchronyConfig, robotId::String, sessionId::String, i
 end
 
 """
-    addVariable(config::SynchronyConfig, robotId::String, sessionId::String, variableRequest::VariableRequest)::VariableResponse
+$(SIGNATURES)
 Create a variable in Synchrony and associate it with the given robot+user.
 Return: Returns the created variable.
 """
@@ -144,7 +144,7 @@ function addVariable(config::SynchronyConfig, robotId::String, sessionId::String
 end
 
 """
-    addVariable(config::SynchronyConfig, robotId::String, sessionId::String, variableRequest::VariableRequest)::VariableResponse
+$(SIGNATURES)
 Create a variable in Synchrony and associate it with the given robot+user.
 Return: Returns the created variable.
 """
@@ -159,7 +159,7 @@ function addBearingRangeFactor(config::SynchronyConfig, robotId::String, session
 end
 
 """
-    addOdometryMeasurement(config::SynchronyConfig, robotId::String, session::SessionDetailsRequest)::SessionDetailsResponse
+$(SIGNATURES)
 Create a session in Synchrony and associate it with the given robot+user.
 Return: Returns the added odometry information.
 """
@@ -169,6 +169,41 @@ function addOdometryMeasurement(config::SynchronyConfig, robotId::String, sessio
     if(statuscode(response) != 200)
         error("Error creating odometry, received $(statuscode(response)) with body '$(readstring(response))'.")
     else
-        return AddOdometryResponse() #_unmarshallWithLinks(readstring(response), AddOdometryResponse)
+        return _unmarshallWithLinks(readstring(response), AddOdometryResponse)
+    end
+end
+
+"""
+$(SIGNATURES)
+Get data entries associated with a node.
+Return: Summary of all data associated with a node.
+"""
+function getDataEntries(config::SynchronyConfig, robotId::String, sessionId::String, nodeId::Int)::Vector{BigDataEntryResponse}
+    url = "$(config.apiEndpoint):$(config.apiPort)/$(format(bigDataEndpoint, config.userId, robotId, sessionId, nodeId))"
+    response = get(url; headers = Dict())
+    if(statuscode(response) != 200)
+        error("Error getting node data entries, received $(statuscode(response)) with body '$(readstring(response))'.")
+    else
+        bigDataRaw = JSON.parse(readstring(response))
+        datas = Vector{BigDataEntryResponse}()
+        for bd in bigDatas
+            push!(datas, _unmarshallWithLinks(JSON.json(bd), BigDataEntryResponse))
+        end
+        return datas
+    end
+end
+
+"""
+$(SIGNATURES)
+Get data elment associated with a node.
+Return: Full data element associated with the specified node.
+"""
+function getDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeId::Int, bigDataKey::String)::BigDataElementResponse
+    url = "$(config.apiEndpoint):$(config.apiPort)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataKey))"
+    response = get(url; headers = Dict())
+    if(statuscode(response) != 200)
+        error("Error getting node data entries, received $(statuscode(response)) with body '$(readstring(response))'.")
+    else
+        return _unmarshallWithLinks(readstring(response), BigDataElementResponse)
     end
 end

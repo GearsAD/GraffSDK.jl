@@ -7,7 +7,7 @@ using SynchronySDK
 
 # 0. Constants
 robotId = "NewRobot"
-sessionId = "HexagonalDrive"
+sessionId = "HexagonalDriveImagery"
 
 # 1. Get a Synchrony configuration
 # Assume that you're running in local directory
@@ -28,7 +28,7 @@ else
     # Create a new one
     println(" -- Robot '$robotId' doesn't exist, creating it...")
     newRobot = RobotRequest(robotId, "My New Bot", "Description of my neat robot", "Active")
-    robot = createRobot(synchronyConfig, newRobot)
+    robot = addRobot(synchronyConfig, newRobot)
 end
 println(robot)
 

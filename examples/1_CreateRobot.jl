@@ -16,7 +16,7 @@ synchronyConfig = Unmarshal.unmarshal(SynchronyConfig, configData)
 # Creating a bot allows us to create session data for that robot.
 # and associate it with data sessions
 newRobot = RobotRequest(robotId, "My New Bot", "Njord in AWS", "Active")
-retRobot = createRobot(synchronyConfig, newRobot)
+retRobot = addRobot(synchronyConfig, newRobot)
 @show retRobot
 # Now we can get it as well if we want
 getRobotDetails = getRobot(synchronyConfig, newRobot.id)

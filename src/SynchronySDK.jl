@@ -4,10 +4,11 @@ module SynchronySDK
 using Requests, JSON, Unmarshal
 using Formatting
 using Graphs
+using DocStringExtensions
 
 # Utility functions
 """
-    _unmarshallWithLinks(responseBody::String, t::Type)
+$(SIGNATURES)
 Internal fix for Unmarshal not being able to deserialize dictionaries.
 https://github.com/lwabeke/Unmarshal.jl/issues/9
 """
@@ -30,6 +31,7 @@ include("./entities/Robot.jl")
 include("./services/RobotService.jl")
 
 include("./entities/Session.jl")
+include("./entities/Data.jl")
 include("./services/SessionService.jl")
 
 include("./entities/Cyphon.jl")
@@ -50,6 +52,7 @@ export SynchronyConfig, ErrorResponse
 export UserRequest, UserResponse, KafkaConfig, UserConfig, createUser, getUser, updateUser, deleteUser, getUserConfig
 export RobotRequest, RobotResponse, RobotsResponse, getRobots, getRobot, createRobot, updateRobot, deleteRobot, getRobotConfig, updateRobotConfig
 export SessionDetailsRequest, SessionDetailsResponse, createSession, getSessions, getSession, putReady
+export 
 export NodeResponse, NodesResponse, BigDataElementResponse, NodeDetailsResponse, getNodes, getNode
 export AddOdometryRequest, AddOdometryResponse, addOdometryMeasurement
 export VariableRequest, VariableResponse, BearingRangeRequest, BearingRangeResponse, DistributionRequest, addVariable, addBearingRangeFactor
