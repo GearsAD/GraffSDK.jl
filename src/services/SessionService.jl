@@ -9,6 +9,7 @@ odoEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/odometry"
 sessionReadyEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/ready/{4}"
 variableEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/variables/{4}"
 bearingRangeEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/factors/bearingrange"
+# factorEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/factors/{4}"
 
 """
     getSessions(config::SynchronyConfig, robotId::String)::SessionsResponse
