@@ -49,10 +49,10 @@ end
 
 # Exports
 export SynchronyConfig, ErrorResponse
-export UserRequest, UserResponse, KafkaConfig, UserConfig, createUser, getUser, updateUser, deleteUser, getUserConfig
-export RobotRequest, RobotResponse, RobotsResponse, getRobots, getRobot, createRobot, updateRobot, deleteRobot, getRobotConfig, updateRobotConfig
-export SessionDetailsRequest, SessionDetailsResponse, createSession, getSessions, getSession, putReady
-export 
+export UserRequest, UserResponse, KafkaConfig, UserConfig, addUser, getUser, updateUser, deleteUser, getUserConfig
+export RobotRequest, RobotResponse, RobotsResponse, getRobots, getRobot, addRobot, updateRobot, deleteRobot, getRobotConfig, updateRobotConfig
+export SessionDetailsRequest, SessionDetailsResponse, addSession, getSessions, getSession, putReady
+export BigDataElementRequest, BigDataEntryResponse, BigDataElementResponse, getDataEntries, getDataElement, addDataElement, updateDataElement, deleteDataElement
 export NodeResponse, NodesResponse, BigDataElementResponse, NodeDetailsResponse, getNodes, getNode
 export AddOdometryRequest, AddOdometryResponse, addOdometryMeasurement
 export VariableRequest, VariableResponse, BearingRangeRequest, BearingRangeResponse, DistributionRequest, addVariable, addBearingRangeFactor

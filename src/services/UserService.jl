@@ -6,10 +6,10 @@ configEndpoint = "api/v0/users/{1}/config"
 
 """
 $(SIGNATURES)
-Create a user in Synchrony.
+Add a user to Synchrony.
 Return: Returns the created user.
 """
-function createUser(config::SynchronyConfig, user::UserRequest)::UserResponse
+function addUser(config::SynchronyConfig, user::UserRequest)::UserResponse
     url = "$(config.apiEndpoint):$(config.apiPort)/$(format(userEndpoint, user.id))"
     response = @mock post(url; headers = Dict(), data=JSON.json(user))
     if(statuscode(response) != 200)

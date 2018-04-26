@@ -109,7 +109,7 @@ function getNode(config::SynchronyConfig, robotId::String, sessionId::String, no
     else
         # Some manual effort done
         rawNode = JSON.parse(readstring(response))
-        node = NodeDetailsResponse(rawNode["id"], rawNode["label"], rawNode["sessionIndex"], rawNode["properties"], rawNode["packed"], rawNode["labels"], rawNode["bigData"], rawNode["links"])
+        node = NodeDetailsResponse(rawNode["id"], rawNode["label"], rawNode["sessionIndex"], rawNode["properties"], rawNode["packed"], rawNode["labels"], rawNode["links"])
         return node
     end
 end
@@ -186,7 +186,7 @@ function getDataEntries(config::SynchronyConfig, robotId::String, sessionId::Str
     else
         bigDataRaw = JSON.parse(readstring(response))
         datas = Vector{BigDataEntryResponse}()
-        for bd in bigDatas
+        for bd in datas
             push!(datas, _unmarshallWithLinks(JSON.json(bd), BigDataEntryResponse))
         end
         return datas
@@ -203,6 +203,59 @@ function getDataElement(config::SynchronyConfig, robotId::String, sessionId::Str
     response = get(url; headers = Dict())
     if(statuscode(response) != 200)
         error("Error getting node data entries, received $(statuscode(response)) with body '$(readstring(response))'.")
+    else
+        return _unmarshallWithLinks(readstring(response), BigDataElementResponse)
+    end
+end
+
+"""
+$(SIGNATURES)
+Add a data elment associated with a node.
+Return: Full data element associated with the specified node.
+"""
+function addDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeId::Int, bigDataElement::BigDataElementRequest)::BigDataElementResponse
+    url = "$(config.apiEndpoint):$(config.apiPort)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataElement.id))"
+    response = post(url; headers = Dict(), data=JSON.json(bigDataElement))
+    if(statuscode(response) != 200)
+        error("Error adding data element, received $(statuscode(response)) with body '$(readstring(response))'.")
+    else
+        return _unmarshallWithLinks(readstring(response), BigDataElementResponse)
+    end
+end
+
+"""
+$(SIGNATURES)
+Encode data and return the data request.
+"""
+function encodeJsonData(id::String, description::String, data::Any)::BigDataElementRequest
+    return BigDataElementRequest(id, "Mongo", description, JSON.json(data), "application/json")
+end
+
+"""
+$(SIGNATURES)
+Update a data element associated with a node.
+Return: Full data element associated with the specified node.
+"""
+function updateDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeId::Int, bigDataElement::BigDataElementResponse)::BigDataElementResponse
+    url = "$(config.apiEndpoint):$(config.apiPort)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataElement.id))"
+    response = post(url; headers = Dict(), data=JSON.json(bigDataElement))
+    if(statuscode(response) != 200)
+        error("Error updating data element, received $(statuscode(response)) with body '$(readstring(response))'.")
+    else
+        return _unmarshallWithLinks(readstring(response), BigDataElementResponse)
+    end
+end
+
+"""
+$(SIGNATURES)
+Delete a data element associated with a node.
+Return: 200 no body if success.
+"""
+function deleteDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeId::Int, bigDataElement::BigDataElementResponse)::BigDataElementResponse
+    url = "$(config.apiEndpoint):$(config.apiPort)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataElement.id))"
+    response = Requests.put(url; headers = Dict(), data=JSON.json(bigDataElement))
+    if(statuscode(response) != 200)
+        error("Error updating data element, received $(statuscode(response)) with body '$(readstring(response))'.")
     else
         return _unmarshallWithLinks(readstring(response), BigDataElementResponse)
     end

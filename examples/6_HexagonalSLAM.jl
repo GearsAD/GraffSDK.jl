@@ -1,22 +1,10 @@
 # tutorial on conventional 2D SLAM example
 # This tutorial shows how to use some of the commonly used factor types
 # This tutorial follows from the ContinuousScalar example from IncrementalInference
-using Base
-using JSON, Unmarshal
-using SynchronySDK
 
-# 0. Constants
-robotId = "NewRobot"
-sessionId = "HexagonalDrive"
-
-# 1. Get a Synchrony configuration
-# Assume that you're running in local directory
-println(" - Retrieving Synchrony Configuration...")
+# 1. Import the initialization code.
 cd(joinpath(Pkg.dir("SynchronySDK"),"examples"))
-configFile = open("synchronyConfig_Local.json")
-configData = JSON.parse(readstring(configFile))
-close(configFile)
-synchronyConfig = Unmarshal.unmarshal(SynchronyConfig, configData)
+include("0_Initialization.jl")
 
 # 2. Confirm that the robot already exists, create if it doesn't.
 println(" - Creating or retrieving robot '$robotId'...")
@@ -28,7 +16,7 @@ else
     # Create a new one
     println(" -- Robot '$robotId' doesn't exist, creating it...")
     newRobot = RobotRequest(robotId, "My New Bot", "Description of my neat robot", "Active")
-    robot = createRobot(synchronyConfig, newRobot)
+    robot = addRobot(synchronyConfig, newRobot)
 end
 println(robot)
 

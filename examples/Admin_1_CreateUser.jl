@@ -17,7 +17,7 @@ synchronyConfig = Unmarshal.unmarshal(SynchronyConfig, configData)
 # Note that we'll create this for you normally, but providing it here to demonstrate
 # how a user is associated with an organization.
 newUser = UserRequest(synchronyConfig.userId, "NewUser", "email@email.com", "N/A", "Student", "Student", string(Base.Random.uuid4()))
-retUser = createUser(synchronyConfig, newUser)
+retUser = addUser(synchronyConfig, newUser)
 @show retUser
 # Now we can get it as well if we want
 getUser = getUser(synchronyConfig, newUser.id)
