@@ -32,6 +32,7 @@ include("./services/RobotService.jl")
 
 include("./entities/Session.jl")
 include("./entities/Data.jl")
+include("./services/DataHelpers.jl")
 include("./services/SessionService.jl")
 
 include("./entities/Cyphon.jl")

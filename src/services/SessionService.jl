@@ -210,7 +210,7 @@ end
 
 """
 $(SIGNATURES)
-Add a data elment associated with a node.
+Add a data element associated with a node.
 Return: Full data element associated with the specified node.
 """
 function addDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeId::Int, bigDataElement::BigDataElementRequest)::BigDataElementResponse
@@ -221,14 +221,6 @@ function addDataElement(config::SynchronyConfig, robotId::String, sessionId::Str
     else
         return _unmarshallWithLinks(readstring(response), BigDataElementResponse)
     end
-end
-
-"""
-$(SIGNATURES)
-Encode data and return the data request.
-"""
-function encodeJsonData(id::String, description::String, data::Any)::BigDataElementRequest
-    return BigDataElementRequest(id, "Mongo", description, JSON.json(data), "application/json")
 end
 
 """

@@ -7,7 +7,7 @@ include("0_Initialization.jl")
 
 # 2a. Get all node summaries in this session
 nodes = getNodes(synchronyConfig, robotId, sessionId)
-if length(nodes.nodes == 0)
+if length(nodes.nodes) == 0
     error("The current session '$sessionId' doesn't contain any nodes, so this example won't be able to continue. Please run either 6_HexagonalSlam.jl or another example to populate data in this session.")
 end
 println("We retrieved the nodes summary for this session, containing $(length(nodes.nodes)) nodes.")
