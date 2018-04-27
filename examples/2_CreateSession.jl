@@ -17,7 +17,7 @@ synchronyConfig = Unmarshal.unmarshal(SynchronyConfig, configData)
 # Creating a session allows us to ingest data and start refining the factor graph.
 # We can also mine data across all our robots and our sessions.
 newSession = SessionDetailsRequest("HexagonalDrive", "A test dataset demonstrating data ingestion for a wheeled vehicle driving in a hexagon.")
-retSession = createSession(synchronyConfig, robotId, newSession)
+retSession = addSession(synchronyConfig, robotId, newSession)
 @show retSession
 # Now we can get it as well if we want
 getSession = getSession(synchronyConfig, robotId, newSession.id)

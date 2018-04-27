@@ -4,10 +4,11 @@ module SynchronySDK
 using Requests, JSON, Unmarshal
 using Formatting
 using Graphs
+using DocStringExtensions
 
 # Utility functions
 """
-    _unmarshallWithLinks(responseBody::String, t::Type)
+$(SIGNATURES)
 Internal fix for Unmarshal not being able to deserialize dictionaries.
 https://github.com/lwabeke/Unmarshal.jl/issues/9
 """
@@ -30,6 +31,8 @@ include("./entities/Robot.jl")
 include("./services/RobotService.jl")
 
 include("./entities/Session.jl")
+include("./entities/Data.jl")
+include("./services/DataHelpers.jl")
 include("./services/SessionService.jl")
 
 include("./entities/Cyphon.jl")
@@ -47,9 +50,11 @@ end
 
 # Exports
 export SynchronyConfig, ErrorResponse
-export UserRequest, UserResponse, KafkaConfig, UserConfig, createUser, getUser, updateUser, deleteUser, getUserConfig
-export RobotRequest, RobotResponse, RobotsResponse, getRobots, getRobot, createRobot, updateRobot, deleteRobot, getRobotConfig, updateRobotConfig
-export SessionDetailsRequest, SessionDetailsResponse, createSession, getSessions, getSession, putReady
+export UserRequest, UserResponse, KafkaConfig, UserConfig, addUser, getUser, updateUser, deleteUser, getUserConfig
+export RobotRequest, RobotResponse, RobotsResponse, getRobots, getRobot, addRobot, updateRobot, deleteRobot, getRobotConfig, updateRobotConfig
+export SessionDetailsRequest, SessionDetailsResponse, addSession, getSessions, getSession, putReady
+export BigDataElementRequest, BigDataEntryResponse, BigDataElementResponse, getDataEntries, getDataElement, getRawDataElement, addDataElement, updateDataElement, addOrUpdateDataElement, deleteDataElement
+export encodeJsonData, encodeBinaryData, readImageIntoDataRequest, isSafeToJsonSerialize
 export NodeResponse, NodesResponse, BigDataElementResponse, NodeDetailsResponse, getNodes, getNode
 export AddOdometryRequest, AddOdometryResponse, addOdometryMeasurement
 export VariableRequest, VariableResponse, BearingRangeRequest, BearingRangeResponse, DistributionRequest, addVariable, addBearingRangeFactor

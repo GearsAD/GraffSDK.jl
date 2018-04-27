@@ -32,9 +32,9 @@ facts("User API") do
 
     # Success criteria
     apply(postMock) do
-        context("createUser") do
+        context("addUser") do
             # Act
-            callResponse = createUser(mockConfig, mockUserRequest)
+            callResponse = addUser(mockConfig, mockUserRequest)
             # Assert
             @fact callResponse.name --> "GearsAD"
         end
