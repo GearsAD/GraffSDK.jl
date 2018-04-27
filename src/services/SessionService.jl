@@ -4,6 +4,7 @@ nodesEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/nodes"
 nodeEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/nodes/{4}"
 bigDataEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/nodes/{4}/data"
 bigDataElementEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/nodes/{4}/data/{5}"
+bigDataRawElementEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/nodes/{4}/data/{5}/raw"
 nodeLabelledEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/nodes/labelled/{4}"
 odoEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/odometry"
 sessionReadyEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/ready/{4}"
@@ -20,16 +21,15 @@ function getSessions(config::SynchronyConfig, robotId::String)::SessionsResponse
     response = get(url; headers = Dict())
     if(statuscode(response) != 200)
         error("Error getting sessions, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        # Some manual effort done here because it's a vector response.
-        rawSessions = JSON.parse(readstring(response))
-        sessions = SessionsResponse(Vector{SessionResponse}(), rawSessions["links"])
-        for session in rawSessions["sessions"]
-            session = _unmarshallWithLinks(JSON.json(session), SessionResponse)
-            push!(sessions.sessions, session)
-        end
-        return sessions
     end
+    # Some manual effort done here because it's a vector response.
+    rawSessions = JSON.parse(readstring(response))
+    sessions = SessionsResponse(Vector{SessionResponse}(), rawSessions["links"])
+    for session in rawSessions["sessions"]
+        session = _unmarshallWithLinks(JSON.json(session), SessionResponse)
+        push!(sessions.sessions, session)
+    end
+    return sessions
 end
 
 """
@@ -51,9 +51,8 @@ function getSession(config::SynchronyConfig, robotId::String, sessionId::String)
     response = get(url; headers = Dict())
     if(statuscode(response) != 200)
         error("Error getting session, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        return _unmarshallWithLinks(readstring(response), SessionDetailsResponse)
     end
+    return _unmarshallWithLinks(readstring(response), SessionDetailsResponse)
 end
 
 """
@@ -66,9 +65,8 @@ function addSession(config::SynchronyConfig, robotId::String, session::SessionDe
     response = post(url; headers = Dict(), data=JSON.json(session))
     if(statuscode(response) != 200)
         error("Error creating session, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        return _unmarshallWithLinks(readstring(response), SessionDetailsResponse)
     end
+    return _unmarshallWithLinks(readstring(response), SessionDetailsResponse)
 end
 
 """
@@ -81,16 +79,15 @@ function getNodes(config::SynchronyConfig, robotId::String, sessionId::String)::
     response = get(url; headers = Dict())
     if(statuscode(response) != 200)
         error("Error getting sessions, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        # Some manual effort done here because it's a vector response.
-        rawNodes = JSON.parse(readstring(response))
-        nodes = NodesResponse(Vector{NodeResponse}(), rawNodes["links"])
-        for node in rawNodes["nodes"]
-            node = _unmarshallWithLinks(JSON.json(node), NodeResponse)
-            push!(nodes.nodes, node)
-        end
-        return nodes
     end
+    # Some manual effort done here because it's a vector response.
+    rawNodes = JSON.parse(readstring(response))
+    nodes = NodesResponse(Vector{NodeResponse}(), rawNodes["links"])
+    for node in rawNodes["nodes"]
+        node = _unmarshallWithLinks(JSON.json(node), NodeResponse)
+        push!(nodes.nodes, node)
+    end
+    return nodes
 end
 
 """
@@ -106,12 +103,11 @@ function getNode(config::SynchronyConfig, robotId::String, sessionId::String, no
     response = get(url; headers = Dict())
     if(statuscode(response) != 200)
         error("Error getting node, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        # Some manual effort done
-        rawNode = JSON.parse(readstring(response))
-        node = NodeDetailsResponse(rawNode["id"], rawNode["label"], rawNode["sessionIndex"], rawNode["properties"], rawNode["packed"], rawNode["labels"], rawNode["links"])
-        return node
     end
+    # Some manual effort done
+    rawNode = JSON.parse(readstring(response))
+    node = NodeDetailsResponse(rawNode["id"], rawNode["label"], rawNode["sessionIndex"], rawNode["properties"], rawNode["packed"], rawNode["labels"], rawNode["links"])
+    return node
 end
 
 """
@@ -123,9 +119,8 @@ function putReady(config::SynchronyConfig, robotId::String, sessionId::String, i
     response = Requests.put(url; headers = Dict(), data="")
     if(statuscode(response) != 200)
         error("Error updating the ready status of the session, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        return nothing
     end
+    return nothing
 end
 
 """
@@ -138,9 +133,8 @@ function addVariable(config::SynchronyConfig, robotId::String, sessionId::String
     response = post(url; headers = Dict(), data=JSON.json(variableRequest))
     if(statuscode(response) != 200)
         error("Error creating odometry, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        return VariableResponse() #_unmarshallWithLinks(readstring(response), AddOdometryResponse)
     end
+    return VariableResponse() #_unmarshallWithLinks(readstring(response), AddOdometryResponse)
 end
 
 """
@@ -153,9 +147,8 @@ function addBearingRangeFactor(config::SynchronyConfig, robotId::String, session
     response = post(url; headers = Dict(), data=JSON.json(bearingRangeRequest))
     if(statuscode(response) != 200)
         error("Error creating bearing range factor, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        return BearingRangeResponse() #_unmarshallWithLinks(readstring(response), AddOdometryResponse)
     end
+    return BearingRangeResponse() #_unmarshallWithLinks(readstring(response), AddOdometryResponse)
 end
 
 """
@@ -168,9 +161,8 @@ function addOdometryMeasurement(config::SynchronyConfig, robotId::String, sessio
     response = post(url; headers = Dict(), data=JSON.json(addOdoRequest))
     if(statuscode(response) != 200)
         error("Error creating odometry, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        return _unmarshallWithLinks(readstring(response), AddOdometryResponse)
     end
+    return _unmarshallWithLinks(readstring(response), AddOdometryResponse)
 end
 
 """
@@ -186,7 +178,7 @@ function getDataEntries(config::SynchronyConfig, robotId::String, sessionId::Str
     else
         bigDataRaw = JSON.parse(readstring(response))
         datas = Vector{BigDataEntryResponse}()
-        for bd in datas
+        for bd in bigDataRaw
             push!(datas, _unmarshallWithLinks(JSON.json(bd), BigDataEntryResponse))
         end
         return datas
@@ -203,52 +195,79 @@ function getDataElement(config::SynchronyConfig, robotId::String, sessionId::Str
     response = get(url; headers = Dict())
     if(statuscode(response) != 200)
         error("Error getting node data entries, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        return _unmarshallWithLinks(readstring(response), BigDataElementResponse)
     end
+    return _unmarshallWithLinks(readstring(response), BigDataElementResponse)
+end
+
+"""
+$(SIGNATURES)
+Get data elment associated with a node.
+Return: Full data element associated with the specified node.
+"""
+function getRawDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeId::Int, bigDataKey::String)::String
+    url = "$(config.apiEndpoint):$(config.apiPort)/$(format(bigDataRawElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataKey))"
+    response = get(url; headers = Dict())
+    if(statuscode(response) != 200)
+        error("Error getting node data entries, received $(statuscode(response)) with body '$(readstring(response))'.")
+    end
+    return readstring(response)
 end
 
 """
 $(SIGNATURES)
 Add a data element associated with a node.
-Return: Full data element associated with the specified node.
+Return: Nothing if succeed, error if failed.
 """
-function addDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeId::Int, bigDataElement::BigDataElementRequest)::BigDataElementResponse
-    url = "$(config.apiEndpoint):$(config.apiPort)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataElement.id))"
+function addDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeId::Int, bigDataElement::BigDataElementRequest)::Void
+    @show url = "$(config.apiEndpoint):$(config.apiPort)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataElement.id))"
     response = post(url; headers = Dict(), data=JSON.json(bigDataElement))
     if(statuscode(response) != 200)
         error("Error adding data element, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        return _unmarshallWithLinks(readstring(response), BigDataElementResponse)
     end
+    return nothing
 end
 
 """
 $(SIGNATURES)
 Update a data element associated with a node.
-Return: Full data element associated with the specified node.
+Return: Nothing if succeed, error if failed.
 """
-function updateDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeId::Int, bigDataElement::BigDataElementResponse)::BigDataElementResponse
+function updateDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeId::Int, bigDataElement::Union{BigDataElementRequest, BigDataElementResponse})::Void
     url = "$(config.apiEndpoint):$(config.apiPort)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataElement.id))"
-    response = post(url; headers = Dict(), data=JSON.json(bigDataElement))
+    response = Requests.put(url; headers = Dict(), data=JSON.json(bigDataElement))
     if(statuscode(response) != 200)
-        error("Error updating data element, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        return _unmarshallWithLinks(readstring(response), BigDataElementResponse)
+        error("Error updating data element '$(bigDataElement.id)', received $(statuscode(response)) with body '$(readstring(response))'.")
     end
+    return nothing
+end
+
+"""
+$(SIGNATURES)
+Add or update a data element associated with a node. Will check if the key exists, if so it updates, otherwise it adds.
+Return: Nothing if succeed, error if failed.
+"""
+function addOrUpdateDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeId::Int, dataElement::Union{BigDataElementRequest, BigDataElementResponse})::Void
+    dataEntries = getDataEntries(config, robotId, sessionId, nodeId)
+    if count(entry -> entry.id == dataElement.id, dataEntries) == 0
+        println("Existence test for ID '$(dataElement.id)' failed - Adding it!")
+        addDataElement(config, robotId, sessionId, nodeId, dataElement)
+    else
+        println("Existence test for ID '$(dataElement.id)' passed - Updating it!")
+        updateDataElement(config, robotId, sessionId, nodeId, dataElement)
+    end
+    return nothing
 end
 
 """
 $(SIGNATURES)
 Delete a data element associated with a node.
-Return: 200 no body if success.
+Return: Nothing if succeed, error if failed.
 """
-function deleteDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeId::Int, bigDataElement::BigDataElementResponse)::BigDataElementResponse
-    url = "$(config.apiEndpoint):$(config.apiPort)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataElement.id))"
-    response = Requests.put(url; headers = Dict(), data=JSON.json(bigDataElement))
+function deleteDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeId::Int, dataId::String)::Void
+    url = "$(config.apiEndpoint):$(config.apiPort)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, dataId))"
+    response = Requests.delete(url; headers = Dict())
     if(statuscode(response) != 200)
-        error("Error updating data element, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        return _unmarshallWithLinks(readstring(response), BigDataElementResponse)
+        error("Error deleting data element '$dataId', received $(statuscode(response)) with body '$(readstring(response))'.")
     end
+    return nothing
 end

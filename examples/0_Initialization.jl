@@ -1,6 +1,7 @@
 using Base
 using JSON, Unmarshal
 using SynchronySDK
+using SynchronySDK.DataHelpers
 
 # 0. Constants
 robotId = "NewRobot"

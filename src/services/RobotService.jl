@@ -11,16 +11,15 @@ function getRobots(config::SynchronyConfig)::RobotsResponse
     response = get(url; headers = Dict())
     if(statuscode(response) != 200)
         error("Error getting robots, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        # Some manual effort done here because it's a vector response.
-        rawRobots = JSON.parse(readstring(response))
-        robots = RobotsResponse(Vector{RobotResponse}(), rawRobots["links"])
-        for robot in rawRobots["robots"]
-            robot = _unmarshallWithLinks(JSON.json(robot), RobotResponse)
-            push!(robots.robots, robot)
-        end
-        return robots
     end
+    # Some manual effort done here because it's a vector response.
+    rawRobots = JSON.parse(readstring(response))
+    robots = RobotsResponse(Vector{RobotResponse}(), rawRobots["links"])
+    for robot in rawRobots["robots"]
+        robot = _unmarshallWithLinks(JSON.json(robot), RobotResponse)
+        push!(robots.robots, robot)
+    end
+    return robots
 end
 
 """
@@ -42,9 +41,8 @@ function getRobot(config::SynchronyConfig, robotId::String)::RobotResponse
     response = get(url; headers = Dict())
     if(statuscode(response) != 200)
         error("Error getting robot, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        return _unmarshallWithLinks(readstring(response), RobotResponse)
     end
+    return _unmarshallWithLinks(readstring(response), RobotResponse)
 end
 
 """
@@ -57,9 +55,8 @@ function addRobot(config::SynchronyConfig, robot::RobotRequest)::RobotResponse
     response = post(url; headers = Dict(), data=JSON.json(robot))
     if(statuscode(response) != 200)
         error("Error creating robot, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        return _unmarshallWithLinks(readstring(response), RobotResponse)
     end
+    return _unmarshallWithLinks(readstring(response), RobotResponse)
 end
 
 """
@@ -72,9 +69,8 @@ function updateRobot(config::SynchronyConfig, robot::RobotRequest)::RobotRespons
     response = Requests.put(url; headers = Dict(), data=JSON.json(robot))
     if(statuscode(response) != 200)
         error("Error updating robot, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        return _unmarshallWithLinks(readstring(response), RobotResponse)
     end
+    return _unmarshallWithLinks(readstring(response), RobotResponse)
 end
 
 """
@@ -87,9 +83,8 @@ function deleteRobot(config::SynchronyConfig, robotId::String)::RobotResponse
     response = delete(url; headers = Dict())
     if(statuscode(response) != 200)
         error("Error deleting robot, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        return _unmarshallWithLinks(readstring(response), RobotResponse)
     end
+    return _unmarshallWithLinks(readstring(response), RobotResponse)
 end
 
 """
@@ -102,9 +97,8 @@ function getRobotConfig(config::SynchronyConfig, robotId::String)::Dict{Any, Any
     response = get(url; headers = Dict())
     if(statuscode(response) != 200)
         error("Error getting robot, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        return JSON.parse(readstring(response))
     end
+    return JSON.parse(readstring(response))
 end
 
 """
@@ -117,7 +111,6 @@ function updateRobotConfig(config::SynchronyConfig, robotId::String, robotConfig
     response = Requests.put(url; headers = Dict(), data=JSON.json(robotConfig))
     if(statuscode(response) != 200)
         error("Error updating robot config, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        return JSON.parse(readstring(response))
     end
+    return JSON.parse(readstring(response))
 end

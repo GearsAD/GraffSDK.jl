@@ -1,6 +1,9 @@
 module DataHelpers
 
+using JSON
+using SynchronySDK
 using DocStringExtensions
+
 
 
 """
@@ -8,11 +11,11 @@ $(SIGNATURES)
 Encode data and return the data request.
 """
 function encodeJsonData(id::String, description::String, data::Any)::BigDataElementRequest
-    return BigDataElementRequest(id, "Mongo", description, JSON.json(data), mimeType="application/json")
+    return BigDataElementRequest(id, "Mongo", description, JSON.json(data), "application/json")
 end
 
 function encodeBinaryData(id::String, description::String, data::Vector{UInt8}; mimeType="application/octet-stream")
-    return BigDataElementRequest(id, "Mongo", description, base64encode(data), mimeType=mimeType)
+    return BigDataElementRequest(id, "Mongo", description, base64encode(data), mimeType)
 end
 
 """
@@ -24,7 +27,7 @@ function readImageIntoDataRequest(file::String, id::String, description::String,
         fid = open(file,"r")
         imgBytes = read(fid)
         close(fid)
-        return BigDataElementRequest(id, "Mongo", description, base64encode(imgBytes), mimeType=mimeType)
+        return BigDataElementRequest(id, "Mongo", description, base64encode(imgBytes), mimeType)
     catch ex
         showerror(STDERR, ex)
         error("Unable to read the image from $file - $ex")

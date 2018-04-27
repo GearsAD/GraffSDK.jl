@@ -1,4 +1,4 @@
-struct BigDataElementRequest
+mutable struct BigDataElementRequest
     id::String
     sourceName::String
     description::String
@@ -6,7 +6,7 @@ struct BigDataElementRequest
     mimeType::String
 end
 
-struct BigDataEntryResponse
+mutable struct BigDataEntryResponse
     id::String
     sourceName::String
     description::String
@@ -15,7 +15,7 @@ struct BigDataEntryResponse
     links::Dict{String, String}
 end
 
-struct BigDataElementResponse
+mutable struct BigDataElementResponse
     id::String
     sourceName::String
     description::String

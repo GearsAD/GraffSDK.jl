@@ -14,9 +14,8 @@ function addUser(config::SynchronyConfig, user::UserRequest)::UserResponse
     response = @mock post(url; headers = Dict(), data=JSON.json(user))
     if(statuscode(response) != 200)
         error("Error creating user, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        return _unmarshallWithLinks(readstring(response), UserResponse)
     end
+    return _unmarshallWithLinks(readstring(response), UserResponse)
 end
 
 """
@@ -29,9 +28,8 @@ function getUser(config::SynchronyConfig, userId::String)::UserResponse
     response = @mock get(url; headers = Dict())
     if(statuscode(response) != 200)
         error("Error getting user, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        return _unmarshallWithLinks(readstring(response), UserResponse)
     end
+    return _unmarshallWithLinks(readstring(response), UserResponse)
 end
 
 """
@@ -44,9 +42,8 @@ function updateUser(config::SynchronyConfig, user::UserRequest)::UserResponse
     response = @mock put(url; headers = Dict(), data=JSON.json(user))
     if(statuscode(response) != 200)
         error("Error updating user, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        return _unmarshallWithLinks(readstring(response), UserResponse)
     end
+    return _unmarshallWithLinks(readstring(response), UserResponse)
 end
 
 """
@@ -60,9 +57,8 @@ function deleteUser(config::SynchronyConfig, userId::String)::UserResponse
     response = @mock delete(url; headers = Dict())
     if(statuscode(response) != 200)
         error("Error deleting user, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        return _unmarshallWithLinks(readstring(response), UserResponse)
     end
+    return _unmarshallWithLinks(readstring(response), UserResponse)
 end
 
 """
@@ -76,7 +72,6 @@ function getUserConfig(config::SynchronyConfig, userId::String)::UserConfig
     response = @mock get(url; headers = Dict())
     if(statuscode(response) != 200)
         error("Error getting user configuration, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        return Unmarshal.unmarshal(UserConfig, JSON.parse(readstring(response)))
     end
+    return Unmarshal.unmarshal(UserConfig, JSON.parse(readstring(response)))
 end
