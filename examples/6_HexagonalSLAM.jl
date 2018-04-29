@@ -42,8 +42,10 @@ for i in 0:5
     pOdo = Float64[[0.1 0 0] [0 0.1 0] [0 0 0.1]]
     println(" - Measurement $i: Adding new odometry measurement '$deltaMeasurement'...")
     newOdometryMeasurement = AddOdometryRequest(deltaMeasurement, pOdo)
-    @time odoResponse = addOdometryMeasurement(synchronyConfig, robotId, sessionId, newOdometryMeasurement)
+    @time @show response = addOdometryMeasurement(synchronyConfig, robotId, sessionId, newOdometryMeasurement)
 end
+# putReady(synchronyConfig, robotId, sessionId, true)
+
 #
 # # 5. Now retrieve the dataset
 # println(" - Retrieving all data for session $sessionId...")
@@ -69,9 +71,9 @@ newBearingRangeFactor2 = BearingRangeRequest("x7", "l1",
 addBearingRangeFactor(synchronyConfig, robotId, sessionId, newBearingRangeFactor2)
 
 # 7. Now let's tell the solver to pick up on all the latest changes.
+# TODO: Allow for putReady to take in a list.
 putReady(synchronyConfig, robotId, sessionId, true)
 
-#TODO: WIP!
 
 # Time to draw some data!
 

@@ -4,7 +4,7 @@ using SynchronySDK
 using SynchronySDK.DataHelpers
 
 # 0. Constants
-robotId = "NewRobot"
+robotId = "Hackathon"
 sessionId = "HexagonalDrive"
 
 # 1. Get a Synchrony configuration

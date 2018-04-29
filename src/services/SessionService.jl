@@ -162,7 +162,7 @@ function addOdometryMeasurement(config::SynchronyConfig, robotId::String, sessio
     if(statuscode(response) != 200)
         error("Error creating odometry, received $(statuscode(response)) with body '$(readstring(response))'.")
     end
-    return _unmarshallWithLinks(readstring(response), AddOdometryResponse)
+    return Unmarshal.unmarshal(AddOdometryResponse, JSON.parse(readstring(response)))
 end
 
 """
@@ -250,7 +250,7 @@ function addOrUpdateDataElement(config::SynchronyConfig, robotId::String, sessio
     dataEntries = getDataEntries(config, robotId, sessionId, nodeId)
     if count(entry -> entry.id == dataElement.id, dataEntries) == 0
         println("Existence test for ID '$(dataElement.id)' failed - Adding it!")
-        addDataElement(config, robotId, sessionId, nodeId, dataElement)
+        return addDataElement(config, robotId, sessionId, nodeId, dataElement)
     else
         println("Existence test for ID '$(dataElement.id)' passed - Updating it!")
         updateDataElement(config, robotId, sessionId, nodeId, dataElement)
