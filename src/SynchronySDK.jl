@@ -53,7 +53,8 @@ export SynchronyConfig, ErrorResponse
 export UserRequest, UserResponse, KafkaConfig, UserConfig, addUser, getUser, updateUser, deleteUser, getUserConfig
 export RobotRequest, RobotResponse, RobotsResponse, getRobots, getRobot, addRobot, updateRobot, deleteRobot, getRobotConfig, updateRobotConfig
 export SessionDetailsRequest, SessionDetailsResponse, addSession, getSessions, getSession, putReady
-export BigDataElementRequest, BigDataEntryResponse, BigDataElementResponse, getDataEntries, getDataElement, getRawDataElement, addDataElement, updateDataElement, addOrUpdateDataElement, deleteDataElement
+export BigDataElementRequest, BigDataEntryResponse, BigDataElementResponse
+export getDataEntries, getDataElement, getRawDataElement, addDataElement, updateDataElement, addOrUpdateDataElement, deleteDataElement
 export encodeJsonData, encodeBinaryData, readImageIntoDataRequest, isSafeToJsonSerialize
 export NodeResponse, NodesResponse, BigDataElementResponse, NodeDetailsResponse, getNodes, getNode
 export AddOdometryRequest, AddOdometryResponse, NodeResponseInfo, addOdometryMeasurement
