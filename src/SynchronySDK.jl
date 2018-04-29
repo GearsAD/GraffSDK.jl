@@ -56,7 +56,7 @@ export SessionDetailsRequest, SessionDetailsResponse, addSession, getSessions, g
 export BigDataElementRequest, BigDataEntryResponse, BigDataElementResponse, getDataEntries, getDataElement, getRawDataElement, addDataElement, updateDataElement, addOrUpdateDataElement, deleteDataElement
 export encodeJsonData, encodeBinaryData, readImageIntoDataRequest, isSafeToJsonSerialize
 export NodeResponse, NodesResponse, BigDataElementResponse, NodeDetailsResponse, getNodes, getNode
-export AddOdometryRequest, AddOdometryResponse, addOdometryMeasurement
+export AddOdometryRequest, AddOdometryResponse, NodeResponseInfo, addOdometryMeasurement
 export VariableRequest, VariableResponse, BearingRangeRequest, BearingRangeResponse, DistributionRequest, addVariable, addBearingRangeFactor
 # For testing
 export _unmarshallWithLinks

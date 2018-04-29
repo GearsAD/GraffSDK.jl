@@ -74,7 +74,6 @@ mutable struct NodeDetailsResponse
     properties::Dict{String, Any}
     packed::Dict{String, Any}
     labels::Vector{String}
-    # bigData::Vector{BigData}
     links::Dict{String, String}
 end
 
@@ -92,7 +91,14 @@ end
 """
 The structure describing the response to the add-odometry request.
 """
+struct NodeResponseInfo
+    id::Int
+    label::String
+end
+
 struct AddOdometryResponse
+    variable::NodeResponseInfo
+    factor::NodeResponseInfo
 end
 
 struct VariableRequest
