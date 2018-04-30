@@ -1,10 +1,22 @@
 # tutorial on conventional 2D SLAM example
 # This tutorial shows how to use some of the commonly used factor types
 # This tutorial follows from the ContinuousScalar example from IncrementalInference
+using Base
+using JSON, Unmarshal
+using SynchronySDK
 
-# 1. Import the initialization code.
+# 0. Constants
+robotId = "NewRobot"
+sessionId = "HexagonalDriveImagery"
+
+# 1. Get a Synchrony configuration
+# Assume that you're running in local directory
+println(" - Retrieving Synchrony Configuration...")
 cd(joinpath(Pkg.dir("SynchronySDK"),"examples"))
-include("0_Initialization.jl")
+configFile = open("synchronyConfig_Local.json")
+configData = JSON.parse(readstring(configFile))
+close(configFile)
+synchronyConfig = Unmarshal.unmarshal(SynchronyConfig, configData)
 
 # 2. Confirm that the robot already exists, create if it doesn't.
 println(" - Creating or retrieving robot '$robotId'...")
@@ -42,10 +54,8 @@ for i in 0:5
     pOdo = Float64[[0.1 0 0] [0 0.1 0] [0 0 0.1]]
     println(" - Measurement $i: Adding new odometry measurement '$deltaMeasurement'...")
     newOdometryMeasurement = AddOdometryRequest(deltaMeasurement, pOdo)
-    @time @show response = addOdometryMeasurement(synchronyConfig, robotId, sessionId, newOdometryMeasurement)
+    @time odoResponse = addOdometryMeasurement(synchronyConfig, robotId, sessionId, newOdometryMeasurement)
 end
-# putReady(synchronyConfig, robotId, sessionId, true)
-
 #
 # # 5. Now retrieve the dataset
 # println(" - Retrieving all data for session $sessionId...")
@@ -71,9 +81,9 @@ newBearingRangeFactor2 = BearingRangeRequest("x7", "l1",
 addBearingRangeFactor(synchronyConfig, robotId, sessionId, newBearingRangeFactor2)
 
 # 7. Now let's tell the solver to pick up on all the latest changes.
-# TODO: Allow for putReady to take in a list.
 putReady(synchronyConfig, robotId, sessionId, true)
 
+#TODO: WIP!
 
 # Time to draw some data!
 

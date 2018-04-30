@@ -16,6 +16,8 @@ The structure used for detailed session requests.
 mutable struct SessionDetailsRequest
     id::String
     description::String
+    initialPoseType::String
+    SessionDetailsRequest(id::String, description::String, initialPoseType::String="") = new(id, description, initialPoseType)
 end
 
 """
@@ -62,20 +64,6 @@ end
 #     print("\r\n$(obj.nodes)")
 # end
 
-
-"""
-The structure used to return a complete big data element in a response.
-"""
-mutable struct BigDataElementResponse
-    id::String
-    sourceName::String
-    description::String
-    data::Nullable{Union{Vector{UInt8}, Dict{String, Any}}}
-    mimeType::String
-    lastSavedTimestamp::String
-    links::Dict{String, String}
-end
-
 """
 The structure describing a complete node in a response.
 """
@@ -86,7 +74,6 @@ mutable struct NodeDetailsResponse
     properties::Dict{String, Any}
     packed::Dict{String, Any}
     labels::Vector{String}
-    bigData::Vector{BigDataElementResponse}
     links::Dict{String, String}
 end
 
@@ -104,7 +91,14 @@ end
 """
 The structure describing the response to the add-odometry request.
 """
+struct NodeResponseInfo
+    id::Int
+    label::String
+end
+
 struct AddOdometryResponse
+    variable::NodeResponseInfo
+    factor::NodeResponseInfo
 end
 
 struct VariableRequest

@@ -5,22 +5,21 @@ userEndpoint = "api/v0/users/{1}"
 configEndpoint = "api/v0/users/{1}/config"
 
 """
-    createUser(config::SynchronyConfig, user::UserRequest)::UserResponse
-Create a user in Synchrony.
+$(SIGNATURES)
+Add a user to Synchrony.
 Return: Returns the created user.
 """
-function createUser(config::SynchronyConfig, user::UserRequest)::UserResponse
+function addUser(config::SynchronyConfig, user::UserRequest)::UserResponse
     url = "$(config.apiEndpoint):$(config.apiPort)/$(format(userEndpoint, user.id))"
     response = @mock post(url; headers = Dict(), data=JSON.json(user))
     if(statuscode(response) != 200)
         error("Error creating user, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        return _unmarshallWithLinks(readstring(response), UserResponse)
     end
+    return _unmarshallWithLinks(readstring(response), UserResponse)
 end
 
 """
-    getUser(auth::AuthResponse, userId::String)::UserResponse
+$(SIGNATURES)
 Gets a user given the user ID.
 Return: The user for the given user ID.
 """
@@ -29,13 +28,12 @@ function getUser(config::SynchronyConfig, userId::String)::UserResponse
     response = @mock get(url; headers = Dict())
     if(statuscode(response) != 200)
         error("Error getting user, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        return _unmarshallWithLinks(readstring(response), UserResponse)
     end
+    return _unmarshallWithLinks(readstring(response), UserResponse)
 end
 
 """
-    updateUser(config::SynchronyConfig, user::UserRequest)::UserResponse
+$(SIGNATURES)
 Update a user.
 Return: The updated user from the service.
 """
@@ -44,13 +42,12 @@ function updateUser(config::SynchronyConfig, user::UserRequest)::UserResponse
     response = @mock put(url; headers = Dict(), data=JSON.json(user))
     if(statuscode(response) != 200)
         error("Error updating user, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        return _unmarshallWithLinks(readstring(response), UserResponse)
     end
+    return _unmarshallWithLinks(readstring(response), UserResponse)
 end
 
 """
-    deleteUser(config::SynchronyConfig, userId::String)::UserResponse
+$(SIGNATURES)
 Delete a user given a user ID.
 NOTE: All robots must be deleted first, the call will fail if robots are still associated to the user.
 Return: The deleted user.
@@ -60,13 +57,12 @@ function deleteUser(config::SynchronyConfig, userId::String)::UserResponse
     response = @mock delete(url; headers = Dict())
     if(statuscode(response) != 200)
         error("Error deleting user, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        return _unmarshallWithLinks(readstring(response), UserResponse)
     end
+    return _unmarshallWithLinks(readstring(response), UserResponse)
 end
 
 """
-    getUserConfig(config::SynchronyConfig, userId::String)::UserConfig
+$(SIGNATURES)
 Get a user config given a user ID.
 The user config contains all the runtime parameters for any robot.
 Return: The user config.
@@ -76,7 +72,6 @@ function getUserConfig(config::SynchronyConfig, userId::String)::UserConfig
     response = @mock get(url; headers = Dict())
     if(statuscode(response) != 200)
         error("Error getting user configuration, received $(statuscode(response)) with body '$(readstring(response))'.")
-    else
-        return Unmarshal.unmarshal(UserConfig, JSON.parse(readstring(response)))
     end
+    return Unmarshal.unmarshal(UserConfig, JSON.parse(readstring(response)))
 end
