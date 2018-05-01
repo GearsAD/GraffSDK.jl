@@ -58,7 +58,8 @@ export getDataEntries, getDataElement, getRawDataElement, addDataElement, update
 export encodeJsonData, encodeBinaryData, readImageIntoDataRequest, isSafeToJsonSerialize
 export NodeResponse, NodesResponse, BigDataElementResponse, NodeDetailsResponse, getNodes, getNode
 export AddOdometryRequest, AddOdometryResponse, NodeResponseInfo, addOdometryMeasurement
-export VariableRequest, VariableResponse, BearingRangeRequest, BearingRangeResponse, DistributionRequest, addVariable, addBearingRangeFactor
+export VariableRequest, addVariable
+export FactorRequest, FactorBody, BearingRangeRequest, DistributionRequest, addFactor, addBearingRangeFactor
 # For testing
 export _unmarshallWithLinks
 export nodeDetail2ExVertex

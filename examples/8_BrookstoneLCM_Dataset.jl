@@ -14,7 +14,7 @@ cd(joinpath(Pkg.dir("SynchronySDK"),"examples"))
 include("0_Initialization.jl")
 # 1a. Constants
 robotId = "Brookstone"
-sessionId = "Hackathon5"
+sessionId = "Hackathon6"
 
 # 2. Confirm that the robot already exists, create if it doesn't.
 println(" - Creating or retrieving robot '$robotId'...")

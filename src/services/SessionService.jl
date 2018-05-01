@@ -9,6 +9,8 @@ nodeLabelledEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/nodes/labelled/
 odoEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/odometry"
 sessionReadyEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/ready/{4}"
 variableEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/variables/{4}"
+factorsEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/factors"
+factorEndpoint = "$factorsEndpoint/{4}"
 bearingRangeEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/factors/bearingrange"
 
 """
@@ -125,30 +127,44 @@ end
 
 """
 $(SIGNATURES)
-Create a variable in Synchrony and associate it with the given robot+user.
-Return: Returns the created variable.
+Create a variable in Synchrony.
+Return: Returns the ID+label of the created variable.
 """
-function addVariable(config::SynchronyConfig, robotId::String, sessionId::String, variableRequest::VariableRequest)::VariableResponse
+function addVariable(config::SynchronyConfig, robotId::String, sessionId::String, variableRequest::VariableRequest)::NodeResponse
     url = "$(config.apiEndpoint):$(config.apiPort)/$(format(variableEndpoint, config.userId, robotId, sessionId, variableRequest.label))"
     response = post(url; headers = Dict(), data=JSON.json(variableRequest))
     if(statuscode(response) != 200)
-        error("Error creating odometry, received $(statuscode(response)) with body '$(readstring(response))'.")
+        error("Error creating variable, received $(statuscode(response)) with body '$(readstring(response))'.")
     end
-    return VariableResponse() #_unmarshallWithLinks(readstring(response), AddOdometryResponse)
+    return _unmarshallWithLinks(readstring(response), NodeResponse)
+end
+
+"""
+$(SIGNATURES)
+Create a factor in Synchrony.
+Return: Returns the ID+label of the created factor.
+"""
+function addFactor(config::SynchronyConfig, robotId::String, sessionId::String, factorRequest::FactorRequest)::NodeResponse
+    url = "$(config.apiEndpoint):$(config.apiPort)/$(format(factorsEndpoint, config.userId, robotId, sessionId))"
+    response = post(url; headers = Dict(), data=JSON.json(factorRequest))
+    if(statuscode(response) != 200)
+        error("Error creating factor, received $(statuscode(response)) with body '$(readstring(response))'.")
+    end
+    return _unmarshallWithLinks(readstring(response), NodeResponse)
 end
 
 """
 $(SIGNATURES)
 Create a variable in Synchrony and associate it with the given robot+user.
-Return: Returns the created variable.
+Return: Returns ID+label of the created factor.
 """
-function addBearingRangeFactor(config::SynchronyConfig, robotId::String, sessionId::String, bearingRangeRequest::BearingRangeRequest)::BearingRangeResponse
+function addBearingRangeFactor(config::SynchronyConfig, robotId::String, sessionId::String, bearingRangeRequest::BearingRangeRequest)::NodeResponse
     url = "$(config.apiEndpoint):$(config.apiPort)/$(format(bearingRangeEndpoint, config.userId, robotId, sessionId))"
     response = post(url; headers = Dict(), data=JSON.json(bearingRangeRequest))
     if(statuscode(response) != 200)
         error("Error creating bearing range factor, received $(statuscode(response)) with body '$(readstring(response))'.")
     end
-    return BearingRangeResponse() #_unmarshallWithLinks(readstring(response), AddOdometryResponse)
+    return _unmarshallWithLinks(readstring(response), NodeResponse)
 end
 
 """
