@@ -40,7 +40,7 @@ Return: Returns true if the session exists already.
 """
 function isSessionExisting(config::SynchronyConfig, robotId::String, sessionId::String)::Bool
     sessions = getSessions(config, robotId)
-    return sessionId in map(sess -> sess.id, sessions.sessions)
+    return count(sess -> lowercase(strip(sess.id)) == lowercase(strip(sessionId)), sessions.sessions) > 0
 end
 
 """
@@ -55,6 +55,20 @@ function getSession(config::SynchronyConfig, robotId::String, sessionId::String)
         error("Error getting session, received $(statuscode(response)) with body '$(readstring(response))'.")
     end
     return _unmarshallWithLinks(readstring(response), SessionDetailsResponse)
+end
+
+"""
+$(SIGNATURES)
+Delete a specific session given a user ID, robot ID, and session ID.
+Return: Nothing if success, error if failed.
+"""
+function deleteSession(config::SynchronyConfig, robotId::String, sessionId::String)::Void
+    url = "$(config.apiEndpoint):$(config.apiPort)/$(format(sessionEndpoint, config.userId, robotId, sessionId))"
+    response = Requests.delete(url; headers = Dict())
+    if(statuscode(response) != 200)
+        error("Error deleting session, received $(statuscode(response)) with body '$(readstring(response))'.")
+    end
+    return nothing
 end
 
 """

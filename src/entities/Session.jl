@@ -120,6 +120,7 @@ end
 
 struct FactorBody
     factorType::String
+    packedFactorType::String
     encoding::String
     body::String
 end
