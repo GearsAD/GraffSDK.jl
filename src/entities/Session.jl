@@ -88,17 +88,9 @@ struct AddOdometryRequest
     AddOdometryRequest(deltaMeasurement::Vector{Float64}, pOdo::Array{Float64, 2}) = new(string(Dates.Time(now(Dates.UTC))), deltaMeasurement, pOdo, nothing)
 end
 
-"""
-The structure describing the response to the add-odometry request.
-"""
-struct NodeResponseInfo
-    id::Int
-    label::String
-end
-
 struct AddOdometryResponse
-    variable::NodeResponseInfo
-    factor::NodeResponseInfo
+    variable::NodeResponse
+    factor::NodeResponse
 end
 
 struct VariableRequest
@@ -126,5 +118,16 @@ struct BearingRangeRequest
     range::DistributionRequest
 end
 
-struct BearingRangeResponse
+struct FactorBody
+    factorType::String
+    packedFactorType::String
+    encoding::String
+    body::String
+end
+
+struct FactorRequest
+    variables::Vector{String}
+    body::FactorBody
+    autoinit::Nullable{Bool}
+    ready::Nullable{Bool}
 end
