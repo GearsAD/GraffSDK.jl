@@ -88,5 +88,5 @@ while true
 end
 
 # KAMEHAMEHA :D
-# NOW PLACE THIS: https://www.youtube.com/watch?v=UT9w0PGykZ0
+# NOW PLAY THIS: https://www.youtube.com/watch?v=UT9w0PGykZ0
 # How awesome is that?

@@ -1,6 +1,8 @@
 # tutorial on conventional 2D SLAM example
 # This tutorial shows how to use some of the commonly used factor types
 # This tutorial follows from the ContinuousScalar example from IncrementalInference
+using SynchronySDK
+
 
 # 1. Import the initialization code.
 cd(joinpath(Pkg.dir("SynchronySDK"),"examples"))
@@ -75,77 +77,30 @@ addBearingRangeFactor(synchronyConfig, robotId, sessionId, newBearingRangeFactor
 putReady(synchronyConfig, robotId, sessionId, true)
 
 
-# Time to draw some data!
+#############################
+####### Visualization #######
+#############################
 
-# 3.
-# # Graphs.plot(fg.g)
-# isInitialized(fg, :x5)
-#
-#
-#
-# ensureAllInitialized!(fg)
-#
-#
-# using RoMEPlotting
-#
-# drawPoses(fg)
-#
-#
-# getVal(fg, :x0)
-# v = getVert(fg, :x0)
-# getVal(v)
-#
-# importall CloudGraphs
-#
-# exvid = fg.IDs[:x0]
-# neoID = fg.cgIDs[exvid]
-# cvr = CloudGraphs.get_vertex(fg.cg, neoID, false)
-# exv = CloudGraphs.cloudVertex2ExVertex(cvr)
-# getVal(exv)
-# # getData(exv)
-#
-#
-# getData(fg.g.vertices[1])
-#
-#
-# tree = wipeBuildNewTree!(fg)
-# # inferOverTree!(fg, tree)
-# inferOverTreeR!(fg, tree)
-#
-#
-#
-#
-#
-# using RoMEPlotting, Gadfly
-#
-#
-#
-#
-#
-# pl = plotKDE(fg, [:x0; :x1; :x2; :x3; :x4; :x5; :x6]);
-#
-# Gadfly.draw(PDF("tmpX0123456.pdf", 15cm, 15cm), pl)
-#
-# @async run(`evince tmpX0123456.pdf`)
-#
-#
-#
-# # pl = drawPoses(fg)
-# pl = drawPosesLandms(fg)
-# Gadfly.draw(PDF("tmpPosesFg.pdf", 15cm, 15cm), pl)
-# @async run(`evince tmpPosesFg.pdf`)
-#
-#
-#
-# tree = wipeBuildNewTree!(fg)
-#
-#
-# @async Graphs.plot(tree.bt)
-#
-#
-# @time inferOverTree!(fg, tree)
-#
-#
-# # Graphs.plot(tree.bt)
-#
-# @async Graphs.plot(fg.g)
+# Ref: https://github.com/rdeits/MeshCat.jl/blob/master/demo.ipynb
+
+# NOTE: WIP!
+# I'd like the SDK to do this natively...
+
+using MeshCat
+using CoordinateTransformations
+import GeometryTypes: HyperRectangle, Vec, Point, HomogenousMesh, SignedDistanceField
+import ColorTypes: RGBA, RGB
+
+# Create a new visualizer instance
+vis = Visualizer()
+open(vis)
+
+# Retrieve all variables and render them.
+println("Retrieving all variables and rendering them...")
+nodes = getNodes(slam_client.syncrconf, robotId, sessionId)
+for node in nodes
+    println(" - Rendering $node")
+    triad = Triad()
+    setobject!(vis["Triad $node"], triad)
+    settransform!(vis["Triad $node"], Translation(node,node,node))
+end
