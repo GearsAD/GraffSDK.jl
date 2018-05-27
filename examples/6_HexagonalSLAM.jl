@@ -76,31 +76,9 @@ addBearingRangeFactor(synchronyConfig, robotId, sessionId, newBearingRangeFactor
 # TODO: Allow for putReady to take in a list.
 putReady(synchronyConfig, robotId, sessionId, true)
 
+# 8. We have to check on the solver.
 
-#############################
-####### Visualization #######
-#############################
 
-# Ref: https://github.com/rdeits/MeshCat.jl/blob/master/demo.ipynb
 
-# NOTE: WIP!
-# I'd like the SDK to do this natively...
-
-using MeshCat
-using CoordinateTransformations
-import GeometryTypes: HyperRectangle, Vec, Point, HomogenousMesh, SignedDistanceField
-import ColorTypes: RGBA, RGB
-
-# Create a new visualizer instance
-vis = Visualizer()
-open(vis)
-
-# Retrieve all variables and render them.
-println("Retrieving all variables and rendering them...")
-nodes = getNodes(slam_client.syncrconf, robotId, sessionId)
-for node in nodes
-    println(" - Rendering $node")
-    triad = Triad()
-    setobject!(vis["Triad $node"], triad)
-    settransform!(vis["Triad $node"], Translation(node,node,node))
-end
+# 9. Lastly we can render this.
+showSession(synchronyConfig, robotId, sessionId)
