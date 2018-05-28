@@ -8,6 +8,9 @@ using SynchronySDK
 cd(joinpath(Pkg.dir("SynchronySDK"),"examples"))
 include("0_Initialization.jl")
 
+# TESTING
+sessionId = "SamSession"
+
 # 2. Confirm that the robot already exists, create if it doesn't.
 println(" - Creating or retrieving robot '$robotId'...")
 robot = nothing
@@ -37,18 +40,21 @@ else
 end
 println(session)
 
+
 # 4. Drive around in a hexagon
+imgRequest = DataHelpers.readImageIntoDataRequest("pexels-photo-1004665.jpeg", "TestImage", "Pretty neat public domain image", "image/jpeg");
 println(" - Adding hexagonal driving pattern to session...")
-for i in 0:5
+for i in 1:6
     deltaMeasurement = [10.0;0;pi/3]
     pOdo = Float64[[0.1 0 0] [0 0.1 0] [0 0 0.1]]
     println(" - Measurement $i: Adding new odometry measurement '$deltaMeasurement'...")
     newOdometryMeasurement = AddOdometryRequest(deltaMeasurement, pOdo)
     @time @show response = addOdometryMeasurement(synchronyConfig, robotId, sessionId, newOdometryMeasurement)
+    # Add some image data too
+    println("   - Adding some image data as well!")
+    @time addOrUpdateDataElement(synchronyConfig, robotId, sessionId, response.variable.id, imgRequest)
 end
-# putReady(synchronyConfig, robotId, sessionId, true)
 
-#
 # # 5. Now retrieve the dataset
 # println(" - Retrieving all data for session $sessionId...")
 @time nodes = getNodes(synchronyConfig, robotId, sessionId);
@@ -76,9 +82,11 @@ addBearingRangeFactor(synchronyConfig, robotId, sessionId, newBearingRangeFactor
 # TODO: Allow for putReady to take in a list.
 putReady(synchronyConfig, robotId, sessionId, true)
 
-# 8. We have to check on the solver.
+# 8. Let's check on the solver updates.
+sessionLatest = getSession(synchronyConfig, robotId, sessionId)
+while session.lastSolvedTimestamp != sessionLatest.lastSolvedTimestamp
+    sleep(2)
+end
 
-
-
-# 9. Lastly we can render this.
+# 9. Great, solver has updated it! We can render this.
 showSession(synchronyConfig, robotId, sessionId)
