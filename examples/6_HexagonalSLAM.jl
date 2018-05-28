@@ -9,7 +9,7 @@ cd(joinpath(Pkg.dir("SynchronySDK"),"examples"))
 include("0_Initialization.jl")
 
 # TESTING
-sessionId = "SamSession"
+sessionId = "SamSession2"
 
 # 2. Confirm that the robot already exists, create if it doesn't.
 println(" - Creating or retrieving robot '$robotId'...")
@@ -44,7 +44,7 @@ println(session)
 # 4. Drive around in a hexagon
 imgRequest = DataHelpers.readImageIntoDataRequest("pexels-photo-1004665.jpeg", "TestImage", "Pretty neat public domain image", "image/jpeg");
 println(" - Adding hexagonal driving pattern to session...")
-for i in 1:6
+@showprogress for i in 1:6
     deltaMeasurement = [10.0;0;pi/3]
     pOdo = Float64[[0.1 0 0] [0 0.1 0] [0 0 0.1]]
     println(" - Measurement $i: Adding new odometry measurement '$deltaMeasurement'...")
@@ -85,7 +85,9 @@ putReady(synchronyConfig, robotId, sessionId, true)
 # 8. Let's check on the solver updates.
 sessionLatest = getSession(synchronyConfig, robotId, sessionId)
 while session.lastSolvedTimestamp != sessionLatest.lastSolvedTimestamp
+    println("Comparing latest session solver timestamp $(sessionLatest.lastSolvedTimestamp) with original $(session.lastSolvedTimestamp) - still the same so sleeping for 2 seconds")
     sleep(2)
+    sessionLatest = getSession(synchronyConfig, robotId, sessionId)
 end
 
 # 9. Great, solver has updated it! We can render this.
