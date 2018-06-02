@@ -21,7 +21,7 @@ $(SIGNATURES)
 Visualize a session using MeshCat.
 Return: Void.
 """
-function showSession(config::SynchronyConfig, robotId::String, sessionId::String, renderBigDataImageEntries::Vector{String} = Vector{String}())::Void
+function visualizeSession(config::SynchronyConfig, robotId::String, sessionId::String, bigDataImageKey::String = "")::Void
     # Create a new visualizer instance
     vis = Visualizer()
     open(vis)
@@ -40,8 +40,7 @@ function showSession(config::SynchronyConfig, robotId::String, sessionId::String
     println("Retrieving all variables and rendering them...")
     nodesResponse = getNodes(synchronyConfig, robotId, sessionId)
     println(" -- Rendering $(length(nodesResponse.nodes)) nodes for session $sessionId for robot $robotId...")
-    #@showprogress
-    for nSummary in nodesResponse.nodes
+    @showprogress for nSummary in nodesResponse.nodes
         node = getNode(synchronyConfig, robotId, sessionId, nSummary.id)
         label = node.label
 
@@ -50,7 +49,7 @@ function showSession(config::SynchronyConfig, robotId::String, sessionId::String
             mapEst = node.properties["MAP_est"]
 
             # Parent triad
-            triad = Triad(2.5)
+            triad = Triad(1.0)
             setobject!(vis[label], triad)
             pose2TransFunc(vis[label], node)
 
@@ -68,14 +67,17 @@ function showSession(config::SynchronyConfig, robotId::String, sessionId::String
             end
 
             # Camera imagery
-            if length(renderBigDataImageEntries) > 0 # Get and render big data images and pointclouds
-                println(" - Rendering image data...")
+            if bigDataImageKey != "" # Get and render big data images and pointclouds
+                println(" - Rendering image data for keys that have id = $bigDataImageKey...")
                 bigEntries = getDataEntries(synchronyConfig, robotId, sessionId, nSummary.id)
                 for bigEntry in bigEntries
-                    if count(e -> e.id == bigEntry, bigDataEntries) > 0
+                    if bigEntry.id == bigDataImageKey
                         # HyperRectangle until we have sprites
-                        box = HyperRectangle(Vec(0,0,0), Vec(0.01, 9.0/16.0, 16.0/9.0))
-                        image = PngImage(joinpath(Pkg.dir("SynchronySDK"), "examples", "pexels-photo-1004665.png"))
+                        box = HyperRectangle(Vec(0,0,0), Vec(0.01, 9.0/16.0/2.0, 16.0/9.0/2.0))
+                        dataFrame = getDataElement(synchronyConfig, robotId, sessionId, nSummary.id, bigEntry.id)
+                        image = PngImage(base64decode(dataFrame.data))
+
+                        # Make an image and put it in the right place.
                         texture = Texture(image=image)
                         material = MeshBasicMaterial(map=texture)
                         trans = Translation(1.0,16.0/9.0/2.0,0) ∘ LinearMap(RotX(pi/2.0))
@@ -92,7 +94,3 @@ function showSession(config::SynchronyConfig, robotId::String, sessionId::String
         end
     end
 end
-
-# Test
-cameraEntries = ["TestCamImages"]
-showSession(synchronyConfig, robotId, sessionId, cameraEntries)

@@ -91,4 +91,5 @@ while session.lastSolvedTimestamp != sessionLatest.lastSolvedTimestamp
 end
 
 # 9. Great, solver has updated it! We can render this.
-showSession(synchronyConfig, robotId, sessionId)
+# Using the bigdata key 'TestImage' as the camera image
+visualizeSession(synchronyConfig, robotId, sessionId, "TestImage")
