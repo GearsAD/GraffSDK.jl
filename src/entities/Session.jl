@@ -28,6 +28,7 @@ mutable struct SessionDetailsResponse
     description::String
     robotId::String
     userId::String
+    initialPoseType::String
     nodeCount::Int
     createdTimestamp::String
     lastSolvedTimestamp::String # Can remove nullable as soon as we stabilize.

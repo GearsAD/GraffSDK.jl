@@ -1,10 +1,15 @@
 # tutorial on conventional 2D SLAM example
 # This tutorial shows how to use some of the commonly used factor types
 # This tutorial follows from the ContinuousScalar example from IncrementalInference
+using SynchronySDK
+
 
 # 1. Import the initialization code.
 cd(joinpath(Pkg.dir("SynchronySDK"),"examples"))
 include("0_Initialization.jl")
+
+# TESTING
+sessionId = "SamSession2"
 
 # 2. Confirm that the robot already exists, create if it doesn't.
 println(" - Creating or retrieving robot '$robotId'...")
@@ -35,18 +40,21 @@ else
 end
 println(session)
 
+
 # 4. Drive around in a hexagon
+imgRequest = DataHelpers.readImageIntoDataRequest("pexels-photo-1004665.jpeg", "TestImage", "Pretty neat public domain image", "image/jpeg");
 println(" - Adding hexagonal driving pattern to session...")
-for i in 0:5
+@showprogress for i in 1:6
     deltaMeasurement = [10.0;0;pi/3]
     pOdo = Float64[[0.1 0 0] [0 0.1 0] [0 0 0.1]]
     println(" - Measurement $i: Adding new odometry measurement '$deltaMeasurement'...")
     newOdometryMeasurement = AddOdometryRequest(deltaMeasurement, pOdo)
     @time @show response = addOdometryMeasurement(synchronyConfig, robotId, sessionId, newOdometryMeasurement)
+    # Add some image data too
+    println("   - Adding some image data as well!")
+    @time addOrUpdateDataElement(synchronyConfig, robotId, sessionId, response.variable.id, imgRequest)
 end
-# putReady(synchronyConfig, robotId, sessionId, true)
 
-#
 # # 5. Now retrieve the dataset
 # println(" - Retrieving all data for session $sessionId...")
 @time nodes = getNodes(synchronyConfig, robotId, sessionId);
@@ -74,78 +82,14 @@ addBearingRangeFactor(synchronyConfig, robotId, sessionId, newBearingRangeFactor
 # TODO: Allow for putReady to take in a list.
 putReady(synchronyConfig, robotId, sessionId, true)
 
+# 8. Let's check on the solver updates.
+sessionLatest = getSession(synchronyConfig, robotId, sessionId)
+while session.lastSolvedTimestamp != sessionLatest.lastSolvedTimestamp
+    println("Comparing latest session solver timestamp $(sessionLatest.lastSolvedTimestamp) with original $(session.lastSolvedTimestamp) - still the same so sleeping for 2 seconds")
+    sleep(2)
+    sessionLatest = getSession(synchronyConfig, robotId, sessionId)
+end
 
-# Time to draw some data!
-
-# 3.
-# # Graphs.plot(fg.g)
-# isInitialized(fg, :x5)
-#
-#
-#
-# ensureAllInitialized!(fg)
-#
-#
-# using RoMEPlotting
-#
-# drawPoses(fg)
-#
-#
-# getVal(fg, :x0)
-# v = getVert(fg, :x0)
-# getVal(v)
-#
-# importall CloudGraphs
-#
-# exvid = fg.IDs[:x0]
-# neoID = fg.cgIDs[exvid]
-# cvr = CloudGraphs.get_vertex(fg.cg, neoID, false)
-# exv = CloudGraphs.cloudVertex2ExVertex(cvr)
-# getVal(exv)
-# # getData(exv)
-#
-#
-# getData(fg.g.vertices[1])
-#
-#
-# tree = wipeBuildNewTree!(fg)
-# # inferOverTree!(fg, tree)
-# inferOverTreeR!(fg, tree)
-#
-#
-#
-#
-#
-# using RoMEPlotting, Gadfly
-#
-#
-#
-#
-#
-# pl = plotKDE(fg, [:x0; :x1; :x2; :x3; :x4; :x5; :x6]);
-#
-# Gadfly.draw(PDF("tmpX0123456.pdf", 15cm, 15cm), pl)
-#
-# @async run(`evince tmpX0123456.pdf`)
-#
-#
-#
-# # pl = drawPoses(fg)
-# pl = drawPosesLandms(fg)
-# Gadfly.draw(PDF("tmpPosesFg.pdf", 15cm, 15cm), pl)
-# @async run(`evince tmpPosesFg.pdf`)
-#
-#
-#
-# tree = wipeBuildNewTree!(fg)
-#
-#
-# @async Graphs.plot(tree.bt)
-#
-#
-# @time inferOverTree!(fg, tree)
-#
-#
-# # Graphs.plot(tree.bt)
-#
-# @async Graphs.plot(fg.g)
+# 9. Great, solver has updated it! We can render this.
+# Using the bigdata key 'TestImage' as the camera image
+visualizeSession(synchronyConfig, robotId, sessionId, "TestImage")

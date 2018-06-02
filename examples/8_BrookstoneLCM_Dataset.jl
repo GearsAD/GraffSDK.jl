@@ -14,7 +14,7 @@ cd(joinpath(Pkg.dir("SynchronySDK"),"examples"))
 include("0_Initialization.jl")
 # 1a. Constants
 robotId = "Brookstone"
-sessionId = "Hackathon6"
+sessionId = "Hackathon8"
 
 # 2. Confirm that the robot already exists, create if it doesn't.
 println(" - Creating or retrieving robot '$robotId'...")
@@ -69,7 +69,7 @@ function lcm_NewOdoAvailable(channel, msg::brookstone_supertype_t, runtimeInfo::
     newNode = getNode(synchronyConfig, robotId, sessionId, nodeLabel)
     @show nodeId = newNode.id
     # Make a request payload
-    dataElementRequest = BigDataElementRequest("Cam_$(factor.utime)", "Mongo", "Brookstone camera data for timestamp $(factor.utime)", base64encode(img.data), "image/jpeg")
+    dataElementRequest = BigDataElementRequest("CamImage", "Mongo", "Brookstone camera data for timestamp $(factor.utime)", base64encode(img.data), "image/jpeg")
     #   # add the data to the database
     addOrUpdateDataElement(synchronyConfig, robotId, sessionId, nodeId, dataElementRequest)
 end
@@ -83,10 +83,13 @@ subscribe(lcm, "BROOKSTONE_ROVER", (c,m)->lcm_NewOdoAvailable(c,m, runtimeInfo),
 # subscribe(lcm, "BROOKSTONE_NEW_FACTOR", (c,m) -> newFactor_Callback(c, m, runtimeInfo), generic_factor_t)
 # subscribe(lcm, "BROOKSTONE_CAM_IMAGE", (c,m)->keyframe_Callback(c,m, synchronyConfig, nodehist), image_t)
 
-while true
-    handle(lcm)
+# Run while there is data
+while handle(lcm)
 end
 
 # KAMEHAMEHA :D
-# NOW PLACE THIS: https://www.youtube.com/watch?v=UT9w0PGykZ0
+# NOW PLAY THIS: https://www.youtube.com/watch?v=UT9w0PGykZ0
 # How awesome is that?
+
+# Let's take a look at the data:
+visualizeSession(synchronyConfig, robotId, sessionId, "CamImage")
