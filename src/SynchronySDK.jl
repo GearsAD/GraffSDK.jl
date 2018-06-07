@@ -88,7 +88,5 @@ export AddOdometryRequest, AddOdometryResponse, NodeResponseInfo, addOdometryMea
 export VariableRequest, addVariable
 export FactorRequest, FactorBody, BearingRangeRequest, DistributionRequest, addFactor, addBearingRangeFactor
 # For testing
-export _unmarshallWithLinks
 export nodeDetail2ExVertex
-export _sendRestRequest
 end
