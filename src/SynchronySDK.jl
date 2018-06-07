@@ -2,9 +2,14 @@ module SynchronySDK
 
 # Imports
 using Requests, JSON, Unmarshal
+using AWS
 using Formatting
 using Graphs
 using DocStringExtensions
+using ProgressMeter
+
+# Initial Include
+include("./entities/SynchronySDK.jl")
 
 # Utility functions
 """
@@ -21,9 +26,29 @@ function _unmarshallWithLinks(responseBody::String, t::Type)
     return unmarshalled
 end
 
-# Includes
-include("./entities/SynchronySDK.jl")
+"""
+$SIGNATURES
+Produces the authorization and sends the REST request.
+"""
+function _sendRestRequest(synchronyConfig::SynchronyConfig, verbFunction, url::String; data::String="", headers::Dict{String, String}=Dict{String, String}(), debug::Bool=false)::Requests.Response
+    env = AWSEnv(; id=synchronyConfig.accessKey, key=synchronyConfig.secretKey, region=synchronyConfig.region, ep=url, dbg=debug)
+    # Force the region as we are using a custom endpoint
+    env.region = synchronyConfig.region
 
+    # Get the auth headers
+    amz_headers, amz_data, signed_querystr = canonicalize_and_sign(env, "execute-api", false, Vector{Tuple}())
+    for val in amz_headers
+        headers[val[1]] = val[2]
+    end
+
+    if data != ""
+        return verbFunction(url, headers = headers, data = data)
+    end
+    return verbFunction(url, headers = headers)
+end
+
+# Includes
+include("./services/StatusService.jl")
 include("./entities/User.jl")
 include("./services/UserService.jl")
 
@@ -51,6 +76,7 @@ end
 
 # Exports
 export SynchronyConfig, ErrorResponse
+export getStatus
 export UserRequest, UserResponse, KafkaConfig, UserConfig, addUser, getUser, updateUser, deleteUser, getUserConfig
 export RobotRequest, RobotResponse, RobotsResponse, getRobots, getRobot, addRobot, updateRobot, deleteRobot, getRobotConfig, updateRobotConfig
 export SessionDetailsRequest, SessionDetailsResponse, addSession, getSessions, getSession, deleteSession, isSessionExisting, putReady
@@ -64,4 +90,5 @@ export FactorRequest, FactorBody, BearingRangeRequest, DistributionRequest, addF
 # For testing
 export _unmarshallWithLinks
 export nodeDetail2ExVertex
+export _sendRestRequest
 end
