@@ -11,7 +11,7 @@ Return: Returns the created user.
 """
 function addUser(config::SynchronyConfig, user::UserRequest)::UserResponse
     url = "$(config.apiEndpoint)/$(format(userEndpoint, user.id))"
-    response = @mock _sendRestRequest(config, post, url, data=JSON.json(user))
+    response = @mock _sendRestRequest(config, post, url, data=JSON.json(user), debug=true)
     if(statuscode(response) != 200)
         error("Error creating user, received $(statuscode(response)) with body '$(readstring(response))'.")
     end

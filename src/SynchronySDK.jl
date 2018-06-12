@@ -87,6 +87,7 @@ export NodeResponse, NodesResponse, BigDataElementResponse, NodeDetailsResponse,
 export AddOdometryRequest, AddOdometryResponse, NodeResponseInfo, addOdometryMeasurement
 export VariableRequest, addVariable
 export FactorRequest, FactorBody, BearingRangeRequest, DistributionRequest, addFactor, addBearingRangeFactor
+export visualizeSession
 # For testing
 export nodeDetail2ExVertex
 end

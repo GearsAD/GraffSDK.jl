@@ -9,7 +9,12 @@ cd(joinpath(Pkg.dir("SynchronySDK"),"examples"))
 include("0_Initialization.jl")
 
 # TESTING
-sessionId = "SamSession2"
+# Create a Configuration
+robotId = "NewRobot"
+sessionId = "HexagonalVisualization"
+synchronyConfig = loadConfig("synchronyConfig_Local.json")
+# synchronyConfig = loadConfig("synchronyConfig_NaviEast_DEV.json")
+
 
 # 2. Confirm that the robot already exists, create if it doesn't.
 println(" - Creating or retrieving robot '$robotId'...")
