@@ -34,14 +34,14 @@ function visualizeSession(config::SynchronyConfig, robotId::String, sessionId::S
         error("Need an explicit transform for '$(sessionInfo.initialPoseType)' to visualize it. Please edit VisualizationService.jl and add a new PoseTransform.")
     end
     println("Good stuff, using it!")
-    pose2TransFunc = poseTransforms[session.initialPoseType]
+    pose2TransFunc = poseTransforms[sessionInfo.initialPoseType]
 
     # Retrieve all variables and render them.
     println("Retrieving all variables and rendering them...")
-    nodesResponse = getNodes(synchronyConfig, robotId, sessionId)
+    nodesResponse = getNodes(config, robotId, sessionId)
     println(" -- Rendering $(length(nodesResponse.nodes)) nodes for session $sessionId for robot $robotId...")
     @showprogress for nSummary in nodesResponse.nodes
-        node = getNode(synchronyConfig, robotId, sessionId, nSummary.id)
+        node = getNode(config, robotId, sessionId, nSummary.id)
         label = node.label
 
         println(" - Rendering $(label)...")
@@ -52,6 +52,18 @@ function visualizeSession(config::SynchronyConfig, robotId::String, sessionId::S
             triad = Triad(1.0)
             setobject!(vis[label], triad)
             pose2TransFunc(vis[label], node)
+        else
+            warn("  - Node hasn't been solved, can't really render this one...")
+        end
+    end
+    # Rendering the point clouds and images
+    @showprogress for nSummary in nodesResponse.nodes
+        node = getNode(config, robotId, sessionId, nSummary.id)
+        label = node.label
+
+        println(" - Rendering $(label)...")
+        if haskey(node.properties, "MAP_est")
+            mapEst = node.properties["MAP_est"]
 
             # Stochastic point clouds
             if haskey(node.packed, "val")
@@ -69,26 +81,23 @@ function visualizeSession(config::SynchronyConfig, robotId::String, sessionId::S
             # Camera imagery
             if bigDataImageKey != "" # Get and render big data images and pointclouds
                 println(" - Rendering image data for keys that have id = $bigDataImageKey...")
-                bigEntries = getDataEntries(synchronyConfig, robotId, sessionId, nSummary.id)
+                bigEntries = getDataEntries(config, robotId, sessionId, nSummary.id)
                 for bigEntry in bigEntries
                     if bigEntry.id == bigDataImageKey
                         # HyperRectangle until we have sprites
                         box = HyperRectangle(Vec(0,0,0), Vec(0.01, 9.0/16.0/2.0, 16.0/9.0/2.0))
-                        dataFrame = getDataElement(synchronyConfig, robotId, sessionId, nSummary.id, bigEntry.id)
+                        dataFrame = getDataElement(config, robotId, sessionId, nSummary.id, bigEntry.id)
                         image = PngImage(base64decode(dataFrame.data))
 
                         # Make an image and put it in the right place.
                         texture = Texture(image=image)
                         material = MeshBasicMaterial(map=texture)
-                        trans = Translation(1.0,16.0/9.0/2.0,0) ∘ LinearMap(RotX(pi/2.0))
+                        trans = Translation(1.0,16.0/9.0/4.0,0) ∘ LinearMap(RotX(pi/2.0))
                         setobject!(vis[label]["camImage"], box, material)
                         settransform!(vis[label]["camImage"], trans)
                     end
                 end
             end
-
-            # Connectivity
-            # TODO, need adjacency matrix for session.
         else
             warn("  - Node hasn't been solved, can't really render this one...")
         end

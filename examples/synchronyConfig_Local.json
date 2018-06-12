@@ -1,7 +1,7 @@
 {
-  "apiEndpoint":"http://localhost",
-  "apiPort":8000,
-  "clientId":"",
-  "clientSecret":"",
+  "apiEndpoint":"http://localhost:8000",
+  "accessKey":"",
+  "secretKey":"",
+  "region":"",
   "userId":"NewUser"
 }
