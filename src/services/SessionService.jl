@@ -54,7 +54,7 @@ function getSession(config::SynchronyConfig, robotId::String, sessionId::String)
     if(statuscode(response) != 200)
         error("Error getting session, received $(statuscode(response)) with body '$(readstring(response))'.")
     end
-    @show readstring(response)
+    readstring(response)
     return _unmarshallWithLinks(readstring(response), SessionDetailsResponse)
 end
 
@@ -222,7 +222,7 @@ Get data elment associated with a node.
 Return: Full data element associated with the specified node.
 """
 function getDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeId::Int, bigDataKey::String)::BigDataElementResponse
-    @show url = "$(config.apiEndpoint)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataKey))"
+    url = "$(config.apiEndpoint)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataKey))"
     response = @mock _sendRestRequest(config, get, url)
     if(statuscode(response) != 200)
         error("Error getting node data entries, received $(statuscode(response)) with body '$(readstring(response))'.")
@@ -250,7 +250,7 @@ Add a data element associated with a node.
 Return: Nothing if succeed, error if failed.
 """
 function addDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeId::Int, bigDataElement::BigDataElementRequest)::Void
-    @show url = "$(config.apiEndpoint)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataElement.id))"
+    url = "$(config.apiEndpoint)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataElement.id))"
     response = @mock _sendRestRequest(config, Requests.post, url, data=JSON.json(bigDataElement))
     if(statuscode(response) != 200)
         error("Error adding data element, received $(statuscode(response)) with body '$(readstring(response))'.")
