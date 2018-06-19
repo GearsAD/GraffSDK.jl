@@ -12,9 +12,20 @@ function projectPose2(renderObject, node::NodeDetailsResponse)::Void
     return nothing
 end
 
+function projectPose3(renderObject, node::NodeDetailsResponse)::Void
+    mapEst = node.properties["MAP_est"]
+     # one day when this changes to quaternions -- for now though Pose3 is using Euler angles during infinite product approximations (but convolutions are generally done on a proper rotation manifold)
+     # yaw = convert(q).theta3
+    trans = Translation(mapEst[1],mapEst[2],mapEst[3])
+    settransform!(renderObject, LinearMap(RotZ(mapEst[6])) ∘ trans)
+    return nothing
+end
+
 # Callbacks for pose transforms
-poseTransforms = Dict{String, Function}("Pose2" => projectPose2)
-# pose2TransFunc = poseTransforms[session.initialPoseType]
+poseTransforms = Dict{String, Function}(
+    "Pose2" => projectPose2,
+    "Pose3" => projectPose3
+)
 
 """
 $(SIGNATURES)
@@ -30,6 +41,9 @@ function visualizeSession(config::SynchronyConfig, robotId::String, sessionId::S
     println("Get the session info for session '$sessionId'...")
     sessionInfo = getSession(config, robotId, sessionId)
     println("Looking if we have a pose transform for '$(sessionInfo.initialPoseType)'...")
+    if isempty(sessionInfo.initialPoseType)
+        error("The session doesn't have a specified pose type - please provide a pose type when creating the session with the parameter 'initialPoseType'")
+    end
     if !haskey(poseTransforms, sessionInfo.initialPoseType)
         error("Need an explicit transform for '$(sessionInfo.initialPoseType)' to visualize it. Please edit VisualizationService.jl and add a new PoseTransform.")
     end
