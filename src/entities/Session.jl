@@ -17,7 +17,8 @@ mutable struct SessionDetailsRequest
     id::String
     description::String
     initialPoseType::String
-    SessionDetailsRequest(id::String, description::String, initialPoseType::String="") = new(id, description, initialPoseType)
+    shouldInitialize::Bool
+    SessionDetailsRequest(id::String, description::String, initialPoseType::String="", shouldInitialize::Bool=true) = new(id, description, initialPoseType, shouldInitialize)
 end
 
 """

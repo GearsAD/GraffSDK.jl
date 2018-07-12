@@ -11,9 +11,9 @@ include("0_Initialization.jl")
 # TESTING
 # Create a Configuration
 robotId = "NewRobot"
-sessionId = "HexagonalVisualization"
-synchronyConfig = loadConfig("synchronyConfig_Local.json")
-# synchronyConfig = loadConfig("synchronyConfig_NaviEast_DEV.json")
+sessionId = "HexagonalVisualization101"
+# synchronyConfig = loadConfig("synchronyConfig_Local.json")
+synchronyConfig = loadConfig("synchronyConfig_NaviEast_Internal.json")
 
 
 # 2. Confirm that the robot already exists, create if it doesn't.
@@ -49,7 +49,7 @@ println(session)
 # 4. Drive around in a hexagon
 imgRequest = DataHelpers.readImageIntoDataRequest("pexels-photo-1004665.jpeg", "TestImage", "Pretty neat public domain image", "image/jpeg");
 println(" - Adding hexagonal driving pattern to session...")
-@showprogress for i in 1:6
+@showprogress for i in 1:1
     deltaMeasurement = [10.0;0;pi/3]
     pOdo = Float64[[0.1 0 0] [0 0.1 0] [0 0 0.1]]
     println(" - Measurement $i: Adding new odometry measurement '$deltaMeasurement'...")

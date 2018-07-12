@@ -15,6 +15,7 @@ include("0_Initialization.jl")
 # 1a. Constants
 robotId = "Brookstone"
 sessionId = "Hackathon8"
+synchronyConfig = loadConfig("synchronyConfig_NaviEast_Internal.json")
 
 # 2. Confirm that the robot already exists, create if it doesn't.
 println(" - Creating or retrieving robot '$robotId'...")
@@ -45,6 +46,61 @@ else
 end
 println(session)
 
+# ----------------- VISUALIZATION ----------------------
+
+# 5. Simple callback to save the list of images.
+using ImageView
+using Images, ImageDraw, ImageMagick, TestImages
+using LCMCore, CaesarLCMTypes
+using JSON
+using SynchronySDK
+
+function lcm_ShowData(channel, msg::brookstone_supertype_t, images::Vector{BigDataElementRequest})
+    img = msg.img
+    dataElementRequest = BigDataElementRequest("CamImage", "Mongo", "Brookstone camera data", base64encode(img.data), "image/jpeg")
+    push!(images, dataElementRequest)
+end
+
+# Just show the images!
+cd(Pkg.dir("SynchronySDK"))
+lcm = LCMLog("examples/data/brookstone_3.lcmlog")
+images = Vector{BigDataElementRequest}()
+subscribe(lcm, "BROOKSTONE_ROVER", (c,m)->lcm_ShowData(c,m, images), brookstone_supertype_t)
+while handle(lcm)
+end
+# Let's run an AprilTags detector on the sequence.
+using AprilTags
+# Simple method to show the image with the tags
+function showImage(image, tags, canvas)
+    # Convert image to RGB
+    imageCol = RGB.(image)
+    #draw color box on tag corners
+    if tags != nothing && length(tags) != 0
+        foreach(tag->drawTagBox!(imageCol, tag, 4), tags)
+    end
+    imshow(canvas["gui"]["canvas"], imageCol)
+    sleep(tags != nothing  && length(tags) != 0 ? 1 : 0.03)
+    return nothing
+end
+
+canvas = imshow(load(Pkg.dir("SynchronySDK") * "/examples/navability_log.png"))
+detector = AprilTagDetector()
+for imageBlob in images
+    imData = base64decode(imageBlob.data)
+    image = readblob(imData)
+    tags = detector(image)
+    @show tags
+    showImage(image, tags, canvas)
+end
+# Close the images
+ImageView.closeall()
+# Free the detector
+free!(detector)
+# ----------------- VISUALIZATION ----------------------
+
+
+# Adding the data!
+
 mutable struct RuntimeInfo
     synchronyConfig::SynchronyConfig
     robotId::String
@@ -60,16 +116,18 @@ function lcm_NewOdoAvailable(channel, msg::brookstone_supertype_t, runtimeInfo::
     dataFrame = JSON.parse(String(factor.data))
     measurement = Float64.(dataFrame["meas"])
     pOdo = Float64.(reshape(dataFrame["podo"], 3, 3))
-    @show newOdometryMeasurement = AddOdometryRequest(measurement, pOdo)
+    newOdometryMeasurement = AddOdometryRequest(measurement, pOdo)
     @time response = addOdometryMeasurement(synchronyConfig, robotId, sessionId, newOdometryMeasurement)
 
     # Image
     # TODO: Finding the ID for the node - this shouldn't be necessary! Fix once we have response.variable.id
-    @show nodeLabel = response.variable.label
+    nodeLabel = response.variable.label
     newNode = getNode(synchronyConfig, robotId, sessionId, nodeLabel)
-    @show nodeId = newNode.id
+    nodeId = newNode.id
     # Make a request payload
     dataElementRequest = BigDataElementRequest("CamImage", "Mongo", "Brookstone camera data for timestamp $(factor.utime)", base64encode(img.data), "image/jpeg")
+    @show dataElementRequest
+    error("NOPE!")
     #   # add the data to the database
     addOrUpdateDataElement(synchronyConfig, robotId, sessionId, nodeId, dataElementRequest)
 end
