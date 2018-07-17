@@ -14,7 +14,6 @@ function getRobots(config::SynchronyConfig)::RobotsResponse
     end
     # Some manual effort done here because it's a vector response.
     rawRobots = JSON.parse(String(response.body))
-    @show rawRobots
     robots = RobotsResponse(Vector{RobotResponse}(), rawRobots["links"])
     for robot in rawRobots["robots"]
         robot = _unmarshallWithLinks(JSON.json(robot), RobotResponse)

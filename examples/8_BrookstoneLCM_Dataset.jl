@@ -15,7 +15,7 @@ include("0_Initialization.jl")
 # 1a. Constants
 robotId = "Brookstone"
 sessionId = "Hackathon8"
-synchronyConfig = loadConfig("synchronyConfig_NaviEast_Internal.json")
+synchronyConfig = loadConfig("synchronyConfig_NaviEast_DEV.json")
 
 # 2. Confirm that the robot already exists, create if it doesn't.
 println(" - Creating or retrieving robot '$robotId'...")
@@ -73,10 +73,8 @@ function lcm_NewOdoAvailable(channel, msg::brookstone_supertype_t, runtimeInfo::
     nodeId = newNode.id
     # Make a request payload
     dataElementRequest = BigDataElementRequest("CamImage", "Mongo", "Brookstone camera data for timestamp $(factor.utime)", base64encode(img.data), "image/jpeg")
-    @show dataElementRequest
-    error("NOPE!")
     #   # add the data to the database
-    addOrUpdateDataElement(synchronyConfig, robotId, sessionId, nodeId, dataElementRequest)
+    # addOrUpdateDataElement(synchronyConfig, robotId, sessionId, nodeId, dataElementRequest)
 end
 
 # Not ideal but i need these things.
