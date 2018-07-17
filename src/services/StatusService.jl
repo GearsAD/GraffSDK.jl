@@ -8,7 +8,7 @@ Get the status of the Synchrony service.
 """
 function getStatus(config::SynchronyConfig)::String
     url = "$(config.apiEndpoint)/$(statusEndpoint)"
-    response = @mock _sendRestRequest(config, Requests.get, url)
+    response = @mock _sendRestRequest(config, HTTP.get, url)
     if(statuscode(response) != 200)
         error("Error getting server status, received $(statuscode(response)) with body '$(readstring(response))'.")
     end

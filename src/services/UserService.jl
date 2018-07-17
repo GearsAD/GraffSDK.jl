@@ -11,7 +11,7 @@ Return: Returns the created user.
 """
 function addUser(config::SynchronyConfig, user::UserRequest)::UserResponse
     url = "$(config.apiEndpoint)/$(format(userEndpoint, user.id))"
-    response = @mock _sendRestRequest(config, post, url, data=JSON.json(user), debug=true)
+    response = @mock _sendRestRequest(config, HTTP.HTTP.HTTP.HTTP.post, url, data=JSON.json(user), debug=true)
     if(statuscode(response) != 200)
         error("Error creating user, received $(statuscode(response)) with body '$(readstring(response))'.")
     end
@@ -25,7 +25,7 @@ Return: The user for the given user ID.
 """
 function getUser(config::SynchronyConfig, userId::String)::UserResponse
     url = "$(config.apiEndpoint)/$(format(userEndpoint, userId))"
-    response = @mock _sendRestRequest(config, get, url)
+    response = @mock _sendRestRequest(config, HTTP.HTTP.HTTP.get, url)
     if(statuscode(response) != 200)
         error("Error getting user, received $(statuscode(response)) with body '$(readstring(response))'.")
     end
@@ -39,7 +39,7 @@ Return: The updated user from the service.
 """
 function updateUser(config::SynchronyConfig, user::UserRequest)::UserResponse
     url = "$(config.apiEndpoint)/$(format(userEndpoint, user.id))"
-    response = @mock _sendRestRequest(config, put, url, data=JSON.json(user))
+    response = @mock _sendRestRequest(config, HTTP.HTTP.put, url, data=JSON.json(user))
     if(statuscode(response) != 200)
         error("Error updating user, received $(statuscode(response)) with body '$(readstring(response))'.")
     end
@@ -54,7 +54,7 @@ Return: The deleted user.
 """
 function deleteUser(config::SynchronyConfig, userId::String)::UserResponse
     url = "$(config.apiEndpoint)/$(format(userEndpoint, userId))"
-    response = @mock _sendRestRequest(config, delete, url)
+    response = @mock _sendRestRequest(config, HTTP.delete, url)
     if(statuscode(response) != 200)
         error("Error deleting user, received $(statuscode(response)) with body '$(readstring(response))'.")
     end
@@ -69,7 +69,7 @@ Return: The user config.
 """
 function getUserConfig(config::SynchronyConfig, userId::String)::UserConfig
     url = "$(config.apiEndpoint)/$(format(configEndpoint, userId))"
-    response = @mock _sendRestRequest(config, get, url)
+    response = @mock _sendRestRequest(config, HTTP.get, url)
     if(statuscode(response) != 200)
         error("Error getting user configuration, received $(statuscode(response)) with body '$(readstring(response))'.")
     end
