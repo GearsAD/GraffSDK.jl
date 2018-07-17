@@ -30,8 +30,8 @@ end
 $SIGNATURES
 Produces the authorization and sends the REST request.
 """
-function _sendRestRequest(synchronyConfig::SynchronyConfig, verbFunction, url::String; data::String="", headers::Dict{String, String}=Dict{String, String}(), debug::Bool=false)::Requests.Response
-    verbFunction(url, headers, body;
+function _sendRestRequest(synchronyConfig::SynchronyConfig, verbFunction, url::String; data::String="", headers::Dict{String, String}=Dict{String, String}(), debug::Bool=false)::HTTP.Response
+    verbFunction(url, headers, data;
         aws_authorization=true,
         aws_service="execute-api",
         aws_region=synchronyConfig.region,

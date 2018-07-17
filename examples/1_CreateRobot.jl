@@ -2,7 +2,7 @@ using Base
 using JSON, Unmarshal
 using SynchronySDK
 
-robotId = "NewRobotSam"
+robotId = "NewRobotSam2"
 
 # 1. Get a Synchrony configuration
 # Assume that you're running in local directory
