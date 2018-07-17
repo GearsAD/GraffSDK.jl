@@ -1,5 +1,5 @@
 using SynchronySDK
-using AWS
+using HTTP
 
 # Should fail
 url = "https://qxzjrc6f93.execute-api.us-east-2.amazonaws.com/DEV/api/v0/status"
@@ -14,38 +14,39 @@ configData = JSON.parse(readstring(configFile))
 close(configFile)
 synchronyConfig = Unmarshal.unmarshal(SynchronyConfig, configData)
 
-# Testing my method.
-# _sendRestRequest(synchronyConfig, Requests.get, "https://qxzjrc6f93.execute-api.us-east-2.amazonaws.com/DEV/api/v0/status", debug=true)
-getStatus(synchronyConfig)
-getUser(synchronyConfig, "NewUser")
+HTTP.get(url;
+    aws_authorization=true,
+    aws_service="execute-api",
+    aws_region=synchronyConfig.region,
+    aws_access_key_id=synchronyConfig.accessKey,
+    aws_secret_access_key=synchronyConfig.secretKey)
+
+url = "https://qxzjrc6f93.execute-api.us-east-2.amazonaws.com/DEV/api/v0/users/NewUser42"
+
 
 """
 $SIGNATURES
 Produces the authorization and sends the REST request.
 """
-function _sendRestRequest2(synchronyConfig::SynchronyConfig, verbFunction, url::String; data::String="", headers::Dict{String, String}=Dict{String, String}(), debug::Bool=false)::Requests.Response
+function _sendRestRequest(synchronyConfig::SynchronyConfig, verbFunction, url::String; data::String="", headers::Dict{String, String}=Dict{String, String}(), debug::Bool=false)::Requests.Response
     env = AWSEnv(; id=synchronyConfig.accessKey, key=synchronyConfig.secretKey, region=synchronyConfig.region, ep=url, dbg=debug)
     # Force the region as we are using a custom endpoint
     env.region = synchronyConfig.region
 
-    # Get the auth headers
-    amz_headers, amz_data, signed_querystr = signature_version_4(env, "execute-api", true, deepcopy(data))
-    # amz_headers, amz_data, signed_querystr = canonicalize_and_sign(env, "execute-api", true, Vector{Tuple}())
-    for val in amz_headers
-        headers[val[1]] = val[2]
-    end
-
     if data != ""
-        return verbFunction(url, headers = headers, data = data)
+        HTTP.get(url;
+            aws_authorization=true,
+            aws_service="execute-api",
+            aws_region=synchronyConfig.region,
+            aws_access_key_id=synchronyConfig.accessKey,
+            aws_secret_access_key=synchronyConfig.secretKey)
+
+        return verbFunction(url;
+            aws_authorization=true,
+            aws_service="execute-api",
+            aws_region=synchronyConfig.region,
+            aws_access_key_id=synchronyConfig.accessKey,
+            aws_secret_access_key=synchronyConfig.secretKey)
     end
     return verbFunction(url, headers = headers)
 end
-
-using AWS.S3
-using AWS.Crypto
-
-url = "https://qxzjrc6f93.execute-api.us-east-2.amazonaws.com/DEV/api/v0/users/NewUser234"
-newUser = UserRequest("NewUser234", "NewUser234", "email@email.com", "N/A", "Student", "Student", string(Base.Random.uuid4()))
-_sendRestRequest2(synchronyConfig, Requests.post, url, debug=true)
-
-# addUser(synchronyConfig, newUser)
