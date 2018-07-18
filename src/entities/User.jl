@@ -26,21 +26,3 @@ mutable struct UserResponse
   lastUpdatedTimestamp::String
   links::Dict{String, String}
 end
-
-"""
-Runtime configuration parameters for connecting to the streaming API.
-"""
-mutable struct KafkaConfig
-    ip::String
-    port::String
-    inputPoseChannelName::String
-    inputImageStreamChannelName::String
-    poseUpdateNotificationChannelName::String
-end
-
-"""
-Runtime configuration parameters for connecting to the Synchrony API.
-"""
-mutable struct UserConfig
-    kafkaConfig::KafkaConfig
-end

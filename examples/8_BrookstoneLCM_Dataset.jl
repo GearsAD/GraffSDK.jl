@@ -15,6 +15,7 @@ include("0_Initialization.jl")
 # 1a. Constants
 robotId = "Brookstone"
 sessionId = "Hackathon8"
+synchronyConfig = loadConfig("synchronyConfig_NaviEast_DEV.json")
 
 # 2. Confirm that the robot already exists, create if it doesn't.
 println(" - Creating or retrieving robot '$robotId'...")
@@ -45,6 +46,8 @@ else
 end
 println(session)
 
+# Adding the data!
+
 mutable struct RuntimeInfo
     synchronyConfig::SynchronyConfig
     robotId::String
@@ -60,18 +63,18 @@ function lcm_NewOdoAvailable(channel, msg::brookstone_supertype_t, runtimeInfo::
     dataFrame = JSON.parse(String(factor.data))
     measurement = Float64.(dataFrame["meas"])
     pOdo = Float64.(reshape(dataFrame["podo"], 3, 3))
-    @show newOdometryMeasurement = AddOdometryRequest(measurement, pOdo)
+    newOdometryMeasurement = AddOdometryRequest(measurement, pOdo)
     @time response = addOdometryMeasurement(synchronyConfig, robotId, sessionId, newOdometryMeasurement)
 
     # Image
     # TODO: Finding the ID for the node - this shouldn't be necessary! Fix once we have response.variable.id
-    @show nodeLabel = response.variable.label
+    nodeLabel = response.variable.label
     newNode = getNode(synchronyConfig, robotId, sessionId, nodeLabel)
-    @show nodeId = newNode.id
+    nodeId = newNode.id
     # Make a request payload
     dataElementRequest = BigDataElementRequest("CamImage", "Mongo", "Brookstone camera data for timestamp $(factor.utime)", base64encode(img.data), "image/jpeg")
     #   # add the data to the database
-    addOrUpdateDataElement(synchronyConfig, robotId, sessionId, nodeId, dataElementRequest)
+    # addOrUpdateDataElement(synchronyConfig, robotId, sessionId, nodeId, dataElementRequest)
 end
 
 # Not ideal but i need these things.

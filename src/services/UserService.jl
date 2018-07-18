@@ -11,11 +11,11 @@ Return: Returns the created user.
 """
 function addUser(config::SynchronyConfig, user::UserRequest)::UserResponse
     url = "$(config.apiEndpoint)/$(format(userEndpoint, user.id))"
-    response = @mock _sendRestRequest(config, post, url, data=JSON.json(user), debug=true)
-    if(statuscode(response) != 200)
-        error("Error creating user, received $(statuscode(response)) with body '$(readstring(response))'.")
+    response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(user), debug=true)
+    if(response.status != 200)
+        error("Error creating user, received $(response.status) with body '$(String(response.body))'.")
     end
-    return _unmarshallWithLinks(readstring(response), UserResponse)
+    return _unmarshallWithLinks(String(response.body), UserResponse)
 end
 
 """
@@ -25,11 +25,11 @@ Return: The user for the given user ID.
 """
 function getUser(config::SynchronyConfig, userId::String)::UserResponse
     url = "$(config.apiEndpoint)/$(format(userEndpoint, userId))"
-    response = @mock _sendRestRequest(config, get, url)
-    if(statuscode(response) != 200)
-        error("Error getting user, received $(statuscode(response)) with body '$(readstring(response))'.")
+    response = @mock _sendRestRequest(config, HTTP.get, url)
+    if(response.status != 200)
+        error("Error getting user, received $(response.status) with body '$(String(response.body))'.")
     end
-    return _unmarshallWithLinks(readstring(response), UserResponse)
+    return _unmarshallWithLinks(String(response.body), UserResponse)
 end
 
 """
@@ -39,11 +39,11 @@ Return: The updated user from the service.
 """
 function updateUser(config::SynchronyConfig, user::UserRequest)::UserResponse
     url = "$(config.apiEndpoint)/$(format(userEndpoint, user.id))"
-    response = @mock _sendRestRequest(config, put, url, data=JSON.json(user))
-    if(statuscode(response) != 200)
-        error("Error updating user, received $(statuscode(response)) with body '$(readstring(response))'.")
+    response = @mock _sendRestRequest(config, HTTP.put, url, data=JSON.json(user))
+    if(response.status != 200)
+        error("Error updating user, received $(response.status) with body '$(String(response.body))'.")
     end
-    return _unmarshallWithLinks(readstring(response), UserResponse)
+    return _unmarshallWithLinks(String(response.body), UserResponse)
 end
 
 """
@@ -54,24 +54,9 @@ Return: The deleted user.
 """
 function deleteUser(config::SynchronyConfig, userId::String)::UserResponse
     url = "$(config.apiEndpoint)/$(format(userEndpoint, userId))"
-    response = @mock _sendRestRequest(config, delete, url)
-    if(statuscode(response) != 200)
-        error("Error deleting user, received $(statuscode(response)) with body '$(readstring(response))'.")
+    response = @mock _sendRestRequest(config, HTTP.delete, url)
+    if(response.status != 200)
+        error("Error deleting user, received $(response.status) with body '$(String(response.body))'.")
     end
-    return _unmarshallWithLinks(readstring(response), UserResponse)
-end
-
-"""
-$(SIGNATURES)
-Get a user config given a user ID.
-The user config contains all the runtime parameters for any robot.
-Return: The user config.
-"""
-function getUserConfig(config::SynchronyConfig, userId::String)::UserConfig
-    url = "$(config.apiEndpoint)/$(format(configEndpoint, userId))"
-    response = @mock _sendRestRequest(config, get, url)
-    if(statuscode(response) != 200)
-        error("Error getting user configuration, received $(statuscode(response)) with body '$(readstring(response))'.")
-    end
-    return Unmarshal.unmarshal(UserConfig, JSON.parse(readstring(response)))
+    return _unmarshallWithLinks(String(response.body), UserResponse)
 end

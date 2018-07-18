@@ -1,4 +1,4 @@
-# Navi Examples
+# Navi SDK
 
 This package is an SDK for the Navi API.
 

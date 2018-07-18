@@ -1,10 +1,9 @@
 module SynchronySDK
 
 # Imports
-using Requests, JSON, Unmarshal
-using AWS
+using JSON, Unmarshal
+using HTTP
 using Formatting
-using Graphs
 using DocStringExtensions
 using ProgressMeter
 
@@ -30,21 +29,14 @@ end
 $SIGNATURES
 Produces the authorization and sends the REST request.
 """
-function _sendRestRequest(synchronyConfig::SynchronyConfig, verbFunction, url::String; data::String="", headers::Dict{String, String}=Dict{String, String}(), debug::Bool=false)::Requests.Response
-    env = AWSEnv(; id=synchronyConfig.accessKey, key=synchronyConfig.secretKey, region=synchronyConfig.region, ep=url, dbg=debug)
-    # Force the region as we are using a custom endpoint
-    env.region = synchronyConfig.region
-
-    # Get the auth headers
-    amz_headers, amz_data, signed_querystr = canonicalize_and_sign(env, "execute-api", false, Vector{Tuple}())
-    for val in amz_headers
-        headers[val[1]] = val[2]
-    end
-
-    if data != ""
-        return verbFunction(url, headers = headers, data = data)
-    end
-    return verbFunction(url, headers = headers)
+function _sendRestRequest(synchronyConfig::SynchronyConfig, verbFunction, url::String; data::String="", headers::Dict{String, String}=Dict{String, String}(), debug::Bool=false)::HTTP.Response
+    @show "HERE"
+    verbFunction(url, headers, data;
+        aws_authorization=true,
+        aws_service="execute-api",
+        aws_region=synchronyConfig.region,
+        aws_access_key_id=synchronyConfig.accessKey,
+        aws_secret_access_key=synchronyConfig.secretKey)
 end
 
 # Includes

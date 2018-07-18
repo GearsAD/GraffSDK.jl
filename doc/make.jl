@@ -7,6 +7,7 @@ makedocs(
     pages = Any[
         "Home" => "index.md",
         "Getting Started" => "getting_started.md",
+        "Examples" => "examples.md"
         "Common Structures and Functions" => "ref_common.md",
         "Auth Service" => "ref_auth.md",
         "User Service" => "ref_user.md",

@@ -2,9 +2,8 @@
 
 This documents the steps for using the SDK, as shown in the examples folder.
 
-This example will walk through the following steps:
+This example will walk through the following steps, demonstrating how you can manage, ingest, and extract data for your robots:
 1. Loading a Synchrony configuration
-1. Initializing an auth token
 1. Getting your user information and runtime configuration
 1. Creating a robot that will produce data and ingest it into Synchrony
 1. Creating a new robot session
@@ -16,7 +15,6 @@ The first step is to create a new script file and import the base libraries:
 
 ```julia
 using Base
-using JSON, Unmarshal
 using SynchronySDK
 ```
 

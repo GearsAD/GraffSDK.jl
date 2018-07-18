@@ -32,7 +32,7 @@ $(SIGNATURES)
 Visualize a session using MeshCat.
 Return: Void.
 """
-function visualizeSession(config::SynchronyConfig, robotId::String, sessionId::String, bigDataImageKey::String = "")::Void
+function visualizeSession(config::SynchronyConfig, robotId::String, sessionId::String, bigDataImageKey::String = "", pointCloudKey::String = "")::Void
     # Create a new visualizer instance
     vis = Visualizer()
     open(vis)
@@ -79,17 +79,41 @@ function visualizeSession(config::SynchronyConfig, robotId::String, sessionId::S
         if haskey(node.properties, "MAP_est")
             mapEst = node.properties["MAP_est"]
 
-            # Stochastic point clouds
-            if haskey(node.packed, "val")
-                println(" - Rendering stochastic measurements")
-                # TODO: Make a lookup as well.
-                points = map(p -> Point3f0(p[1], p[2], 0), node.packed["val"])
-                # Make more fancy in future.
-                # cols = reinterpret(RGB{Float32}, points); # use the xyz value as rgb color
-                cols = map(p -> RGB{Float32}(1.0, 1.0, 1.0), points)
-                # pointsMaterial = PointsMaterial(RGB(1., 1., 1.), 0.001, 2)
-                pointCloud = PointCloud(points, cols)
-                setobject!(vis[label]["pointCloud"], pointCloud)
+            # # Stochastic point clouds
+            # if haskey(node.packed, "val")
+            #     println(" - Rendering stochastic measurements")
+            #     # TODO: Make a lookup as well.
+            #     points = map(p -> Point3f0(p[1], p[2], 0), node.packed["val"])
+            #     # Make more fancy in future.
+            #     # cols = reinterpret(RGB{Float32}, points); # use the xyz value as rgb color
+            #     cols = map(p -> RGB{Float32}(1.0, 1.0, 1.0), points)
+            #     # pointsMaterial = PointsMaterial(RGB(1., 1., 1.), 0.001, 2)
+            #     pointCloud = PointCloud(points, cols)
+            #     setobject!(vis[label]["statsPointCloud"], pointCloud)
+            # end
+
+            if pointCloudKey != "" # Get and render point clouds
+                println(" - Rendering point cloud data for keys that have id = $bigDataImageKey...")
+                bigEntries = getDataEntries(config, robotId, sessionId, nSummary.id)
+                for bigEntry in bigEntries
+                    if bigEntry.id == pointCloudKey
+                        dataFrame = getDataElement(config, robotId, sessionId, nSummary.id, bigEntry.id)
+
+                        # Form the data.
+                        pointData = eval(parse(dataFrame.data))
+                        points = Vector{Point3f0}(length(pointData[1]))
+                        for i in 1:length(pointData[1])
+                            points[i] = Point3f0(pointData[1][i], pointData[2][i], pointData[3][i])
+                        end
+
+                        # Make more fancy in future.
+                        # cols = reinterpret(RGB{Float32}, points); # use the xyz value as rgb color
+                        cols = map(p -> RGB{Float32}(1.0, 1.0, 1.0), points)
+                        # pointsMaterial = PointsMaterial(RGB(1., 1., 1.), 0.001, 2)
+                        pointCloud = PointCloud(points, cols)
+                        setobject!(vis[label][pointCloudKey], pointCloud)
+                    end
+                end
             end
 
             # Camera imagery
