@@ -4,7 +4,6 @@ module SynchronySDK
 using JSON, Unmarshal
 using HTTP
 using Formatting
-using Graphs
 using DocStringExtensions
 using ProgressMeter
 
@@ -31,6 +30,7 @@ $SIGNATURES
 Produces the authorization and sends the REST request.
 """
 function _sendRestRequest(synchronyConfig::SynchronyConfig, verbFunction, url::String; data::String="", headers::Dict{String, String}=Dict{String, String}(), debug::Bool=false)::HTTP.Response
+    @show "HERE"
     verbFunction(url, headers, data;
         aws_authorization=true,
         aws_service="execute-api",

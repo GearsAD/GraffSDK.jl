@@ -92,7 +92,7 @@ Return: A vector of nodes for a given robot.
 """
 function getNodes(config::SynchronyConfig, robotId::String, sessionId::String)::NodesResponse
     url = "$(config.apiEndpoint)/$(format(nodesEndpoint, config.userId, robotId, sessionId))"
-    response = @mock _sendRestRequest(config, HTTP.HTTP.get, url)
+    response = @mock _sendRestRequest(config, HTTP.get, url)
     if(response.status != 200)
         error("Error getting sessions, received $(response.status) with body '$(String(response.body))'.")
     end
@@ -188,7 +188,7 @@ Return: Returns the added odometry information.
 """
 function addOdometryMeasurement(config::SynchronyConfig, robotId::String, sessionId::String, addOdoRequest::AddOdometryRequest)::AddOdometryResponse
     url = "$(config.apiEndpoint)/$(format(odoEndpoint, config.userId, robotId, sessionId))"
-    response = @mock _sendRestRequest(config, HTTP.HTTP.post, url, data=JSON.json(addOdoRequest))
+    response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(addOdoRequest))
     if(response.status != 200)
         error("Error creating odometry, received $(response.status) with body '$(String(response.body))'.")
     end
