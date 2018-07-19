@@ -49,6 +49,19 @@ function nodeDetail2ExVertex(nodeDetails::SynchronySDK.NodeDetailsResponse)::Gra
     return vert
 end
 
+"""
+$SIGNATURES
+Produces the authorization and sends the REST request.
+"""
+function _sendRestRequest(synchronyConfig::SynchronyConfig, verbFunction, url::String; data::String="", headers::Dict{String, String}=Dict{String, String}(), debug::Bool=false)::HTTP.Response
+    verbFunction(url, headers, data;
+        aws_authorization=true,
+        aws_service="execute-api",
+        aws_region=synchronyConfig.region,
+        aws_access_key_id=synchronyConfig.accessKey,
+        aws_secret_access_key=synchronyConfig.secretKey)
+end
+
 # Exports
 export SynchronyConfig, ErrorResponse
 export UserRequest, UserResponse, KafkaConfig, UserConfig, addUser, getUser, updateUser, deleteUser, getUserConfig
