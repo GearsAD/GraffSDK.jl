@@ -1,14 +1,11 @@
 module SynchronySDK
 
 # Imports
-using JSON, Unmarshal
-using HTTP
+using HTTP, JSON, Unmarshal
 using Formatting
+using Graphs
 using DocStringExtensions
 using ProgressMeter
-
-# Initial Include
-include("./entities/SynchronySDK.jl")
 
 # Utility functions
 """
@@ -25,22 +22,9 @@ function _unmarshallWithLinks(responseBody::String, t::Type)
     return unmarshalled
 end
 
-"""
-$SIGNATURES
-Produces the authorization and sends the REST request.
-"""
-function _sendRestRequest(synchronyConfig::SynchronyConfig, verbFunction, url::String; data::String="", headers::Dict{String, String}=Dict{String, String}(), debug::Bool=false)::HTTP.Response
-    @show "HERE"
-    verbFunction(url, headers, data;
-        aws_authorization=true,
-        aws_service="execute-api",
-        aws_region=synchronyConfig.region,
-        aws_access_key_id=synchronyConfig.accessKey,
-        aws_secret_access_key=synchronyConfig.secretKey)
-end
-
 # Includes
-include("./services/StatusService.jl")
+include("./entities/SynchronySDK.jl")
+
 include("./entities/User.jl")
 include("./services/UserService.jl")
 
@@ -52,7 +36,6 @@ include("./entities/Data.jl")
 include("./services/DataHelpers.jl")
 include("./services/SessionService.jl")
 
-include("./services/VisualizationService.jl")
 include("./entities/Cyphon.jl")
 
 # Exported functions
@@ -68,18 +51,16 @@ end
 
 # Exports
 export SynchronyConfig, ErrorResponse
-export getStatus
 export UserRequest, UserResponse, KafkaConfig, UserConfig, addUser, getUser, updateUser, deleteUser, getUserConfig
 export RobotRequest, RobotResponse, RobotsResponse, getRobots, getRobot, addRobot, updateRobot, deleteRobot, getRobotConfig, updateRobotConfig
-export SessionDetailsRequest, SessionDetailsResponse, addSession, getSessions, getSession, deleteSession, isSessionExisting, putReady
+export SessionDetailsRequest, SessionDetailsResponse, addSession, getSessions, getSession, putReady
 export BigDataElementRequest, BigDataEntryResponse, BigDataElementResponse
 export getDataEntries, getDataElement, getRawDataElement, addDataElement, updateDataElement, addOrUpdateDataElement, deleteDataElement
 export encodeJsonData, encodeBinaryData, readImageIntoDataRequest, isSafeToJsonSerialize
 export NodeResponse, NodesResponse, BigDataElementResponse, NodeDetailsResponse, getNodes, getNode
 export AddOdometryRequest, AddOdometryResponse, NodeResponseInfo, addOdometryMeasurement
-export VariableRequest, addVariable
-export FactorRequest, FactorBody, BearingRangeRequest, DistributionRequest, addFactor, addBearingRangeFactor
-export visualizeSession
+export VariableRequest, VariableResponse, BearingRangeRequest, BearingRangeResponse, DistributionRequest, addVariable, addBearingRangeFactor
 # For testing
+export _unmarshallWithLinks
 export nodeDetail2ExVertex
 end

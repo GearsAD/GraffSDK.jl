@@ -18,9 +18,9 @@ mutable struct RobotResponse
   name::String
   description::String
   status::String
-  links::Dict{String, String}
   createdTimestamp::String
   lastUpdatedTimestamp::String
+  links::Dict{String, String}
 end
 
 # function show(io::IO, obj::RobotResponse)
