@@ -2,6 +2,7 @@
 # This tutorial shows how to use some of the commonly used factor types
 # This tutorial follows from the ContinuousScalar example from IncrementalInference
 using SynchronySDK
+using ProgressMeter
 
 # 1. Import the initialization code.
 cd(joinpath(Pkg.dir("SynchronySDK"),"examples"))

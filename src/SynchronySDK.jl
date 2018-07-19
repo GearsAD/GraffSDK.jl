@@ -35,6 +35,7 @@ include("./entities/Session.jl")
 include("./entities/Data.jl")
 include("./services/DataHelpers.jl")
 include("./services/SessionService.jl")
+include("./services/VisualizationService.jl")
 
 include("./entities/Cyphon.jl")
 
