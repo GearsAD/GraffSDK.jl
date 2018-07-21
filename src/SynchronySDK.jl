@@ -35,6 +35,7 @@ include("./entities/Session.jl")
 include("./entities/Data.jl")
 include("./services/DataHelpers.jl")
 include("./services/SessionService.jl")
+include("./services/StatusService.jl")
 include("./services/VisualizationService.jl")
 
 include("./entities/Cyphon.jl")
@@ -65,6 +66,7 @@ end
 
 # Exports
 export SynchronyConfig, ErrorResponse
+export getStatus, printStatus
 export UserRequest, UserResponse, KafkaConfig, UserConfig, addUser, getUser, updateUser, deleteUser, getUserConfig
 export RobotRequest, RobotResponse, RobotsResponse, getRobots, getRobot, addRobot, updateRobot, deleteRobot, getRobotConfig, updateRobotConfig
 export SessionDetailsRequest, SessionDetailsResponse, addSession, getSessions, getSession, putReady
