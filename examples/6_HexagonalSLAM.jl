@@ -8,12 +8,14 @@ using ProgressMeter
 cd(joinpath(Pkg.dir("SynchronySDK"),"examples"))
 include("0_Initialization.jl")
 
-# Create a Configuration
+# 1a. Create a Configuration
 robotId = "Hexagonal"
 sessionId = "HexDemo1"
 # synchronyConfig = loadConfig("synchronyConfig_Local.json")
 synchronyConfig = loadConfig("synchronyConfig.json")
 
+# 1b. Check the credentials and the service status
+printStatus(sychronyConfig)
 
 # 2. Confirm that the robot already exists, create if it doesn't.
 println(" - Creating or retrieving robot '$robotId'...")
