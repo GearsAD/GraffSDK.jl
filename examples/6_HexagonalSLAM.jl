@@ -10,7 +10,7 @@ include("0_Initialization.jl")
 
 # 1a. Create a Configuration
 robotId = "Hexagonal"
-sessionId = "HexDemo"
+sessionId = "HexDemo1"
 # synchronyConfig = loadConfig("synchronyConfig_Local.json")
 synchronyConfig = loadConfig("synchronyConfig.json")
 
