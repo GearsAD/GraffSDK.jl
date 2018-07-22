@@ -69,7 +69,7 @@ export SynchronyConfig, ErrorResponse
 export getStatus, printStatus
 export UserRequest, UserResponse, KafkaConfig, UserConfig, addUser, getUser, updateUser, deleteUser, getUserConfig
 export RobotRequest, RobotResponse, RobotsResponse, getRobots, getRobot, addRobot, updateRobot, deleteRobot, getRobotConfig, updateRobotConfig
-export SessionDetailsRequest, SessionDetailsResponse, addSession, getSessions, getSession, putReady
+export SessionDetailsRequest, SessionDetailsResponse, addSession, getSessions, isSessionExisting, getSession, putReady
 export BigDataElementRequest, BigDataEntryResponse, BigDataElementResponse
 export getDataEntries, getDataElement, getRawDataElement, addDataElement, updateDataElement, addOrUpdateDataElement, deleteDataElement
 export encodeJsonData, encodeBinaryData, readImageIntoDataRequest, isSafeToJsonSerialize
