@@ -9,11 +9,10 @@ makedocs(
         "Getting Started" => "getting_started.md",
         "Examples" => "examples.md",
         "Common Structures and Functions" => "ref_common.md",
-        "Auth Service" => "ref_auth.md",
+        "Making Robust Calls" => "handling_errors.md",
         "User Service" => "ref_user.md",
         "Robot Service" => "ref_robot.md",
         "Session Service" => "ref_session.md",
-        "Cyphon Service" => "ref_cyphon.md",
         "Reference" => "reference.md"
     ]
     # html_prettyurls = !("local" in ARGS),
