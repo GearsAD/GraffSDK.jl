@@ -1,12 +1,12 @@
-# Navi Examples
+# Synchrony Examples
 
-This package is an SDK for the Navi API.
+This package is an SDK for the Project Synchrony API.
 
 ## Installation
 This package is not yet registered with JuliaLang/METADATA.jl, but can be easily installed in Julia 0.6 with:
 ```julia
-Pkg.clone("https://github.com/GearsAD/NaviSDK.jl.git")
-Pkg.build("NaviSDK")
+Pkg.clone("https://github.com/GearsAD/SynchronySDK.jl.git")
+Pkg.build("SynchronySDK")
 ```
 
 ## Manual Outline
