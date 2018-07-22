@@ -9,11 +9,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "index.html#Navi-Examples-1",
+    "location": "index.html#Synchrony-Examples-1",
     "page": "Home",
-    "title": "Navi Examples",
+    "title": "Synchrony Examples",
     "category": "section",
-    "text": "This package is an SDK for the Navi API."
+    "text": "This package is an SDK for the Project Synchrony API."
 },
 
 {
@@ -21,7 +21,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "Installation",
     "category": "section",
-    "text": "This package is not yet registered with JuliaLang/METADATA.jl, but can be easily installed in Julia 0.6 with:Pkg.clone(\"https://github.com/GearsAD/NaviSDK.jl.git\")\nPkg.build(\"NaviSDK\")"
+    "text": "This package is not yet registered with JuliaLang/METADATA.jl, but can be easily installed in Julia 0.6 with:Pkg.clone(\"https://github.com/GearsAD/SynchronySDK.jl.git\")\nPkg.build(\"SynchronySDK\")"
 },
 
 {
