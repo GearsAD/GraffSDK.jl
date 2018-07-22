@@ -14,8 +14,6 @@ Pkg.build("NaviSDK")
 Pages = [
     "index.md"
     "getting_started.md"
-    "handling_errors.md"
-    "ref_auth.md"
     "ref_user.md"
     "ref_robot.md"
     "ref_session.md"

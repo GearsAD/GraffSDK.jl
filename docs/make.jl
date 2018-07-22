@@ -23,6 +23,7 @@ deploydocs(
     repo   = "github.com/GearsAD/SynchronySDK.jl.git",
     target = "build",
     deps   = Deps.pip("mkdocs", "python-markdown-math"),
+    make   = nothing,
     julia  = "0.6",
     osname = "linux"
 )
