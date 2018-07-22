@@ -12,11 +12,12 @@ using ProgressMeter
 $(SIGNATURES)
 Internal fix for Unmarshal not being able to deserialize dictionaries.
 https://github.com/lwabeke/Unmarshal.jl/issues/9
+This still seems to be an issue even with 0.1.1 of Unmarshal.
 """
 function _unmarshallWithLinks(responseBody::String, t::Type)
     j = JSON.parse(responseBody)
     links = j["links"]
-    delete!(j, "links")
+    j["links"] = Dict{String,String}()
     unmarshalled = Unmarshal.unmarshal(t, j)
     unmarshalled.links = links
     return unmarshalled
