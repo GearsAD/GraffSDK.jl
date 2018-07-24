@@ -10,12 +10,12 @@ include("0_Initialization.jl")
 
 # 1a. Create a Configuration
 robotId = "Hexagonal"
-sessionId = "HexDemo1"
+sessionId = "HexDemo2"
 # synchronyConfig = loadConfig("synchronyConfig_Local.json")
 synchronyConfig = loadConfig("synchronyConfig.json")
 
 # 1b. Check the credentials and the service status
-printStatus(sychronyConfig)
+printStatus(synchronyConfig)
 
 # 2. Confirm that the robot already exists, create if it doesn't.
 println(" - Creating or retrieving robot '$robotId'...")
@@ -55,10 +55,10 @@ println(" - Adding hexagonal driving pattern to session...")
     pOdo = Float64[0.1 0 0; 0 0.1 0; 0 0 0.1]
     println(" - Measurement $i: Adding new odometry measurement '$deltaMeasurement'...")
     newOdometryMeasurement = AddOdometryRequest(deltaMeasurement, pOdo)
-    @time @show response = addOdometryMeasurement(synchronyConfig, robotId, sessionId, newOdometryMeasurement)
-    # Add some image data too - NOT YET ON PUBLIC API
-    # println("   - Adding some image data as well!")
-    # @time addOrUpdateDataElement(synchronyConfig, robotId, sessionId, response.variable.id, imgRequest)
+    @time @show addOdoResponse = addOdometryMeasurement(synchronyConfig, robotId, sessionId, newOdometryMeasurement)
+    println("  - Adding image data to the pose...")
+    # Adding image data
+    addOrUpdateDataElement(synchronyConfig, robotId, sessionId, addOdoResponse.variable, imgRequest)
 end
 
 # # 5. Now retrieve the dataset

@@ -21,7 +21,7 @@ Print the current service status.
 """
 function printStatus(config::SynchronyConfig)::Void
     try
-        serviceStatus = getStatus(synchronyConfig)
+        serviceStatus = getStatus(config)
         print_with_color(:blue, "Synchrony service status: ")
         print_with_color(serviceStatus == "UP!" ? :green : :red, "$(serviceStatus)\r\n")
     catch ex

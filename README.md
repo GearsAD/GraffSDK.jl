@@ -18,4 +18,4 @@ There are quite a few comprehensive examples in the [Examples](examples) folder.
 You can find all the Synchrony SDK documentation at [Synchrony GitHub Page](https://gearsad.github.io/SynchronySDK.jl/latest/)
 
 ## Questions
-Any questions, please feel free to post Issues or email me directly sclaassens[at]gmail.com.
+Any questions, please feel free to post Issues or email me directly sclaassens.ad[at]gmail.com.

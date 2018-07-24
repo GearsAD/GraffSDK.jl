@@ -276,6 +276,15 @@ $(SIGNATURES)
 Add or update a data element associated with a node. Will check if the key exists, if so it updates, otherwise it adds.
 Return: Nothing if succeed, error if failed.
 """
+function addOrUpdateDataElement(config::SynchronyConfig, robotId::String, sessionId::String, node::Union{NodeResponse, NodeDetailsResponse}, dataElement::Union{BigDataElementRequest, BigDataElementResponse})::Void
+    return addOrUpdateDataElement(config, robotId, sessionId, node.id, dataElement::Union{BigDataElementRequest, BigDataElementResponse})
+end
+
+"""
+$(SIGNATURES)
+Add or update a data element associated with a node. Will check if the key exists, if so it updates, otherwise it adds.
+Return: Nothing if succeed, error if failed.
+"""
 function addOrUpdateDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeId::Int, dataElement::Union{BigDataElementRequest, BigDataElementResponse})::Void
     dataEntries = getDataEntries(config, robotId, sessionId, nodeId)
     if count(entry -> entry.id == dataElement.id, dataEntries) == 0
