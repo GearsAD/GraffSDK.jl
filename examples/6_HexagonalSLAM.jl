@@ -64,7 +64,6 @@ end
 # # 5. Now retrieve the dataset
 # println(" - Retrieving all data for session $sessionId...")
 @time nodes = getNodes(synchronyConfig, robotId, sessionId);
-# println(" -- Node list:\r\n$nodes")
 
 # By NeoID
 node = getNode( synchronyConfig, robotId, sessionId, nodes.nodes[1].id);
