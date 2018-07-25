@@ -78,7 +78,7 @@ newBearingRangeFactor = BearingRangeRequest("x1", "l1",
                           DistributionRequest("Normal", Float64[0; 0.1]),
                           DistributionRequest("Normal", Float64[20; 1.0]))
 addBearingRangeFactor(synchronyConfig, robotId, sessionId, newBearingRangeFactor)
-newBearingRangeFactor2 = BearingRangeRequest("x7", "l1",
+newBearingRangeFactor2 = BearingRangeRequest("x6", "l1",
                            DistributionRequest("Normal", Float64[0; 0.1]),
                            DistributionRequest("Normal", Float64[20; 1.0]))
 addBearingRangeFactor(synchronyConfig, robotId, sessionId, newBearingRangeFactor2)
