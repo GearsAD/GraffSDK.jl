@@ -22,7 +22,7 @@ end
 $(SIGNATURES)
 Read an image from a file and encode it as a Synchrony data element.
 """
-function readImageIntoDataRequest(file::String, id::String, description::String, mimeType)
+function readFileIntoDataRequest(file::String, id::String, description::String, mimeType)
     try
         fid = open(file,"r")
         imgBytes = read(fid)
