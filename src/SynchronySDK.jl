@@ -23,6 +23,21 @@ function _unmarshallWithLinks(responseBody::String, t::Type)
     return unmarshalled
 end
 
+"""
+$(SIGNATURES)
+Load a config file from a file name.
+"""
+function loadConfigFile(filename::String)::SynchronyConfig
+    if !isfile(filename)
+        error("Cannot locate the configuration file '$filename'. Please check tht it exists.")
+    end
+    configFile = open("synchronyConfig.json")
+    configData = JSON.parse(readstring(configFile))
+    close(configFile)
+    synchronyConfig = Unmarshal.unmarshal(SynchronyConfig, configData)
+    return synchronyConfig
+end
+
 # Includes
 include("./entities/SynchronySDK.jl")
 
@@ -79,6 +94,6 @@ export AddOdometryRequest, AddOdometryResponse, NodeResponseInfo, addOdometryMea
 export VariableRequest, VariableResponse, BearingRangeRequest, BearingRangeResponse, DistributionRequest, addVariable, addBearingRangeFactor
 export visualizeSession
 # For testing
-export _unmarshallWithLinks
+export _unmarshallWithLinks, loadConfigFile
 export nodeDetail2ExVertex
 end

@@ -39,13 +39,10 @@ using SynchronySDK
 
 # 1. Get a Synchrony configuration
 # Assume that you're running in local directory
-configFile = open("synchronyConfig.json")
-configData = JSON.parse(readstring(configFile))
-close(configFile)
-synchronyConfig = Unmarshal.unmarshal(SynchronyConfig, configData)
+synchronyConfig = loadConfigFile("synchronyConfig.json")
 
 robotId = "Hexagonal" # Update these
-session = "HexDemo" # Update these
+sessionId = "HexDemo1" # Update these
 
 # Get all nodes and select the first for this example
 sessionNodes = getNodes(synchronyConfig, robotId, sessionId);
@@ -54,7 +51,7 @@ if length(sessionNodes.nodes) == 0
 end
 
 # Get the first node - we don't need the complete node, just the summary - no getNode call needed.
-node = sessionNodes[1]
+node = sessionNodes.nodes[1]
 
 ```
 
@@ -138,21 +135,22 @@ Now that we've discussed getting data, it's pretty easy covering how to add/upda
 To add data, just make a `BigDataElementRequest` (or use a helper to make one), and submit it.
 
 #### A Matrix
-For example, we can construct a huge(ish) 2D matrix, encode it, and submit it:
+For example, we can construct a huge(ish) 2D matrix, encode it as JSON (or ProtoBuf or JLD or etc.), and submit it:
 
 ```julia
-myMat = rand(10000, 10000)
-dataBytes = "Something"
-enc = base64encode(dataBytes)
+myMat = rand(1000, 1000)
+dataBytes = JSON.json(myMat);
+enc = base64encode(dataBytes);
 # Make a Data request
-request = BigDataElementRequest("Matrix Entry", "", "An example matrix", enc)
+request = BigDataElementRequest("Matrix_Entry", "", "An example matrix", enc);
 # Attach it to the node
-addOrUpdateDataElement(synchronyConfig, robotId, sessionId, node, request)
+addOrUpdateDataElement(synchronyConfig, robotId, sessionId, node, request);
 ```
 
 Now we can retrieve it to see it again:
 ```julia
-@show dataElemRaw = getRawDataElement(synchronyConfig, robotId, sessionId, node dataEntry)
+dataElemRaw = getRawDataElement(synchronyConfig, robotId, sessionId, node, "Matrix_Entry")
+myMatDeser = JSON.parse(dataElemRaw)
 ```  
 
 There's also a simple helper method for this if you use `SynchronySDK.DataHelpers`:
@@ -160,7 +158,7 @@ There's also a simple helper method for this if you use `SynchronySDK.DataHelper
 ```julia
 using SynchronySDK.DataHelpers
 
-request = encodeBinaryData("Matrix Entry", "An example matrix", dataBytes)
+request = encodeBinaryData("Matrix_Entry", "An example matrix", dataBytes)
 # Attach it to the node
 @show matrixElement = addOrUpdateDataElement(synchronyConfig, robotId, sessionId, node, request)
 ```
@@ -177,7 +175,7 @@ end
 
 testStruct = TestStruct(1:10, "A test struct", 3.14159)
 enc = JSON.json(testStruct)
-request = BigDataElementRequest("Struct Entry", "", "An example struct", enc)
+request = BigDataElementRequest("Struct_Entry", "", "An example struct", enc)
 @show structElement = addOrUpdateDataElement(synchronyConfig, robotId, sessionId, node, request)
 ```
 
@@ -190,7 +188,7 @@ Actually, we've ended up doing this so much we've made a simple helper method fo
 
 ```julia
 using SynchronySDK.DataHelpers
-request = encodeJsonData("Struct Entry", "An example struct", testStruct)
+request = encodeJsonData("Struct_Entry", "An example struct", testStruct)
 structElement = addOrUpdateDataElement(synchronyConfig, robotId, sessionId, node, request)
 ```
 
@@ -221,7 +219,7 @@ Deleting data is done by calling `deleteDataElement`. For example, we can delete
 # Delete by element reference
 @show deleteDataElement(synchronyConfig, robotId, sessionId, node, matrixElement)
 # Delete by string key
-@show deleteDataElement(synchronyConfig, robotId, sessionId, node, "Struct Entry")
+@show deleteDataElement(synchronyConfig, robotId, sessionId, node, "Struct_Entry")
 ```
 
 ## Discussion on Base64 Encoding and Decoding
