@@ -10,6 +10,12 @@ If you want to see the start of this at work, take a look at the [Brookstone Rov
 * Insert new loop closures into the graph together with the AprilTag ID's
 * Allow the solver to refine the graph given these new bearing+range measurements
 
+## Important Notes
+
+A few important notes before we continue:
+* Data keys can't contain spaces yet, this is a known bug and we're chasing up on it.
+* Anything with an image MIME type is automatically base64 decoded when a raw data call is made - this is so it can be shown in a browser with no decoding. We're looking at a better way to do this, more to follow.
+
 ## An Overview of Our Data Model
 
 Consider that a single pose can have multiple raw data elements attached to it - a camera image, a lidar scan, an audio snippet. It can also have processed data elements that may be include once that processing is completed.
@@ -50,9 +56,8 @@ if length(sessionNodes.nodes) == 0
   error("Please update the robotId and sessionId to give back some existing nodes, or run the hexagonal example to make a new dataset.")
 end
 
-# Get the first node - we don't need the complete node, just the summary - no getNode call needed.
+# Get the first node - we don't need the complete node, just the summary, so no getNode call needed.
 node = sessionNodes.nodes[1]
-
 ```
 
 ## Listing All Data Entries in a Pose or Factor
@@ -109,11 +114,10 @@ If we want to skip getting all the entry information again, we can just call `ge
 @show dataElemRaw = getRawDataElement(synchronyConfig, robotId, sessionId, node dataEntry)
 ```  
 
-In the Hexagonal example, we base64 encoded an image and attached it to every pose, so if you're using that data set, we can visualize this image with the following snippet:
+In the Hexagonal example, we base64 encoded an image and attached it to every pose. Note that at the moment if a big data element has an image MIME type, it's automatically base64 decoded whenever `gerRawDataElement` is called. If you're using that data set, we can visualize this image with the following snippet:
 
 ```julia
-# Decode the raw image into a Vector{Uint8}
-imgBytes = base64decode(dataElemRaw)
+imgBytes = dataElemRaw
 
 # Use the neat Images.jl, ImageView.jl, and ImageMagick.jl to show it
 # In case you haven't added them:
@@ -134,38 +138,8 @@ Now that we've discussed getting data, it's pretty easy covering how to add/upda
 ### Adding or Updating Data
 To add data, just make a `BigDataElementRequest` (or use a helper to make one), and submit it.
 
-#### A Matrix
-For example, we can construct a huge(ish) 2D matrix, encode it using JSON or ProtoBufs or JLD etc., and submit it:
-
-```julia
-using ProtoBuf
-myMat = rand(1000, 1000);
-dataBytes = JSON.json(myMat);
-enc = base64encode(dataBytes);
-# Make a Data request
-request = BigDataElementRequest("Matrix_Entry", "", "An example matrix", enc);
-# Attach it to the node
-addOrUpdateDataElement(synchronyConfig, robotId, sessionId, node, request);
-```
-
-Now we can retrieve it to see it again:
-```julia
-dataElemRaw = getRawDataElement(synchronyConfig, robotId, sessionId, node, "Matrix_Entry")
-myMatDeser = JSON.parse(dataElemRaw)
-```  
-
-There's also a simple helper method for this if you use `SynchronySDK.DataHelpers`:
-
-```julia
-using SynchronySDK.DataHelpers
-
-request = encodeBinaryData("Matrix_Entry", "An example matrix", dataBytes)
-# Attach it to the node
-@show matrixElement = addOrUpdateDataElement(synchronyConfig, robotId, sessionId, node, request)
-```
-
 #### Structures and JSON
-We can also encode structures as JSON, and send those (no base64 encoding required, and they display nicely in the UI):
+We can encode structures as JSON, and send those (it's JSON - no base64 encoding required and they display nicely in the UI):
 
 ```julia
 mutable struct TestStruct
@@ -193,6 +167,34 @@ request = encodeJsonData("Struct_Entry", "An example struct", testStruct)
 structElement = addOrUpdateDataElement(synchronyConfig, robotId, sessionId, node, request)
 ```
 
+#### A Matrix
+Similarly, we can construct a huge(ish) 2D matrix, encode it using JSON or ProtoBufs or JLD etc., and submit it. As above, let's encode it as JSON:
+
+```julia
+myMat = rand(100, 100);
+dataBytes = JSON.json(myMat);
+# Make a Data request
+request = BigDataElementRequest("Matrix_Entry", "", "An example matrix", dataBytes, "application/json");
+# Attach it to the node
+addOrUpdateDataElement(synchronyConfig, robotId, sessionId, node, request);
+```
+
+Now we can retrieve it to see it again:
+```julia
+dataElemRaw = getRawDataElement(synchronyConfig, robotId, sessionId, node, "Matrix_Entry");
+myMatDeser = JSON.parse(dataElemRaw);
+```  
+
+There's also a simple helper method for this if you use `SynchronySDK.DataHelpers`:
+
+```julia
+using SynchronySDK.DataHelpers
+
+request = encodeBinaryData("Matrix_Entry", "An example matrix", dataBytes)
+# Attach it to the node
+@show matrixElement = addOrUpdateDataElement(synchronyConfig, robotId, sessionId, node, request)
+```
+
 #### Images
 Images can be sent as their raw encoded bytes with an image MIME type - they will be then displayable in your browser. We've made a helper to load files, which works well here:
 
@@ -201,13 +203,14 @@ request = DataHelpers.readFileIntoDataRequest(joinpath(Pkg.dir("SynchronySDK"), 
 imgElement = addOrUpdateDataElement(synchronyConfig, robotId, sessionId, node, request)
 ```
 
-As above, let's use the Julia image libraries to show this:
+As above, blobs with the `image/*` datatypes are automatically base64 decoded before they are returned when using the `getRawDataElement` method. Let's retrieve it and use the Julia image libraries to show this:
 
 ```julia
 using Images, ImageView, ImageMagick
 
 # Read it, decode it, and make an image all in one line
-image = readblob(base64decode(getRawDataElement(synchronyConfig, robotId, sessionId, node, "TestImage")))
+# NOTE: Normally we have to do base64 decoding, but images are automatically decoded so that they can be shown in browser.
+image = readblob(getRawDataElement(synchronyConfig, robotId, sessionId, node, "TestImage"));
 # Show it
 imshow(image)
 ```
