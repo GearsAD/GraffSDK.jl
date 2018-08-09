@@ -135,10 +135,11 @@ Now that we've discussed getting data, it's pretty easy covering how to add/upda
 To add data, just make a `BigDataElementRequest` (or use a helper to make one), and submit it.
 
 #### A Matrix
-For example, we can construct a huge(ish) 2D matrix, encode it as JSON (or ProtoBuf or JLD or etc.), and submit it:
+For example, we can construct a huge(ish) 2D matrix, encode it using JSON or ProtoBufs or JLD etc., and submit it:
 
 ```julia
-myMat = rand(1000, 1000)
+using ProtoBuf
+myMat = rand(1000, 1000);
 dataBytes = JSON.json(myMat);
 enc = base64encode(dataBytes);
 # Make a Data request
@@ -181,7 +182,7 @@ request = BigDataElementRequest("Struct_Entry", "", "An example struct", enc)
 
 Now we can retrieve it to see it again:
 ```julia
-@show dataElemRaw = getRawDataElement(synchronyConfig, robotId, sessionId, node "Struct Entry")
+@show dataElemRaw = getRawDataElement(synchronyConfig, robotId, sessionId, node, "Struct_Entry")
 ```  
 
 Actually, we've ended up doing this so much we've made a simple helper method for it as well:
@@ -197,7 +198,7 @@ Images can be sent as their raw encoded bytes with an image MIME type - they wil
 
 ```julia
 request = DataHelpers.readFileIntoDataRequest(joinpath(Pkg.dir("SynchronySDK"), "examples", "pexels-photo-1004665.jpeg"), "TestImage", "Pretty neat public domain image", "image/jpeg");
-imgElement  addOrUpdateDataElement(synchronyConfig, robotId, sessionId, node, request)
+imgElement = addOrUpdateDataElement(synchronyConfig, robotId, sessionId, node, request)
 ```
 
 As above, let's use the Julia image libraries to show this:
