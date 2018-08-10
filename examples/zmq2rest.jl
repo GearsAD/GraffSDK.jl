@@ -4,7 +4,6 @@ using SynchronySDK
 using ZMQ, JSON
 
 
-
 # 1. Import the initialization code.
 include(joinpath(Pkg.dir("SynchronySDK"),"examples", "0_Initialization.jl"))
 
@@ -17,34 +16,38 @@ synchronyConfig = loadConfig(joinpath(ENV["HOME"],"Documents","synchronyConfig.j
 # 1b. Check the credentials and the service status
 @show serviceStatus = getStatus(synchronyConfig)
 
-
-
+# set up a context for zmq
 ctx=Context()
 s1=Socket(ctx, REP)
 
 ZMQ.bind(s1, "tcp://*:5555")
 
+try
+  while true
+    msg = ZMQ.recv(s1)
+    out=convert(IOStream, msg)
 
-msg = ZMQ.recv(s1)
-out=convert(IOStream, msg)
+    str = takebuf_string(out)
 
-str = takebuf_string(out)
+    dict = JSON.parse(str)
 
-dict = JSON.parse(str)
+    robotId = dict["robotId"]  # bad Sam
+    sessionId = dict["sessionId"]
 
-robotId = dict["robotId"]  # bad Sam
-sessionId = dict["sessionId"]
+    @show dict["type"]
+    @show cmd = getfield(SynchronySDK, Symbol(dict["type"]))
 
-@show dict["type"]
-@show cmd = getfield(SynchronySDK, Symbol(dict["type"]))
-
-args = (synchronyConfig,)
-@show cmd(args...)
-
-ZMQ.close(s1)
-# ZMQ.close(s2)
-ZMQ.close(ctx)
-
+    args = (synchronyConfig,)
+    @show cmd(args...)
+  end
+catch ex
+  warn("Something in the zmq/json/rest pipeline broke")
+  showerror(STDERR, ex, catch_backtrace())
+finally
+  ZMQ.close(s1)
+  # ZMQ.close(s2)
+  ZMQ.close(ctx)
+end
 
 
 
