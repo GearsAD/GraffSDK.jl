@@ -1,16 +1,14 @@
-# Tutorial on conventional 2D SLAM example
-# This tutorial shows how to use some of the commonly used factor types
-# This tutorial follows from the ContinuousScalar example from IncrementalInference
 
 using SynchronySDK
+using RoME, Distributions
 using ProgressMeter
 
 # 1. Import the initialization code.
 include(joinpath(Pkg.dir("SynchronySDK"),"examples", "0_Initialization.jl"))
 
 # 1a. Create a Configuration
-robotId = "Hexagonal"
-sessionId = "TestNewBearingRange9"
+robotId = "DynamicPoses"
+sessionId = "TestDynamicSession003"
 # synchronyConfig = loadConfig("synchronyConfig_Local.json")
 synchronyConfig = loadConfig(joinpath(ENV["HOME"],"Documents","synchronyConfig.json"))
 
@@ -41,10 +39,31 @@ if(SynchronySDK.isSessionExisting(synchronyConfig, robotId, sessionId))
 else
     # Create a new one
     println(" -- Session '$sessionId' doesn't exist for robot '$robotId', creating it...")
-    newSessionRequest = SessionDetailsRequest(sessionId, "A test dataset demonstrating data ingestion for a wheeled vehicle driving in a hexagon.", "Pose2")
+    newSessionRequest = SessionDetailsRequest(sessionId, "A test dataset demonstrating data ingestion for a wheeled vehicle driving in a hexagon.", "")
     session = addSession(synchronyConfig, robotId, newSessionRequest)
 end
 println(session)
+
+
+# start building the factor graph
+firstPose = VariableRequest("x0", "DynPose2(ut=0)", nothing, ["POSE"])
+response = addVariable(synchronyConfig, robotId, sessionId, firstPose)
+
+
+
+
+dp2_fact = DynPose2VelocityPrior(MvNormal(zeros(3),diagm([0.01;0.01;0.001].^2)),
+                                 MvNormal(zeros(2),diagm([0.3;0.01].^2)))
+# 2. Pack the prior (we can automate this step soon, but for now it's hand cranking)
+pd2_packed = convert(RoME.PackedDynPose2VelocityPrior, dp2_fact)
+
+# 3. Build the factor request (again, we can make this way easier and transparent once it's stable)
+fctBody = SynchronySDK.FactorBody(string(typeof(dp2_fact)), string(typeof(pd2_packed)), "JSON", JSON.json(pd2_packed))
+fctRequest = SynchronySDK.FactorRequest(["x0";], fctBody, false, false)
+resp = SynchronySDK.addFactor(synchronyConfig, robotId, sessionId, fctRequest)
+
+
+
 
 
 # 4. Drive around in a hexagon
@@ -61,40 +80,10 @@ println(" - Adding hexagonal driving pattern to session...")
     addOrUpdateDataElement(synchronyConfig, robotId, sessionId, addOdoResponse.variable, imgRequest)
 end
 
-# # 5. Now retrieve the dataset
-# println(" - Retrieving all data for session $sessionId...")
-@time nodes = getNodes(synchronyConfig, robotId, sessionId);
 
-# By NeoID
-node = getNode( synchronyConfig, robotId, sessionId, nodes.nodes[1].id);
-# By Synchrony label
-node = getNode( synchronyConfig, robotId, sessionId, nodes.nodes[1].label);
-
-# 6. Now lets add a couple landmarks
-# Ref: https://github.com/dehann/RoME.jl/blob/master/examples/Slam2dExample.jl#L35
-newLandmark = VariableRequest("l1", "Point2", nothing, ["LANDMARK"])
+newLandmark = VariableRequest("l1", "Pose2", nothing, ["LANDMARK"])
 response = addVariable(synchronyConfig, robotId, sessionId, newLandmark)
 newBearingRangeFactor = BearingRangeRequest("x1", "l1",
                           DistributionRequest("Normal", Float64[0; 0.1]),
                           DistributionRequest("Normal", Float64[20; 1.0]))
 addBearingRangeFactor(synchronyConfig, robotId, sessionId, newBearingRangeFactor)
-newBearingRangeFactor2 = BearingRangeRequest("x6", "l1",
-                           DistributionRequest("Normal", Float64[0; 0.1]),
-                           DistributionRequest("Normal", Float64[20; 1.0]))
-addBearingRangeFactor(synchronyConfig, robotId, sessionId, newBearingRangeFactor2)
-
-# 7. Now let's tell the solver to pick up on all the latest changes.
-# TODO: Allow for putReady to take in a list.
-putReady(synchronyConfig, robotId, sessionId, true)
-
-# 8. Let's check on the solver updates.
-sessionLatest = getSession(synchronyConfig, robotId, sessionId)
-while session.lastSolvedTimestamp != sessionLatest.lastSolvedTimestamp
-    println("Comparing latest session solver timestamp $(sessionLatest.lastSolvedTimestamp) with original $(session.lastSolvedTimestamp) - still the same so sleeping for 2 seconds")
-    sleep(2)
-    sessionLatest = getSession(synchronyConfig, robotId, sessionId)
-end
-
-# 9. Great, solver has updated it! We can render this.
-# Using the bigdata key 'TestImage' as the camera image
-visualizeSession(synchronyConfig, robotId, sessionId, "TestImage")

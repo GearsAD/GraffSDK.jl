@@ -124,7 +124,7 @@ struct FactorBody
     factorType::String
     packedFactorType::String
     encoding::String
-    body::String
+    body::String  # TODO -- what is the motivation for json in json
 end
 
 struct FactorRequest

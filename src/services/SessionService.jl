@@ -131,7 +131,7 @@ $(SIGNATURES)
 Set the ready status for a session.
 """
 function putReady(config::SynchronyConfig, robotId::String, sessionId::String, isReady::Bool)::Void
-    url = "$(config.apiEndpoint)/$(format(sessionReadyEndpoint, config.userId, robotId, sessionId, isReady))"
+    @show url = "$(config.apiEndpoint)/$(format(sessionReadyEndpoint, config.userId, robotId, sessionId, isReady))"
     response = @mock _sendRestRequest(config, HTTP.put, url, data="")
     if(response.status != 200)
         error("Error updating the ready status of the session, received $(response.status) with body '$(String(response.body))'.")
@@ -187,8 +187,9 @@ Create a session in Synchrony and associate it with the given robot+user.
 Return: Returns the added odometry information.
 """
 function addOdometryMeasurement(config::SynchronyConfig, robotId::String, sessionId::String, addOdoRequest::AddOdometryRequest)::AddOdometryResponse
-    url = "$(config.apiEndpoint)/$(format(odoEndpoint, config.userId, robotId, sessionId))"
-    response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(addOdoRequest))
+    @show url = "$(config.apiEndpoint)/$(format(odoEndpoint, config.userId, robotId, sessionId))"
+    @show showme = JSON.json(addOdoRequest)
+    response = @mock _sendRestRequest(config, HTTP.post, url, data=showme)
     if(response.status != 200)
         error("Error creating odometry, received $(response.status) with body '$(String(response.body))'.")
     end
@@ -206,6 +207,7 @@ function getDataEntries(config::SynchronyConfig, robotId::String, sessionId::Str
     if(response.status != 200)
         error("Error getting node data entries, received $(response.status) with body '$(String(response.body))'.")
     else
+        @show String(response.body)
         bigDataRaw = JSON.parse(String(response.body))
         datas = Vector{BigDataEntryResponse}()
         for bd in bigDataRaw
@@ -286,7 +288,7 @@ Add or update a data element associated with a node. Will check if the key exist
 Return: Nothing if succeed, error if failed.
 """
 function addOrUpdateDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeId::Int, dataElement::Union{BigDataElementRequest, BigDataElementResponse})::Void
-    dataEntries = getDataEntries(config, robotId, sessionId, nodeId)
+    @show dataEntries = getDataEntries(config, robotId, sessionId, nodeId)
     if count(entry -> entry.id == dataElement.id, dataEntries) == 0
         println("Existence test for ID '$(dataElement.id)' failed - Adding it!")
         return addDataElement(config, robotId, sessionId, nodeId, dataElement)

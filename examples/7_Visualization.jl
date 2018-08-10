@@ -6,13 +6,13 @@ cd(joinpath(Pkg.dir("SynchronySDK"),"examples"))
 include("0_Initialization.jl")
 
 # Create a Configuration
-robotId = "NewRobot"
-sessionId = "HexagonalVisualization"
+robotId = "PythonBot"
+sessionId = "PythonSessionNick"
 # synchronyConfig = loadConfig("synchronyConfig_NaviEast_Internal.json")
-synchronyConfig = loadConfig("synchronyConfig_NaviEast_DEV.json")
+synchronyConfig = loadConfig("/home/dehann/Documents/synchronyConfig.json")
 
 # 2. Confirm that the robot already exists
-println(" - Retrieving robot '$robotId'...")
+println(" - Retrieving robot '$robotId'..."
 if !SynchronySDK.isRobotExisting(synchronyConfig, robotId)
     error(" -- Robot '$robotId' doesn't exist...")
 end
