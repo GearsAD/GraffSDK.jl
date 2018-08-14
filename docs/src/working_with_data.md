@@ -183,9 +183,20 @@ Now we can retrieve it to see it again:
 ```julia
 dataElemRaw = getRawDataElement(synchronyConfig, robotId, sessionId, node, "Matrix_Entry");
 myMatDeser = JSON.parse(dataElemRaw);
+# JSON matrices as deserialized as Put it back into a 2D matrix #TODO - There's probably an easier way to do this.
+els = myMatDeser[1];
+for i in 2:length(myMatDeser)
+  append!(els, myMatDeser[i])
+end
+myMatDeser = reshape(els, (100,100));
+myMatDeser
 ```  
 
-There's also a simple helper method for this if you use `SynchronySDK.DataHelpers`:
+If we want to save it in a more compact, Julia-specific format, here is how we can use JLD (a Julia-specific HFDS format) and save it more compactly:
+
+#TODO...
+
+Either way, if you want to save it quickly using Base64 binary encoding, there's a simple helper method for this in `SynchronySDK.DataHelpers`:
 
 ```julia
 using SynchronySDK.DataHelpers
