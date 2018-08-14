@@ -13,6 +13,7 @@ makedocs(
         "User Service" => "ref_user.md",
         "Robot Service" => "ref_robot.md",
         "Session Service" => "ref_session.md",
+        "Working with Data" => "working_with_data.md",
         "Reference" => "reference.md"
     ]
     # html_prettyurls = !("local" in ARGS),
