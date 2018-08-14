@@ -3,6 +3,6 @@
 *.jl.mem
 deps/deps.jl
 examples/synchronyConfig*.json
-doc/build
+docs/build
 
 src/test.jl

@@ -47,12 +47,12 @@ facts("Sessions API") do
             # Act & Assert
             callResponse = deleteSession(mockConfig, "", "")
         end
-        # context("addSession") do
-        #     # Act
-        #     callResponse = deleteRobot(mockConfig, "", mockRequest)
-        #     # Assert
-        #     @fact callResponse.name --> "TestSession"
-        # end
+        context("addSession") do
+            # Act
+            callResponse = addSession(mockConfig, "", mockRequest)
+            # Assert
+            @fact callResponse.id --> "TestSession"
+        end
     end
 
     # apply(sendRequestMock) do
