@@ -9,6 +9,8 @@ struct SynchronyConfig
     userId::String
     robotId::String
     sessionId::String
+    SynchronyConfig(apiEndpoint::String, accessKey::String, secretKey::String, region::String, userId::String, robotId::String, sessionId::String) = new(apiEndpoint, accessKey, secretKey, region, userId, robotId, sessionId)
+    SynchronyConfig(apiEndpoint::String, accessKey::String, secretKey::String, region::String, userId::String) = new(apiEndpoint, accessKey, secretKey, region, userId, "", "")
 end
 
 """

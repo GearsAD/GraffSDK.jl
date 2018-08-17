@@ -141,3 +141,16 @@ function visualizeSession(config::SynchronyConfig, robotId::String, sessionId::S
         end
     end
 end
+
+"""
+$(SIGNATURES)
+Visualize a session using MeshCat.
+Return: Void.
+"""
+function visualizeSession(config::SynchronyConfig, bigDataImageKey::String = "", pointCloudKey::String = "")::Void
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    visualizeSession(config, config.robotId, config.sessionId, bigDataImageKey, pointCloudKey)
+end

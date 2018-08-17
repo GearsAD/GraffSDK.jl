@@ -3,5 +3,7 @@
   "accessKey":"",
   "secretKey":"",
   "region":"",
-  "userId":"NewUser"
+  "userId":"NewUser",
+  "robotId":"",
+  "sessionId":""
 }

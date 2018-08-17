@@ -36,6 +36,10 @@ $(SIGNATURES)
 Return: Returns true if the robot in the config exists already.
 """
 function isRobotExisting(config::SynchronyConfig)::Bool
+    if config.robotId == ""
+        error("Your config doesn't have a robot specified, please attach your config to a valid robot by setting the robotId field. Robot = $(config.robotId)")
+    end
+
     return isRobotExisting(config, config.robotId)
 end
 
@@ -60,6 +64,10 @@ Get a specific robot given a user ID and robot ID. Will retrieve config.robotId 
 Return: The robot for the provided user ID and robot ID.
 """
 function getRobot(config::SynchronyConfig)::RobotResponse
+    if config.robotId == ""
+        error("Your config doesn't have a robot specified, please attach your config to a valid robot by setting the robotId field. Robot = $(config.robotId)")
+    end
+
     return getRobot(config, config.robotId)
 end
 
@@ -125,6 +133,10 @@ Will retrieve the robot configuration (user settings) for the default robot ID.
 Return: The robot config for the provided user ID and robot ID.
 """
 function getRobotConfig(config::SynchronyConfig)::Dict{Any, Any}
+    if config.robotId == ""
+        error("Your config doesn't have a robot specified, please attach your config to a valid robot by setting the robotId field. Robot = $(config.robotId)")
+    end
+
     return getRobotConfig(config, config.robotId)
 end
 
@@ -148,5 +160,9 @@ Update a robot configuration.
 Return: The updated robot configuration from the service.
 """
 function updateRobotConfig(config::SynchronyConfig, robotConfig::Dict{String, String})::Dict{Any, Any}
+    if config.robotId == ""
+        error("Your config doesn't have a robot specified, please attach your config to a valid robot by setting the robotId field. Robot = $(config.robotId)")
+    end
+
     return updateRobotConfig(config, config.robotId, robotConfig)
 end
