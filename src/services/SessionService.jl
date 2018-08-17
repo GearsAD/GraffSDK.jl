@@ -313,7 +313,10 @@ $(SIGNATURES)
 Get data entries associated with a node.
 Return: Summary of all data associated with a node.
 """
-function getDataEntries(config::SynchronyConfig, robotId::String, sessionId::String, nodeId::Int)::Vector{BigDataEntryResponse}
+function getDataEntries(config::SynchronyConfig, robotId::String, sessionId::String, nodeOrId::Union{Int, NodeResponse, NodeDetailsResponse})::Vector{BigDataEntryResponse}
+    # Get the node ID.
+    nodeId = typeof(nodeOrId) == Int ? nodeOrId : nodeOrId.id
+
     url = "$(config.apiEndpoint)/$(format(bigDataEndpoint, config.userId, robotId, sessionId, nodeId))"
     response = @mock _sendRestRequest(config, HTTP.get, url)
     if(response.status != 200)
@@ -322,7 +325,9 @@ function getDataEntries(config::SynchronyConfig, robotId::String, sessionId::Str
         bigDataRaw = JSON.parse(String(response.body))
         datas = Vector{BigDataEntryResponse}()
         for bd in bigDataRaw
-            push!(datas, _unmarshallWithLinks(JSON.json(bd), BigDataEntryResponse))
+            elem = _unmarshallWithLinks(JSON.json(bd), BigDataEntryResponse)
+            elem.nodeId = nodeId
+            push!(datas, elem)
         end
         return datas
     end
@@ -333,13 +338,19 @@ $(SIGNATURES)
 Get data elment associated with a node.
 Return: Full data element associated with the specified node.
 """
-function getDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeId::Int, bigDataKey::String)::BigDataElementResponse
+function getDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeOrId::Union{Int, NodeResponse, NodeDetailsResponse}, elemOrDataId::Union{String, BigDataElementRequest, BigDataElementResponse, BigDataEntryResponse})::BigDataElementResponse
+    # Get the node ID.
+    nodeId = typeof(nodeOrId) == Int ? nodeOrId : nodeOrId.id
+    bigDataKey = typeof(elemOrDataId) == String ? elemOrDataId : elemOrDataId.id
+
     url = "$(config.apiEndpoint)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataKey))"
     response = @mock _sendRestRequest(config, HTTP.get, url)
     if(response.status != 200)
         error("Error getting node data entries, received $(response.status) with body '$(String(response.body))'.")
     end
-    return _unmarshallWithLinks(String(response.body), BigDataElementResponse)
+    elem = _unmarshallWithLinks(String(response.body), BigDataElementResponse)
+    elem.nodeId = nodeId
+    return elem
 end
 
 """
@@ -347,7 +358,11 @@ $(SIGNATURES)
 Get data elment associated with a node.
 Return: Full data element associated with the specified node.
 """
-function getRawDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeId::Int, bigDataKey::String)::String
+function getRawDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeOrId::Union{Int, NodeResponse, NodeDetailsResponse}, elemOrDataId::Union{String, BigDataElementRequest, BigDataElementResponse, BigDataEntryResponse})::String
+    # Get the node ID.
+    nodeId = typeof(nodeOrId) == Int ? nodeOrId : nodeOrId.id
+    bigDataKey = typeof(elemOrDataId) == String ? elemOrDataId : elemOrDataId.id
+
     url = "$(config.apiEndpoint)/$(format(bigDataRawElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataKey))"
     response = @mock _sendRestRequest(config, HTTP.get, url)
     if(response.status != 200)
@@ -361,7 +376,10 @@ $(SIGNATURES)
 Add a data element associated with a node.
 Return: Nothing if succeed, error if failed.
 """
-function addDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeId::Int, bigDataElement::BigDataElementRequest)::Void
+function addDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeOrId::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataElement::BigDataElementRequest)::Void
+    # Get the node ID.
+    nodeId = typeof(nodeOrId) == Int ? nodeOrId : nodeOrId.id
+
     url = "$(config.apiEndpoint)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataElement.id))"
     response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(bigDataElement))
     if(response.status != 200)
@@ -375,7 +393,10 @@ $(SIGNATURES)
 Update a data element associated with a node.
 Return: Nothing if succeed, error if failed.
 """
-function updateDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeId::Int, bigDataElement::Union{BigDataElementRequest, BigDataElementResponse})::Void
+function updateDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeOrId::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataElement::Union{BigDataElementRequest, BigDataElementResponse})::Void
+    # Get the node ID.
+    nodeId = typeof(nodeOrId) == Int ? nodeOrId : nodeOrId.id
+
     url = "$(config.apiEndpoint)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataElement.id))"
     response = @mock _sendRestRequest(config, HTTP.put, url, data=JSON.json(bigDataElement))
     if(response.status != 200)
@@ -389,22 +410,15 @@ $(SIGNATURES)
 Add or update a data element associated with a node. Will check if the key exists, if so it updates, otherwise it adds.
 Return: Nothing if succeed, error if failed.
 """
-function addOrUpdateDataElement(config::SynchronyConfig, robotId::String, sessionId::String, node::Union{NodeResponse, NodeDetailsResponse}, dataElement::Union{BigDataElementRequest, BigDataElementResponse})::Void
-    return addOrUpdateDataElement(config, robotId, sessionId, node.id, dataElement::Union{BigDataElementRequest, BigDataElementResponse})
-end
+function addOrUpdateDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeOrId::Union{Int, NodeResponse, NodeDetailsResponse}, dataElement::Union{BigDataElementRequest, BigDataElementResponse})::Void
+    nodeId = typeof(nodeOrId) == Int ? nodeOrId : nodeOrId.id
 
-"""
-$(SIGNATURES)
-Add or update a data element associated with a node. Will check if the key exists, if so it updates, otherwise it adds.
-Return: Nothing if succeed, error if failed.
-"""
-function addOrUpdateDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeId::Int, dataElement::Union{BigDataElementRequest, BigDataElementResponse})::Void
     dataEntries = getDataEntries(config, robotId, sessionId, nodeId)
     if count(entry -> entry.id == dataElement.id, dataEntries) == 0
-        println("Existence test for ID '$(dataElement.id)' failed - Adding it!")
+        println("lement '$(dataElement.id)' doesn't exist - Adding it!")
         return addDataElement(config, robotId, sessionId, nodeId, dataElement)
     else
-        println("Existence test for ID '$(dataElement.id)' passed - Updating it!")
+        println("Element ID '$(dataElement.id)' exists - Updating it!")
         updateDataElement(config, robotId, sessionId, nodeId, dataElement)
     end
     return nothing
@@ -415,8 +429,12 @@ $(SIGNATURES)
 Delete a data element associated with a node.
 Return: Nothing if succeed, error if failed.
 """
-function deleteDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeId::Int, dataId::String)::Void
-    url = "$(config.apiEndpoint)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, dataId))"
+function deleteDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeOrId::Union{Int, NodeResponse, NodeDetailsResponse}, elemOrDataId::Union{String, BigDataElementRequest, BigDataElementResponse, BigDataEntryResponse})::Void
+    # Get the node ID.
+    nodeId = typeof(nodeOrId) == Int ? nodeOrId : nodeOrId.id
+    bigDataKey = typeof(elemOrDataId) == String ? elemOrDataId : elemOrDataId.id
+
+    url = "$(config.apiEndpoint)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataKey))"
     response = @mock _sendRestRequest(config, HTTP.delete, url)
     if(response.status != 200)
         error("Error deleting data element '$dataId', received $(response.status) with body '$(String(response.body))'.")

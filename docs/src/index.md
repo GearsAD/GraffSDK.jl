@@ -14,6 +14,7 @@ Pkg.build("SynchronySDK")
 Pages = [
     "index.md"
     "getting_started.md"
+    "working_with_data.md"
     "ref_user.md"
     "ref_robot.md"
     "ref_session.md"

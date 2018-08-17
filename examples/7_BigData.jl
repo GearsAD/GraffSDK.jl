@@ -60,7 +60,7 @@ println()
 
 println("Let's do something more exciting - upload an image against a node...")
 cd(joinpath(Pkg.dir("SynchronySDK"),"examples"))
-imgRequest = DataHelpers.readImageIntoDataRequest("pexels-photo-1004665.jpeg", "TestImage", "Pretty neat public domain image", "image/jpeg");
+imgRequest = DataHelpers.readFileIntoDataRequest("pexels-photo-1004665.jpeg", "TestImage", "Pretty neat public domain image", "image/jpeg");
 addOrUpdateDataElement(synchronyConfig, robotId, sessionId, exampleNode.id, imgRequest)
 println()
 

@@ -10,7 +10,7 @@ include("0_Initialization.jl")
 
 # 1a. Create a Configuration
 robotId = "Hexagonal"
-sessionId = "HexDemo2"
+sessionId = "HexDemo"
 # synchronyConfig = loadConfig("synchronyConfig_Local.json")
 synchronyConfig = loadConfig("synchronyConfig.json")
 
@@ -48,7 +48,7 @@ println(session)
 
 
 # 4. Drive around in a hexagon
-imgRequest = DataHelpers.readImageIntoDataRequest("pexels-photo-1004665.jpeg", "TestImage", "Pretty neat public domain image", "image/jpeg");
+imgRequest = DataHelpers.readFileIntoDataRequest("pexels-photo-1004665.jpeg", "TestImage", "Pretty neat public domain image", "image/jpeg");
 println(" - Adding hexagonal driving pattern to session...")
 @showprogress for i in 1:6
     deltaMeasurement = [10.0;0;pi/3]
@@ -78,7 +78,7 @@ newBearingRangeFactor = BearingRangeRequest("x1", "l1",
                           DistributionRequest("Normal", Float64[0; 0.1]),
                           DistributionRequest("Normal", Float64[20; 1.0]))
 addBearingRangeFactor(synchronyConfig, robotId, sessionId, newBearingRangeFactor)
-newBearingRangeFactor2 = BearingRangeRequest("x7", "l1",
+newBearingRangeFactor2 = BearingRangeRequest("x6", "l1",
                            DistributionRequest("Normal", Float64[0; 0.1]),
                            DistributionRequest("Normal", Float64[20; 1.0]))
 addBearingRangeFactor(synchronyConfig, robotId, sessionId, newBearingRangeFactor2)
