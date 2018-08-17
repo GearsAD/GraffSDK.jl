@@ -36,11 +36,28 @@ end
 
 """
 $(SIGNATURES)
+Gets all sessions for the current robot.
+Return: A vector of sessions for the current robot.
+"""
+function getSessions(config::SynchronyConfig)::SessionsResponse
+    return getSessions(config, config.robotId)
+end
+
+"""
+$(SIGNATURES)
 Return: Returns true if the session exists already.
 """
 function isSessionExisting(config::SynchronyConfig, robotId::String, sessionId::String)::Bool
     sessions = getSessions(config, robotId)
     return count(sess -> lowercase(strip(sess.id)) == lowercase(strip(sessionId)), sessions.sessions) > 0
+end
+
+"""
+$(SIGNATURES)
+Return: Returns true if the session exists already.
+"""
+function isSessionExisting(config::SynchronyConfig)::Bool
+    return isSessionExisting(config, config.robotId, config.sessionId)
 end
 
 """
@@ -59,6 +76,15 @@ end
 
 """
 $(SIGNATURES)
+Get a specific session given a user ID, robot ID, and session ID.
+Return: The session details for the provided user ID, robot ID, and session ID.
+"""
+function getSession(config::SynchronyConfig)::SessionDetailsResponse
+    return getSession(config, config.robotId, config.sessionId)
+end
+
+"""
+$(SIGNATURES)
 Delete a specific session given a user ID, robot ID, and session ID.
 Return: Nothing if success, error if failed.
 """
@@ -73,6 +99,16 @@ end
 
 """
 $(SIGNATURES)
+Delete a specific session given a user ID, robot ID, and session ID.
+Return: Nothing if success, error if failed.
+"""
+function deleteSession(config::SynchronyConfig, robotId::String, sessionId::String)::Void
+    return deleteSession(config, robotId, sessionId)
+end
+
+
+"""
+$(SIGNATURES)
 Create a session in Synchrony and associate it with the given robot+user.
 Return: Returns the created session.
 """
@@ -83,6 +119,15 @@ function addSession(config::SynchronyConfig, robotId::String, session::SessionDe
         error("Error creating session, received $(response.status) with body '$(String(response.body))'.")
     end
     return _unmarshallWithLinks(String(response.body), SessionDetailsResponse)
+end
+
+"""
+$(SIGNATURES)
+Create a session in Synchrony and associate it with the given robot+user.
+Return: Returns the created session.
+"""
+function addSession(config::SynchronyConfig, session::SessionDetailsRequest)::SessionDetailsResponse
+    return addSession(config, config.robotId, session)
 end
 
 """
@@ -108,6 +153,16 @@ end
 
 """
 $(SIGNATURES)
+Gets all nodes for a given session.
+Return: A vector of nodes for a given robot.
+"""
+function getNodes(config::SynchronyConfig)::NodesResponse
+    return getNodes(config, config.robotId, config.sessionId)
+end
+
+
+"""
+$(SIGNATURES)
 Gets a node's details by either its ID or name.
 Return: A node's details.
 """
@@ -128,6 +183,15 @@ end
 
 """
 $(SIGNATURES)
+Gets a node's details by either its ID or name.
+Return: A node's details.
+"""
+function getNode(config::SynchronyConfig, nodeIdOrLabel::Union{Int, String})::NodeDetailsResponse
+    return getNode(config, config.robotId, config.sessionId, nodeIdOrLabel)
+end
+
+"""
+$(SIGNATURES)
 Set the ready status for a session.
 """
 function putReady(config::SynchronyConfig, robotId::String, sessionId::String, isReady::Bool)::Void
@@ -137,6 +201,14 @@ function putReady(config::SynchronyConfig, robotId::String, sessionId::String, i
         error("Error updating the ready status of the session, received $(response.status) with body '$(String(response.body))'.")
     end
     return nothing
+end
+
+"""
+$(SIGNATURES)
+Set the ready status for a session.
+"""
+function putReady(config::SynchronyConfig, isReady::Bool)::Void
+    return putReady(config, config.robotId, config.sessionId, isReady)
 end
 
 """
@@ -155,6 +227,15 @@ end
 
 """
 $(SIGNATURES)
+Create a variable in Synchrony.
+Return: Returns the ID+label of the created variable.
+"""
+function addVariable(config::SynchronyConfig, variableRequest::VariableRequest)::NodeResponse
+    return addVariable(config, config.robotId, config.sessionId,variableRequest)
+end
+
+"""
+$(SIGNATURES)
 Create a factor in Synchrony.
 Return: Returns the ID+label of the created factor.
 """
@@ -165,6 +246,15 @@ function addFactor(config::SynchronyConfig, robotId::String, sessionId::String, 
         error("Error creating factor, received $(response.status) with body '$(String(response.body))'.")
     end
     return _unmarshallWithLinks(String(response.body), NodeResponse)
+end
+
+"""
+$(SIGNATURES)
+Create a factor in Synchrony.
+Return: Returns the ID+label of the created factor.
+"""
+function addFactor(config::SynchronyConfig, factorRequest::FactorRequest)::NodeResponse
+    return addFactor(config, config.robotId, config.sessionId, FactorRequest)
 end
 
 """
@@ -183,10 +273,33 @@ end
 
 """
 $(SIGNATURES)
+Create a variable in Synchrony and associate it with the given robot+user.
+Return: Returns ID+label of the created factor.
+"""
+function addBearingRangeFactor(config::SynchronyConfig, bearingRangeRequest::BearingRangeRequest)::NodeResponse
+    return addBearingRangeFactor(config, config.robotId, config.sessionId, bearingRangeRequest)
+end
+
+"""
+$(SIGNATURES)
 Create a session in Synchrony and associate it with the given robot+user.
 Return: Returns the added odometry information.
 """
 function addOdometryMeasurement(config::SynchronyConfig, robotId::String, sessionId::String, addOdoRequest::AddOdometryRequest)::AddOdometryResponse
+    url = "$(config.apiEndpoint)/$(format(odoEndpoint, config.userId, robotId, sessionId))"
+    response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(addOdoRequest))
+    if(response.status != 200)
+        error("Error creating odometry, received $(response.status) with body '$(String(response.body))'.")
+    end
+    return Unmarshal.unmarshal(AddOdometryResponse, JSON.parse(String(response.body)))
+end
+
+"""
+$(SIGNATURES)
+Create a session in Synchrony and associate it with the given robot+user.
+Return: Returns the added odometry information.
+"""
+function addOdometryMeasurement(config::SynchronyConfig, addOdoRequest::AddOdometryRequest)::AddOdometryResponse
     url = "$(config.apiEndpoint)/$(format(odoEndpoint, config.userId, robotId, sessionId))"
     response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(addOdoRequest))
     if(response.status != 200)

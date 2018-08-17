@@ -33,6 +33,15 @@ end
 
 """
 $(SIGNATURES)
+Return: Returns true if the robot in the config exists already.
+"""
+function isRobotExisting(config::SynchronyConfig)::Bool
+    return isRobotExisting(config, config.robotId)
+end
+
+
+"""
+$(SIGNATURES)
 Get a specific robot given a user ID and robot ID. Will retrieve config.robotId by default.
 Return: The robot for the provided user ID and robot ID.
 """
@@ -43,6 +52,15 @@ function getRobot(config::SynchronyConfig, robotId::String)::RobotResponse
         error("Error getting robot, received $(response.status) with body '$(response.body)'.")
     end
     return _unmarshallWithLinks(String(response.body), RobotResponse)
+end
+
+"""
+$(SIGNATURES)
+Get a specific robot given a user ID and robot ID. Will retrieve config.robotId by default.
+Return: The robot for the provided user ID and robot ID.
+"""
+function getRobot(config::SynchronyConfig)::RobotResponse
+    return getRobot(config, config.robotId)
 end
 
 """
@@ -103,6 +121,15 @@ end
 
 """
 $(SIGNATURES)
+Will retrieve the robot configuration (user settings) for the default robot ID.
+Return: The robot config for the provided user ID and robot ID.
+"""
+function getRobotConfig(config::SynchronyConfig)::Dict{Any, Any}
+    return getRobotConfig(config, config.robotId)
+end
+
+"""
+$(SIGNATURES)
 Update a robot configuration.
 Return: The updated robot configuration from the service.
 """
@@ -113,4 +140,13 @@ function updateRobotConfig(config::SynchronyConfig, robotId::String, robotConfig
         error("Error updating robot config, received $(response.status) with body '$(String(response.body))'.")
     end
     return JSON.parse(String(response.body))
+end
+
+"""
+$(SIGNATURES)
+Update a robot configuration.
+Return: The updated robot configuration from the service.
+"""
+function updateRobotConfig(config::SynchronyConfig, robotConfig::Dict{String, String})::Dict{Any, Any}
+    return updateRobotConfig(config, config.robotId, robotConfig)
 end

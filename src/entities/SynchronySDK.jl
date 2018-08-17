@@ -7,6 +7,8 @@ struct SynchronyConfig
     secretKey::String
     region::String
     userId::String
+    robotId::String
+    sessionId::String
 end
 
 """
