@@ -16,6 +16,10 @@ getRobot
 addRobot
 updateRobot
 deleteRobot
+```
+
+## Robot Configuration Functions
+```@docs
 getRobotConfig
 updateRobotConfig
 ```

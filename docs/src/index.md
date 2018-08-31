@@ -1,6 +1,9 @@
+![GraffSDK.jl Logo](graff_logo_white.png)
+
 # GraffSDK.jl Documentation
 
-This package is an SDK for the Project Synchrony API.
+
+This package is an SDK for SlamInDb/Graff.
 
 ## Installation
 This package is not yet registered with JuliaLang/METADATA.jl, but can be easily installed in Julia 0.6 with:
