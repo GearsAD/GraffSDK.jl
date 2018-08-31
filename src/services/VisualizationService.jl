@@ -1,4 +1,4 @@
-using SynchronySDK
+using GraffSDK
 using MeshCat
 using CoordinateTransformations
 import GeometryTypes: HyperRectangle, Vec, Point, HomogenousMesh, SignedDistanceField, Point3f0
