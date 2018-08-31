@@ -1,9 +1,9 @@
-using Documenter, SynchronySDK
+using Documenter, GraffSDK
 
 makedocs(
-    modules = [SynchronySDK],
+    modules = [GraffSDK],
     format = :html,
-    sitename = "Synchrony SDK",
+    sitename = "Graff SDK",
     pages = Any[
         "Home" => "index.md",
         "Getting Started" => "getting_started.md",
@@ -21,7 +21,7 @@ makedocs(
 
 
 deploydocs(
-    repo   = "github.com/GearsAD/SynchronySDK.jl.git",
+    repo   = "github.com/GearsAD/GraffSDK.jl.git",
     target = "build",
     deps   = Deps.pip("mkdocs", "python-markdown-math"),
     make   = nothing,

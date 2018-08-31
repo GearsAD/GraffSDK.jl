@@ -1,12 +1,12 @@
-# Navi SDK
+# Graff SDK Examples
 
-This package is an SDK for the Navi API.
+This package is an SDK for SlamInDb/Graff SDK.
 
 ## Installation
 This package is not yet registered with JuliaLang/METADATA.jl, but can be easily installed in Julia 0.6 with:
 ```julia
-Pkg.clone("https://github.com/GearsAD/NaviSDK.jl.git")
-Pkg.build("NaviSDK")
+Pkg.clone("https://github.com/GearsAD/GraffSDK.jl.git")
+Pkg.build("GraffSDK"
 ```
 
 ## Manual Outline

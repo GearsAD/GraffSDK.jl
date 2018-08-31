@@ -1,4 +1,4 @@
-# Getting Started with Synchrony SDK
+# Getting Started with Graff SDK
 
 This documents the steps for using the SDK, as shown in the examples folder.
 
@@ -15,7 +15,7 @@ The first step is to create a new script file and import the base libraries:
 
 ```julia
 using Base
-using SynchronySDK
+using GraffSDK
 ```
 
 ## Loading a Synchrony Configuration
