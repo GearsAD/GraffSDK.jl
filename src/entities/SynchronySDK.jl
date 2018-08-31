@@ -1,7 +1,7 @@
 """
 Configuration structure for Synchrony, it defines the Synchrony Web API endpoint and port.
 """
-struct SynchronyConfig
+mutable struct SynchronyConfig
     apiEndpoint::String
     accessKey::String
     secretKey::String

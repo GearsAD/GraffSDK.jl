@@ -1,6 +1,8 @@
 mockConfig = SynchronyConfig("http://mock", "9000", "", "", "")
+mockConfig.sessionId = "TestSession"
+mockConfig.robotId = "TestRobot"
 
-facts("Sessions API") do
+facts("Robot API") do
     # Arrange
     mockResponse = HTTP.Response(200, "{\"id\": \"TestSession\",\"description\": \"\",\"robotId\": \"\",\"userId\": \"\",\"initialPoseType\": \"\",\"nodeCount\": 0,\"shouldInitialize\": \"true\",\"createdTimestamp\": \"\",\"lastUpdatedTimestamp\": \"\", \"lastSolvedTimestamp\": \"\", \"isSolverEnabled\": 1, \"links\": {\"self\": \"https://api.synchronysandbox.com/mocking\"}}")
     mockListResponse = HTTP.Response(200, "{\"sessions\": [{\"id\": \"\", \"links\": {\"self\": \"https://api.synchronysandbox.com/mocking\"}}], \"links\": {\"self\": \"https://api.synchronysandbox.com/mocking\"}}")
@@ -44,64 +46,58 @@ facts("Sessions API") do
         #     @fact callResponse.name --> "TestRobot"
         # end
         context("deleteSession") do
-            # Act
+            # Act & Assert
             callResponse = deleteSession(mockConfig, "", "")
-            # Assert
-            @fact callResponse.name --> "TestSession"
         end
         context("addSession") do
             # Act
-            callResponse = deleteRobot(mockConfig, "", mockRequest)
+            callResponse = addSession(mockConfig, "", mockRequest)
             # Assert
-            @fact callResponse.name --> "TestSession"
+            @fact callResponse.id --> "TestSession"
         end
     end
 
-    apply(sendRequestMock) do
-        context("getNodes") do
-            # Act
-            callResponse = getRobotConfig(mockConfig, "GearsAD")
-            # Assert
-            @fact callResponse["name"] --> "TestRobot"
-        end
-        context("updateRobotConfig") do
-            # Act
-            callResponse = updateRobotConfig(mockConfig, "GearsAD", robotConfig)
-            # Assert
-            @fact callResponse["name"] --> "TestRobot"
-        end
-
-    end
+    # apply(sendRequestMock) do
+    #     context("getNodes") do
+    #         # Act
+    #         callResponse = getRobotConfig(mockConfig, "GearsAD")
+    #         # Assert
+    #         @fact callResponse["name"] --> "TestRobot"
+    #     end
+    #     context("updateRobotConfig") do
+    #         # Act
+    #         callResponse = updateRobotConfig(mockConfig, "GearsAD", robotConfig)
+    #         # Assert
+    #         @fact callResponse["name"] --> "TestRobot"
+    #     end
+    #
+    # end
 
     # Failure mode
-    apply(sendRequestErrorMock) do
-        context("getRobots - Failure Mode") do
-            # Act & Assert
-            @fact_throws ErrorException getRobots(mockConfig)
-        end
-        context("isRoboyExisting - Failure Mode") do
-            # Act & Assert
-            @fact_throws ErrorException isRobotExisting(mockConfig, "TestRobot")
-        end
-        context("getRobot - Failure Mode") do
-            # Act & Assert
-            @fact_throws ErrorException getRobot(mockConfig, "TestRobot")
-        end
-        context("addRobot - Failure Mode") do
-            # Act & Assert
-            @fact_throws ErrorException addRobot(mockConfig, mockRequest)
-        end
-        context("deleteRobot - Failure Mode") do
-            # Act & Assert
-            @fact_throws ErrorException deleteRobot(mockConfig, "GearsAD")
-        end
-        context("getRobotConfig - Failure Mode") do
-            # Act & Assert
-            @fact_throws ErrorException getRobotConfig(mockConfig, "GearsAD")
-        end
-        context("updateRobotConfig - Failure Mode") do
-            # Act & Assert
-            @fact_throws ErrorException updateRobotConfig(mockConfig, "GearsAD", robotConfig)
-        end
-    end
+    # apply(sendRequestErrorMock) do
+    #     context("getRobots - Failure Mode") do
+    #         # Act & Assert
+    #         @fact_throws ErrorException getRobots(mockConfig)
+    #     end
+    #     context("getRobot - Failure Mode") do
+    #         # Act & Assert
+    #         @fact_throws ErrorException getRobot(mockConfig, "TestRobot")
+    #     end
+    #     context("addRobot - Failure Mode") do
+    #         # Act & Assert
+    #         @fact_throws ErrorException addRobot(mockConfig, mockRequest)
+    #     end
+    #     context("deleteRobot - Failure Mode") do
+    #         # Act & Assert
+    #         @fact_throws ErrorException deleteRobot(mockConfig, "GearsAD")
+    #     end
+    #     context("getRobotConfig - Failure Mode") do
+    #         # Act & Assert
+    #         @fact_throws ErrorException getRobotConfig(mockConfig, "GearsAD")
+    #     end
+    #     context("updateRobotConfig - Failure Mode") do
+    #         # Act & Assert
+    #         @fact_throws ErrorException updateRobotConfig(mockConfig, "GearsAD", robotConfig)
+    #     end
+    # end
 end

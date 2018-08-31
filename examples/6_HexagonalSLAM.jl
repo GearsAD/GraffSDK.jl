@@ -9,10 +9,11 @@ cd(joinpath(Pkg.dir("SynchronySDK"),"examples"))
 include("0_Initialization.jl")
 
 # 1a. Create a Configuration
-robotId = "Hexagonal"
-sessionId = "HexDemo"
 # synchronyConfig = loadConfig("synchronyConfig_Local.json")
 synchronyConfig = loadConfig("synchronyConfig.json")
+# Set a default session and robot IDs
+synchronyConfig.robotId = "Hexagonal"
+synchronyConfig.sessionId = "HexDemo"
 
 # 1b. Check the credentials and the service status
 printStatus(synchronyConfig)
