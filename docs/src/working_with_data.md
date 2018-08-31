@@ -4,7 +4,7 @@ The Synchrony Project is not just for building and solving factor graphs. You ca
 
 We're still working on the best ways to do this, but it's one our key missions: to provide you with a simple way to insert massive amounts of sensory data into the graph and efficiently query+extract it at some point in the future across multiple systems.
 
-If you want to see the start of this at work, take a look at the [Brookstone Rover example](Link!), where we:
+If you want to see the start of this at work, take a look at the [Brookstone Rover example](examples.md), where we:
 * Insert data + video imagery from a LCM log (pretending to be a robot)
 * Extract the images in another process and identify AprilTags (pretending to be a Apri processor either on the robot, on a base station, or in the cloud :))
 * Insert new loop closures into the graph together with the AprilTag ID's

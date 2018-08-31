@@ -36,11 +36,36 @@ end
 
 """
 $(SIGNATURES)
+Gets all sessions for the current robot.
+Return: A vector of sessions for the current robot.
+"""
+function getSessions(config::SynchronyConfig)::SessionsResponse
+    if config.robotId == ""
+        error("Your config doesn't have a robot specified, please attach your config to a valid robot by setting the robotId field. Robot = $(config.robotId)")
+    end
+
+    return getSessions(config, config.robotId)
+end
+
+"""
+$(SIGNATURES)
 Return: Returns true if the session exists already.
 """
 function isSessionExisting(config::SynchronyConfig, robotId::String, sessionId::String)::Bool
     sessions = getSessions(config, robotId)
     return count(sess -> lowercase(strip(sess.id)) == lowercase(strip(sessionId)), sessions.sessions) > 0
+end
+
+"""
+$(SIGNATURES)
+Return: Returns true if the session exists already.
+"""
+function isSessionExisting(config::SynchronyConfig)::Bool
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return isSessionExisting(config, config.robotId, config.sessionId)
 end
 
 """
@@ -59,6 +84,19 @@ end
 
 """
 $(SIGNATURES)
+Get a specific session given a user ID, robot ID, and session ID.
+Return: The session details for the provided user ID, robot ID, and session ID.
+"""
+function getSession(config::SynchronyConfig)::SessionDetailsResponse
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return getSession(config, config.robotId, config.sessionId)
+end
+
+"""
+$(SIGNATURES)
 Delete a specific session given a user ID, robot ID, and session ID.
 Return: Nothing if success, error if failed.
 """
@@ -73,6 +111,20 @@ end
 
 """
 $(SIGNATURES)
+Delete a specific session given a user ID, robot ID, and session ID.
+Return: Nothing if success, error if failed.
+"""
+function deleteSession(config::SynchronyConfig)::Void
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return deleteSession(config, config.robotId, config.sessionId)
+end
+
+
+"""
+$(SIGNATURES)
 Create a session in Synchrony and associate it with the given robot+user.
 Return: Returns the created session.
 """
@@ -83,6 +135,19 @@ function addSession(config::SynchronyConfig, robotId::String, session::SessionDe
         error("Error creating session, received $(response.status) with body '$(String(response.body))'.")
     end
     return _unmarshallWithLinks(String(response.body), SessionDetailsResponse)
+end
+
+"""
+$(SIGNATURES)
+Create a session in Synchrony and associate it with the given robot+user.
+Return: Returns the created session.
+"""
+function addSession(config::SynchronyConfig, session::SessionDetailsRequest)::SessionDetailsResponse
+    if config.robotId == ""
+        error("Your config doesn't have a robot specified, please attach your config to a valid robot by setting the robotId fields. Robot = $(config.robotId)")
+    end
+
+    return addSession(config, config.robotId, session)
 end
 
 """
@@ -108,6 +173,20 @@ end
 
 """
 $(SIGNATURES)
+Gets all nodes for a given session.
+Return: A vector of nodes for a given robot.
+"""
+function getNodes(config::SynchronyConfig)::NodesResponse
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return getNodes(config, config.robotId, config.sessionId)
+end
+
+
+"""
+$(SIGNATURES)
 Gets a node's details by either its ID or name.
 Return: A node's details.
 """
@@ -128,6 +207,19 @@ end
 
 """
 $(SIGNATURES)
+Gets a node's details by either its ID or name.
+Return: A node's details.
+"""
+function getNode(config::SynchronyConfig, nodeIdOrLabel::Union{Int, String})::NodeDetailsResponse
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return getNode(config, config.robotId, config.sessionId, nodeIdOrLabel)
+end
+
+"""
+$(SIGNATURES)
 Set the ready status for a session.
 """
 function putReady(config::SynchronyConfig, robotId::String, sessionId::String, isReady::Bool)::Void
@@ -137,6 +229,18 @@ function putReady(config::SynchronyConfig, robotId::String, sessionId::String, i
         error("Error updating the ready status of the session, received $(response.status) with body '$(String(response.body))'.")
     end
     return nothing
+end
+
+"""
+$(SIGNATURES)
+Set the ready status for a session.
+"""
+function putReady(config::SynchronyConfig, isReady::Bool)::Void
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return putReady(config, config.robotId, config.sessionId, isReady)
 end
 
 """
@@ -155,6 +259,19 @@ end
 
 """
 $(SIGNATURES)
+Create a variable in Synchrony.
+Return: Returns the ID+label of the created variable.
+"""
+function addVariable(config::SynchronyConfig, variableRequest::VariableRequest)::NodeResponse
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return addVariable(config, config.robotId, config.sessionId,variableRequest)
+end
+
+"""
+$(SIGNATURES)
 Create a factor in Synchrony.
 Return: Returns the ID+label of the created factor.
 """
@@ -165,6 +282,19 @@ function addFactor(config::SynchronyConfig, robotId::String, sessionId::String, 
         error("Error creating factor, received $(response.status) with body '$(String(response.body))'.")
     end
     return _unmarshallWithLinks(String(response.body), NodeResponse)
+end
+
+"""
+$(SIGNATURES)
+Create a factor in Synchrony.
+Return: Returns the ID+label of the created factor.
+"""
+function addFactor(config::SynchronyConfig, factorRequest::FactorRequest)::NodeResponse
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return addFactor(config, config.robotId, config.sessionId, FactorRequest)
 end
 
 """
@@ -183,6 +313,19 @@ end
 
 """
 $(SIGNATURES)
+Create a variable in Synchrony and associate it with the given robot+user.
+Return: Returns ID+label of the created factor.
+"""
+function addBearingRangeFactor(config::SynchronyConfig, bearingRangeRequest::BearingRangeRequest)::NodeResponse
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return addBearingRangeFactor(config, config.robotId, config.sessionId, bearingRangeRequest)
+end
+
+"""
+$(SIGNATURES)
 Create a session in Synchrony and associate it with the given robot+user.
 Return: Returns the added odometry information.
 """
@@ -197,12 +340,25 @@ end
 
 """
 $(SIGNATURES)
+Create a session in Synchrony and associate it with the given robot+user.
+Return: Returns the added odometry information.
+"""
+function addOdometryMeasurement(config::SynchronyConfig, addOdoRequest::AddOdometryRequest)::AddOdometryResponse
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return addOdometryMeasurement(config, config.robotId, config.sessionId, addOdoRequest)
+end
+
+"""
+$(SIGNATURES)
 Get data entries associated with a node.
 Return: Summary of all data associated with a node.
 """
-function getDataEntries(config::SynchronyConfig, robotId::String, sessionId::String, nodeOrId::Union{Int, NodeResponse, NodeDetailsResponse})::Vector{BigDataEntryResponse}
+function getDataEntries(config::SynchronyConfig, robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse})::Vector{BigDataEntryResponse}
     # Get the node ID.
-    nodeId = typeof(nodeOrId) == Int ? nodeOrId : nodeOrId.id
+    nodeId = typeof(node) != Int ? node.id : node;
 
     url = "$(config.apiEndpoint)/$(format(bigDataEndpoint, config.userId, robotId, sessionId, nodeId))"
     response = @mock _sendRestRequest(config, HTTP.get, url)
@@ -212,9 +368,7 @@ function getDataEntries(config::SynchronyConfig, robotId::String, sessionId::Str
         bigDataRaw = JSON.parse(String(response.body))
         datas = Vector{BigDataEntryResponse}()
         for bd in bigDataRaw
-            elem = _unmarshallWithLinks(JSON.json(bd), BigDataEntryResponse)
-            elem.nodeId = nodeId
-            push!(datas, elem)
+            push!(datas, _unmarshallWithLinks(JSON.json(bd), BigDataEntryResponse))
         end
         return datas
     end
@@ -222,22 +376,15 @@ end
 
 """
 $(SIGNATURES)
-Get data elment associated with a node.
-Return: Full data element associated with the specified node.
+Get data entries associated with a node.
+Return: Summary of all data associated with a node.
 """
-function getDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeOrId::Union{Int, NodeResponse, NodeDetailsResponse}, elemOrDataId::Union{String, BigDataElementRequest, BigDataElementResponse, BigDataEntryResponse})::BigDataElementResponse
-    # Get the node ID.
-    nodeId = typeof(nodeOrId) == Int ? nodeOrId : nodeOrId.id
-    bigDataKey = typeof(elemOrDataId) == String ? elemOrDataId : elemOrDataId.id
-
-    url = "$(config.apiEndpoint)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataKey))"
-    response = @mock _sendRestRequest(config, HTTP.get, url)
-    if(response.status != 200)
-        error("Error getting node data entries, received $(response.status) with body '$(String(response.body))'.")
+function getDataEntries(config::SynchronyConfig, node::Union{Int, NodeResponse, NodeDetailsResponse})::Vector{BigDataEntryResponse}
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
-    elem = _unmarshallWithLinks(String(response.body), BigDataElementResponse)
-    elem.nodeId = nodeId
-    return elem
+
+    return getDataEntries(config, config.robotId, config.sessionId, node)
 end
 
 """
@@ -245,10 +392,39 @@ $(SIGNATURES)
 Get data elment associated with a node.
 Return: Full data element associated with the specified node.
 """
-function getRawDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeOrId::Union{Int, NodeResponse, NodeDetailsResponse}, elemOrDataId::Union{String, BigDataElementRequest, BigDataElementResponse, BigDataEntryResponse})::String
+function getDataElement(config::SynchronyConfig, robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::String)::BigDataElementResponse
     # Get the node ID.
-    nodeId = typeof(nodeOrId) == Int ? nodeOrId : nodeOrId.id
-    bigDataKey = typeof(elemOrDataId) == String ? elemOrDataId : elemOrDataId.id
+    nodeId = typeof(node) != Int ? node.id : node;
+
+    url = "$(config.apiEndpoint)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataKey))"
+    response = @mock _sendRestRequest(config, HTTP.get, url)
+    if(response.status != 200)
+        error("Error getting node data entries, received $(response.status) with body '$(String(response.body))'.")
+    end
+    return _unmarshallWithLinks(String(response.body), BigDataElementResponse)
+end
+
+"""
+$(SIGNATURES)
+Get data elment associated with a node.
+Return: Full data element associated with the specified node.
+"""
+function getDataElement(config::SynchronyConfig,  node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::String)::BigDataElementResponse
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return getDataElement(config, config.robotId, config.sessionId, node, bigDataKey)
+end
+
+"""
+$(SIGNATURES)
+Get data elment associated with a node.
+Return: Full data element associated with the specified node.
+"""
+function getRawDataElement(config::SynchronyConfig, robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::String)::String
+    # Get the node ID.
+    nodeId = typeof(node) != Int ? node.id : node;
 
     url = "$(config.apiEndpoint)/$(format(bigDataRawElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataKey))"
     response = @mock _sendRestRequest(config, HTTP.get, url)
@@ -260,12 +436,25 @@ end
 
 """
 $(SIGNATURES)
+Get data elment associated with a node.
+Return: Full data element associated with the specified node.
+"""
+function getRawDataElement(config::SynchronyConfig, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::String)::String
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return getRawDataElement(config, config.robotId, config.sessionId, node, bigDataKey)
+end
+
+"""
+$(SIGNATURES)
 Add a data element associated with a node.
 Return: Nothing if succeed, error if failed.
 """
-function addDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeOrId::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataElement::BigDataElementRequest)::Void
+function addDataElement(config::SynchronyConfig, robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataElement::BigDataElementRequest)::Void
     # Get the node ID.
-    nodeId = typeof(nodeOrId) == Int ? nodeOrId : nodeOrId.id
+    nodeId = typeof(node) != Int ? node.id : node;
 
     url = "$(config.apiEndpoint)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataElement.id))"
     response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(bigDataElement))
@@ -277,12 +466,25 @@ end
 
 """
 $(SIGNATURES)
+Add a data element associated with a node.
+Return: Nothing if succeed, error if failed.
+"""
+function addDataElement(config::SynchronyConfig, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataElement::BigDataElementRequest)::Void
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return addDataElement(config, config.robotId, config.sessionId, node, bigDataElement)
+end
+
+"""
+$(SIGNATURES)
 Update a data element associated with a node.
 Return: Nothing if succeed, error if failed.
 """
-function updateDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeOrId::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataElement::Union{BigDataElementRequest, BigDataElementResponse})::Void
+function updateDataElement(config::SynchronyConfig, robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataElement::Union{BigDataElementRequest, BigDataElementResponse})::Void
     # Get the node ID.
-    nodeId = typeof(nodeOrId) == Int ? nodeOrId : nodeOrId.id
+    nodeId = typeof(node) != Int ? node.id : node;
 
     url = "$(config.apiEndpoint)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataElement.id))"
     response = @mock _sendRestRequest(config, HTTP.put, url, data=JSON.json(bigDataElement))
@@ -294,19 +496,54 @@ end
 
 """
 $(SIGNATURES)
+Update a data element associated with a node.
+Return: Nothing if succeed, error if failed.
+"""
+function updateDataElement(config::SynchronyConfig, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataElement::Union{BigDataElementRequest, BigDataElementResponse})::Void
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return updateDataElement(config, config.robotId, config.sessionId, node, bigDataElement)
+end
+
+"""
+$(SIGNATURES)
 Add or update a data element associated with a node. Will check if the key exists, if so it updates, otherwise it adds.
 Return: Nothing if succeed, error if failed.
 """
-function addOrUpdateDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeOrId::Union{Int, NodeResponse, NodeDetailsResponse}, dataElement::Union{BigDataElementRequest, BigDataElementResponse})::Void
-    nodeId = typeof(nodeOrId) == Int ? nodeOrId : nodeOrId.id
+function addOrUpdateDataElement(config::SynchronyConfig, robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, dataElement::Union{BigDataElementRequest, BigDataElementResponse})::Void
+    # Get the node ID.
+    nodeId = typeof(node) != Int ? node.id : node;
 
     dataEntries = getDataEntries(config, robotId, sessionId, nodeId)
     if count(entry -> entry.id == dataElement.id, dataEntries) == 0
-        println("lement '$(dataElement.id)' doesn't exist - Adding it!")
+        println("Existence test for ID '$(dataElement.id)' failed - Adding it!")
         return addDataElement(config, robotId, sessionId, nodeId, dataElement)
     else
-        println("Element ID '$(dataElement.id)' exists - Updating it!")
+        println("Existence test for ID '$(dataElement.id)' passed - Updating it!")
         updateDataElement(config, robotId, sessionId, nodeId, dataElement)
+    end
+    return nothing
+end
+
+function addOrUpdateDataElement(config::SynchronyConfig, node::Union{Int, NodeResponse, NodeDetailsResponse}, dataElement::Union{BigDataElementRequest, BigDataElementResponse})::Void
+    return addOrUpdateDataElement(config, config.robotId, config.sessionId, node, dataElement)
+end
+
+"""
+$(SIGNATURES)
+Delete a data element associated with a node.
+Return: Nothing if succeed, error if failed.
+"""
+function deleteDataElement(config::SynchronyConfig, robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, dataId::String)::Void
+    # Get the node ID.
+    nodeId = typeof(node) != Int ? node.id : node;
+
+    url = "$(config.apiEndpoint)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, dataId))"
+    response = @mock _sendRestRequest(config, HTTP.delete, url)
+    if(response.status != 200)
+        error("Error deleting data element '$dataId', received $(response.status) with body '$(String(response.body))'.")
     end
     return nothing
 end
@@ -316,15 +553,10 @@ $(SIGNATURES)
 Delete a data element associated with a node.
 Return: Nothing if succeed, error if failed.
 """
-function deleteDataElement(config::SynchronyConfig, robotId::String, sessionId::String, nodeOrId::Union{Int, NodeResponse, NodeDetailsResponse}, elemOrDataId::Union{String, BigDataElementRequest, BigDataElementResponse, BigDataEntryResponse})::Void
-    # Get the node ID.
-    nodeId = typeof(nodeOrId) == Int ? nodeOrId : nodeOrId.id
-    bigDataKey = typeof(elemOrDataId) == String ? elemOrDataId : elemOrDataId.id
-
-    url = "$(config.apiEndpoint)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataKey))"
-    response = @mock _sendRestRequest(config, HTTP.delete, url)
-    if(response.status != 200)
-        error("Error deleting data element '$dataId', received $(response.status) with body '$(String(response.body))'.")
+function deleteDataElement(config::SynchronyConfig, node::Union{Int, NodeResponse, NodeDetailsResponse}, dataId::String)::Void
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
-    return nothing
+
+    return deleteDataElement(config, config.robotId, config.sessionId, node, dataId)
 end

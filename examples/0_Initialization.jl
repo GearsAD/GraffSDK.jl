@@ -13,9 +13,6 @@ function loadConfig(configFileLocation::String)::SynchronyConfig
     close(configFile)
     synchronyConfig = Unmarshal.unmarshal(SynchronyConfig, configData)
 
-    println(" --- Configuring Synchrony example for:")
-    println("  --- User: $(synchronyConfig.userId)")
-    println("  --- Robot: $(robotId)")
-    println("  --- Session: $(sessionId)")
+    println(synchronyConfig)
     return synchronyConfig
 end

@@ -7,6 +7,8 @@ using Graphs
 using DocStringExtensions
 using ProgressMeter
 
+import Base.show
+
 # Utility functions
 """
 $(SIGNATURES)
@@ -29,7 +31,7 @@ Load a config file from a file name.
 """
 function loadConfigFile(filename::String)::SynchronyConfig
     if !isfile(filename)
-        error("Cannot locate the configuration file '$filename'. Please check tht it exists.")
+        error("Cannot locate the configuration file '$filename'. Please check that it exists.")
     end
     configFile = open("synchronyConfig.json")
     configData = JSON.parse(readstring(configFile))
