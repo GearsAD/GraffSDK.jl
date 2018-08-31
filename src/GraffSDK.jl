@@ -1,4 +1,4 @@
-module SynchronySDK
+module GraffSDK
 
 # Imports
 using HTTP, JSON, Unmarshal

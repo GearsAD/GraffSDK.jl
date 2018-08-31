@@ -1,10 +1,16 @@
 # import Base: show
 
+"""
+A summary response for a single session.
+"""
 mutable struct SessionResponse
     id::String
     links::Dict{String, String}
 end
 
+"""
+A list of session response summaries.
+"""
 mutable struct SessionsResponse
     sessions::Vector{SessionResponse}
     links::Dict{String, String}

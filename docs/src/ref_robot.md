@@ -1,5 +1,5 @@
 # Robot Service
-Robot calls are used to create, update, retrieve, or delete robots related to users in Synchrony.
+Robot calls are used to create, update, retrieve, or delete robots related to users in the GraffSDK.
 
 ## Robot Structures
 ```@docs
@@ -11,8 +11,11 @@ RobotsResponse
 ## Robot Functions
 ```@docs
 getRobots
+isRobotExisting
 getRobot
-createRobot
+addRobot
 updateRobot
 deleteRobot
+getRobotConfig
+updateRobotConfig
 ```
