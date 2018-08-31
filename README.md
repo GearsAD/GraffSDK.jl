@@ -1,7 +1,7 @@
+![GraffSDK Logo](graff_logo_white.png)
+
 # GraffSDK.jl
 Build status: [![Build Status](https://travis-ci.org/GearsAD/SynchronySDK.jl.svg?branch=master)](https://travis-ci.org/GearsAD/SynchronySDK.jl)
-
-![GraffSDK Logo](graff_logo_white.png)
 
 ## Overview
 A Julia SDK for the SlamInDb/Graff project!
