@@ -5,16 +5,11 @@ User calls are used to create, update, retrieve, or delete users from Synchrony.
 ```@docs
 UserRequest
 UserResponse
-UserConfig
-KafkaConfig
-ErrorResponse
 ```
 
 ## User Functions
 ```@docs
-createUser
 getUser
 updateUser
 deleteUser
-getUserConfig
 ```
