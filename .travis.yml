@@ -29,11 +29,11 @@ matrix:
 
 ## uncomment the following lines to override the default test script
 script:
-  - julia --compilecache=no --check-bounds=yes --color=yes -e "Pkg.clone(\"https://github.com/GearsAD/SynchronySDK.jl.git\"); Pkg.test(\"SynchronySDK.jl\", coverage=true)"
+  - julia --compilecache=no --check-bounds=yes --color=yes -e "Pkg.clone(\"https://github.com/GearsAD/GraffSDK.jl.git\"); Pkg.test(\"GraffSDK.jl\", coverage=true)"
 after_success:
   # push coverage results to Codecov
-  - julia -e 'cd(Pkg.dir("SynchronySDK")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
+  - julia -e 'cd(Pkg.dir("GraffSDK")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
 
   #run documenter
   - julia -e 'Pkg.add("Documenter")'
-  - julia -e 'cd(Pkg.dir("SynchronySDK")); include(joinpath("docs", "make.jl"))'
+  - julia -e 'cd(Pkg.dir("GraffSDK")); include(joinpath("docs", "make.jl"))'
