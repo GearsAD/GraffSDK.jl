@@ -7,7 +7,7 @@ using Base.Test
 using FactCheck
 using HTTP
 
-using SynchronySDK
+using GraffSDK
 
 mockConfig = SynchronyConfig("http://mock", "9000", "", "", "")
 
