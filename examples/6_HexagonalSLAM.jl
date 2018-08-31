@@ -14,7 +14,8 @@ synchronyConfig = loadConfig("synchronyConfig.json")
 # Set a default session and robot IDs so we don't have to keep repeating them
 # Can also do this in the config file.
 synchronyConfig.robotId = "Hexagonal"
-synchronyConfig.sessionId = "HexDemo"
+synchronyConfig.sessionId = "HexDemoSamAgain1"
+println(synchronyConfig)
 
 # 1b. Check the credentials and the service status
 printStatus(synchronyConfig)
@@ -42,7 +43,7 @@ if(SynchronySDK.isSessionExisting(synchronyConfig))
     session = getSession(synchronyConfig)
 else
     # Create a new one
-    println(" -- Session '$(synchronyConfig.sessionId)' doesn't exist for robot '$robotId', creating it...")
+    println(" -- Session '$(synchronyConfig.sessionId)' doesn't exist for robot '$(synchronyConfig.robotId)', creating it...")
     newSessionRequest = SessionDetailsRequest(synchronyConfig.sessionId, "A test dataset demonstrating data ingestion for a wheeled vehicle driving in a hexagon.", "Pose2")
     session = addSession(synchronyConfig, newSessionRequest)
 end

@@ -7,6 +7,8 @@ using Graphs
 using DocStringExtensions
 using ProgressMeter
 
+import Base.show
+
 # Utility functions
 """
 $(SIGNATURES)
