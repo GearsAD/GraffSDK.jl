@@ -5,15 +5,15 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "Home",
     "category": "page",
-    "text": ""
+    "text": "(Image: GraffSDK.jl Logo)"
 },
 
 {
-    "location": "index.html#Synchrony-Examples-1",
+    "location": "index.html#GraffSDK.jl-Documentation-1",
     "page": "Home",
-    "title": "Synchrony Examples",
+    "title": "GraffSDK.jl Documentation",
     "category": "section",
-    "text": "This package is an SDK for the Project Synchrony API."
+    "text": "This package is an SDK for SlamInDb/Graff."
 },
 
 {
@@ -21,7 +21,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "Installation",
     "category": "section",
-    "text": "This package is not yet registered with JuliaLang/METADATA.jl, but can be easily installed in Julia 0.6 with:Pkg.clone(\"https://github.com/GearsAD/SynchronySDK.jl.git\")\nPkg.build(\"SynchronySDK\")"
+    "text": "This package is not yet registered with JuliaLang/METADATA.jl, but can be easily installed in Julia 0.6 with:Pkg.clone(\"https://github.com/GearsAD/GraffSDK.jl.git\")\nPkg.build(\"GraffSDK\")"
 },
 
 {
@@ -34,23 +34,23 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "getting_started.html#",
-    "page": "Getting Started",
-    "title": "Getting Started",
+    "page": "Introduction",
+    "title": "Introduction",
     "category": "page",
     "text": ""
 },
 
 {
-    "location": "getting_started.html#Getting-Started-with-Synchrony-SDK-1",
-    "page": "Getting Started",
-    "title": "Getting Started with Synchrony SDK",
+    "location": "getting_started.html#Getting-Started-with-Graff-SDK-1",
+    "page": "Introduction",
+    "title": "Getting Started with Graff SDK",
     "category": "section",
-    "text": "This documents the steps for using the SDK, as shown in the examples folder.This example will walk through the following steps, demonstrating how you can manage, ingest, and extract data for your robots:Loading a Synchrony configuration\nGetting your user information and runtime configuration\nCreating a robot that will produce data and ingest it into Synchrony\nCreating a new robot session\nImporting data into the new session\nRunning the solver to refine the graph\nViewing the results of the SLAM solutionThe first step is to create a new script file and import the base libraries:using Base\nusing SynchronySDK"
+    "text": "This documents the steps for using the SDK, as shown in the examples folder.This example will walk through the following steps, demonstrating how you can manage, ingest, and extract data for your robots:Loading a Synchrony configuration\nGetting your user information and runtime configuration\nCreating a robot that will produce data and ingest it into Synchrony\nCreating a new robot session\nImporting data into the new session\nRunning the solver to refine the graph\nViewing the results of the SLAM solutionThe first step is to create a new script file and import the base libraries:using Base\nusing GraffSDK"
 },
 
 {
     "location": "getting_started.html#Loading-a-Synchrony-Configuration-1",
-    "page": "Getting Started",
+    "page": "Introduction",
     "title": "Loading a Synchrony Configuration",
     "category": "section",
     "text": "In the same location as the new script, create a file called \'synchronyConfig.json\', and paste in your Synchrony endpoint which was provided when you created your account:{\n  \"apiEndpoint\":\"http://myserver...\",\n  \"apiPort\":8000\n}It is assumed that Julia was started in the same folder as the script, so add the following code to the script to load the configuration:# 1. Get a Synchrony configuration\n# Assume that you\'re running in local directory\nconfigFile = open(\"synchronyConfig.json\")\nconfigData = JSON.parse(readstring(configFile))\nclose(configFile)\nsynchronyConfig = Unmarshal.unmarshal(SynchronyConfig, configData)"
@@ -58,7 +58,7 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "getting_started.html#Creating-a-Token-1",
-    "page": "Getting Started",
+    "page": "Introduction",
     "title": "Creating a Token",
     "category": "section",
     "text": "Next step is to create a token for your user. Add the following code with your user and API key:# 2. Authorizing ourselves for requests\nauthRequest = AuthRequest(\"user\", \"apiKey\")\nauth = authenticate(synchronyConfig, authRequest)This will fire off an authentication request, and return an AuthRespose that contains a token."
@@ -66,7 +66,7 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "getting_started.html#Getting-your-User-and-Runtime-Configuration-Information-1",
-    "page": "Getting Started",
+    "page": "Introduction",
     "title": "Getting your User and Runtime Configuration Information",
     "category": "section",
     "text": "Users maintain the runtime configuration, which is the connection information to ingest data as well as receive notifications when the graph is updated.Just to confirm our user information, we do the following:userId = \"myUserId\" #TODO: Replace with your user ID\nuser = getUser(synchronyConfig, auth, myUserId)The \'user\' variable should contain all our account information. This isn\'t a necessary step, but helps us check a new user account to make sure all is correct.We do need to get the runtime information to subscribe to notifications and ingest data though, so let\'s retrieve the runtime configuration for this user:# 3. Config retrieval\n# This contains all the parameters required to ingest or retrieve\n# data from the system.\nruntimeConfig = getUserConfig(synchronyConfig, auth, userId)We can now use the runtime configuration to ingest data for a given robot as well as subscribe for graph updates. Firstly though, we need to create robot and a new session for the data."
@@ -74,7 +74,7 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "getting_started.html#Creating-a-Robot-1",
-    "page": "Getting Started",
+    "page": "Introduction",
     "title": "Creating a Robot",
     "category": "section",
     "text": "Users manage robots, and in this example we have assumed that your user currently has no robots assigned to them. Let\'s create a robot!TODO"
@@ -82,7 +82,7 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "getting_started.html#Creating-a-New-Session-1",
-    "page": "Getting Started",
+    "page": "Introduction",
     "title": "Creating a New Session",
     "category": "section",
     "text": ""
@@ -90,74 +90,10 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "getting_started.html#Importing-Data-into-the-New-Session-1",
-    "page": "Getting Started",
+    "page": "Introduction",
     "title": "Importing Data into the New Session",
     "category": "section",
     "text": "TODO"
-},
-
-{
-    "location": "examples.html#",
-    "page": "Examples",
-    "title": "Examples",
-    "category": "page",
-    "text": ""
-},
-
-{
-    "location": "examples.html#Navi-SDK-1",
-    "page": "Examples",
-    "title": "Navi SDK",
-    "category": "section",
-    "text": "This package is an SDK for the Navi API."
-},
-
-{
-    "location": "examples.html#Installation-1",
-    "page": "Examples",
-    "title": "Installation",
-    "category": "section",
-    "text": "This package is not yet registered with JuliaLang/METADATA.jl, but can be easily installed in Julia 0.6 with:Pkg.clone(\"https://github.com/GearsAD/NaviSDK.jl.git\")\nPkg.build(\"NaviSDK\")"
-},
-
-{
-    "location": "examples.html#Manual-Outline-1",
-    "page": "Examples",
-    "title": "Manual Outline",
-    "category": "section",
-    "text": "Pages = [\n    \"index.md\"\n    \"getting_started.md\"\n    \"ref_user.md\"\n    \"ref_robot.md\"\n    \"ref_session.md\"\n    \"reference.md\"\n]"
-},
-
-{
-    "location": "ref_common.html#",
-    "page": "Common Structures and Functions",
-    "title": "Common Structures and Functions",
-    "category": "page",
-    "text": ""
-},
-
-{
-    "location": "ref_common.html#Common-Structures-and-Functions-1",
-    "page": "Common Structures and Functions",
-    "title": "Common Structures and Functions",
-    "category": "section",
-    "text": "The following are common structures and functions that are used across all the services."
-},
-
-{
-    "location": "ref_common.html#Common-Structures-1",
-    "page": "Common Structures and Functions",
-    "title": "Common Structures",
-    "category": "section",
-    "text": "SynchronyConfig\nErrorResponse"
-},
-
-{
-    "location": "ref_common.html#Common-Functions-1",
-    "page": "Common Structures and Functions",
-    "title": "Common Functions",
-    "category": "section",
-    "text": ""
 },
 
 {
@@ -177,107 +113,75 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "ref_user.html#",
-    "page": "User Service",
-    "title": "User Service",
+    "location": "ref_common.html#",
+    "page": "Common Structures and Functions",
+    "title": "Common Structures and Functions",
     "category": "page",
     "text": ""
 },
 
 {
-    "location": "ref_user.html#User-Service-1",
-    "page": "User Service",
-    "title": "User Service",
+    "location": "ref_common.html#Common-Structures-and-Functions-1",
+    "page": "Common Structures and Functions",
+    "title": "Common Structures and Functions",
     "category": "section",
-    "text": "User calls are used to create, update, retrieve, or delete users from Synchrony. It is also used to retrieve runtime configuration information per user (e.g. streaming connection information)."
+    "text": "The following are common structures and functions that are used across all the services."
 },
 
 {
-    "location": "ref_user.html#User-Structures-1",
-    "page": "User Service",
-    "title": "User Structures",
-    "category": "section",
-    "text": "UserRequest\nUserResponse\nUserConfig\nKafkaConfig\nErrorResponse"
-},
-
-{
-    "location": "ref_user.html#User-Functions-1",
-    "page": "User Service",
-    "title": "User Functions",
-    "category": "section",
-    "text": "createUser\ngetUser\nupdateUser\ndeleteUser\ngetUserConfig"
-},
-
-{
-    "location": "ref_robot.html#",
-    "page": "Robot Service",
-    "title": "Robot Service",
-    "category": "page",
-    "text": ""
-},
-
-{
-    "location": "ref_robot.html#Robot-Service-1",
-    "page": "Robot Service",
-    "title": "Robot Service",
-    "category": "section",
-    "text": "Robot calls are used to create, update, retrieve, or delete robots related to users in Synchrony."
-},
-
-{
-    "location": "ref_robot.html#SynchronySDK.RobotRequest",
-    "page": "Robot Service",
-    "title": "SynchronySDK.RobotRequest",
+    "location": "ref_common.html#GraffSDK.SynchronyConfig",
+    "page": "Common Structures and Functions",
+    "title": "GraffSDK.SynchronyConfig",
     "category": "type",
-    "text": "The structure used for robot requests.\n\n\n\n"
+    "text": "Configuration structure for Synchrony, it defines the Synchrony Web API endpoint and port.\n\n\n\n"
 },
 
 {
-    "location": "ref_robot.html#SynchronySDK.RobotResponse",
-    "page": "Robot Service",
-    "title": "SynchronySDK.RobotResponse",
+    "location": "ref_common.html#GraffSDK.ErrorResponse",
+    "page": "Common Structures and Functions",
+    "title": "GraffSDK.ErrorResponse",
     "category": "type",
-    "text": "The structure returned when any robot requests are made.\n\n\n\n"
+    "text": "Standardized error response for any request. This is returned if any requests fail server-side.\n\n\n\n"
 },
 
 {
-    "location": "ref_robot.html#SynchronySDK.RobotsResponse",
-    "page": "Robot Service",
-    "title": "SynchronySDK.RobotsResponse",
-    "category": "type",
-    "text": "A list of robots provided by the /robots request.\n\n\n\n"
-},
-
-{
-    "location": "ref_robot.html#Robot-Structures-1",
-    "page": "Robot Service",
-    "title": "Robot Structures",
+    "location": "ref_common.html#Structures-1",
+    "page": "Common Structures and Functions",
+    "title": "Structures",
     "category": "section",
-    "text": "RobotRequest\nRobotResponse\nRobotsResponse"
+    "text": "SynchronyConfig\nErrorResponse"
 },
 
 {
-    "location": "ref_robot.html#Robot-Functions-1",
-    "page": "Robot Service",
-    "title": "Robot Functions",
+    "location": "ref_common.html#GraffSDK.loadConfigFile",
+    "page": "Common Structures and Functions",
+    "title": "GraffSDK.loadConfigFile",
+    "category": "function",
+    "text": "loadConfigFile(filename)\n\n\nLoad a config file from a file name.\n\n\n\n"
+},
+
+{
+    "location": "ref_common.html#GraffSDK.getStatus",
+    "page": "Common Structures and Functions",
+    "title": "GraffSDK.getStatus",
+    "category": "function",
+    "text": "getStatus(config)\n\n\nGet the status of the Synchrony service.\n\n\n\n"
+},
+
+{
+    "location": "ref_common.html#GraffSDK.printStatus",
+    "page": "Common Structures and Functions",
+    "title": "GraffSDK.printStatus",
+    "category": "function",
+    "text": "printStatus(config)\n\n\nPrint the current service status.\n\n\n\n"
+},
+
+{
+    "location": "ref_common.html#Functions-1",
+    "page": "Common Structures and Functions",
+    "title": "Functions",
     "category": "section",
-    "text": "getRobots\ngetRobot\ncreateRobot\nupdateRobot\ndeleteRobot"
-},
-
-{
-    "location": "ref_session.html#",
-    "page": "Session Service",
-    "title": "Session Service",
-    "category": "page",
-    "text": ""
-},
-
-{
-    "location": "ref_session.html#Session-Service-1",
-    "page": "Session Service",
-    "title": "Session Service",
-    "category": "section",
-    "text": "Session calls are used to ingest or retrieve runtime data from Synchrony. Every running robot saves data against a session, and the Session calls allow a user to retrieve data across all sessions."
+    "text": "loadConfigFile\ngetStatus\nprintStatus"
 },
 
 {
@@ -382,6 +286,670 @@ var documenterSearchIndex = {"docs": [
     "title": "Discussion on Base64 Encoding and Decoding",
     "category": "section",
     "text": "A quick important point on encoding - it\'s not strictly required, but we recommend you base64 encode your data and the decode it when you retrieve it if it may contain special characters. That way, if there are non-ASCII characters, they won\'t be an issue. A little more data has to travel up and down the wire, but it\'s more robust overall.@show unsafeString = \"This is an unsafe string...\\n\\0\"\n@show encBytes = base64encode(unsafeString)\n@show decBytes = base64decode(enc)\n@show unsafeReturned = String(decBytes)"
+},
+
+{
+    "location": "examples/examples.html#",
+    "page": "Introduction",
+    "title": "Introduction",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "examples/examples.html#Examples-1",
+    "page": "Introduction",
+    "title": "Examples",
+    "category": "section",
+    "text": ""
+},
+
+{
+    "location": "examples/examples.html#Conceptual-Examples-1",
+    "page": "Introduction",
+    "title": "Conceptual Examples",
+    "category": "section",
+    "text": "There are a few simple examples that take you through the creation of a robot, a session, and add data. These are:Graff Initialization\nCreating a Robot and Adding Configuration Data\nCreating Sessions, Adding Nodes\nA Deep Dive into Variables and Factors"
+},
+
+{
+    "location": "examples/examples.html#End-To-End-Examples-1",
+    "page": "Introduction",
+    "title": "End-To-End Examples",
+    "category": "section",
+    "text": "We are growing a library of end-to-end examples that highlight specific features of SlamInDb/Graff which we think are, well, cool. These are:The Hexagonal Robot Example: Imagine a little wheeled robot driving in a circle. The tread measurement is a little sketchy, so as it progresses it gets a little less certain of where it is. But, each time it loops around, it\'s fairly certain it sees the same AprilTag. We construct this problem in SlamInDb/Graff, and show how the little guy is able to keep his cool as he progresses on his Sisyphean journey. Concepts highlighted:  \nAdding incremental odometry data\nAdding data to poses\nAdding factors like loop closures\nSolver robustness when contradictory data is provided\nVisualization\nBrookstone Rover Example: In the Brookstone Rover example we implement a real-world version of the Hexagonal example, and demonstrate batch-processing in Graff using a simple $100 robot. The robot is cheap, the data is messy, and we still a good solution. Concepts highlighted:\nIntegrating Graff with MIT\'s LCM to process an LCM log\nProcessing offline camera data\nVisualization"
+},
+
+{
+    "location": "examples/basics_initialization.html#",
+    "page": "Basic Initialization",
+    "title": "Basic Initialization",
+    "category": "page",
+    "text": "Complete code example can be found at Graff Initialization"
+},
+
+{
+    "location": "examples/basics_robot.html#",
+    "page": "Basic Robot",
+    "title": "Basic Robot",
+    "category": "page",
+    "text": "Complete code example can be found at Creating a Robot and Adding Configuration Data"
+},
+
+{
+    "location": "examples/basics_session.html#",
+    "page": "Basic Session",
+    "title": "Basic Session",
+    "category": "page",
+    "text": "Complete code example can be found at Creating Sessions, Adding Nodes"
+},
+
+{
+    "location": "examples/hexagonal.html#",
+    "page": "Hexagonal Robot",
+    "title": "Hexagonal Robot",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "examples/hexagonal.html#The-Hexagonal-Robot-Example-1",
+    "page": "Hexagonal Robot",
+    "title": "The Hexagonal Robot Example",
+    "category": "section",
+    "text": "Imagine a little wheeled robot driving in a circle. The tread measurement is a little sketchy, so as it progresses it gets a little less certain of where it is. But, each time it loops around, it\'s fairly certain it sees the same AprilTag. We construct this problem in SlamInDb/Graff, and show how the little guy is able to keep his cool as he progresses on his Sisyphean journey. Concepts highlighted:  Adding incremental odometry data\nAdding data to poses\nAdding factors like loop closures\nSolver robustness when contradictory data is provided\nVisualization"
+},
+
+{
+    "location": "examples/hexagonal.html#Source-Code-1",
+    "page": "Hexagonal Robot",
+    "title": "Source Code",
+    "category": "section",
+    "text": "The complete source code for this example can be found at The Hexagonal Robot Example."
+},
+
+{
+    "location": "examples/hexagonal.html#An-Overview-of-the-Example-1",
+    "page": "Hexagonal Robot",
+    "title": "An Overview of the Example",
+    "category": "section",
+    "text": ""
+},
+
+{
+    "location": "examples/brookstone.html#",
+    "page": "Brookstone Rover",
+    "title": "Brookstone Rover",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "examples/brookstone.html#Brookstone-Rover-Example-1",
+    "page": "Brookstone Rover",
+    "title": "Brookstone Rover Example",
+    "category": "section",
+    "text": "In the Brookstone Rover example we implement a real-world version of the Hexagonal example, and demonstrate batch-processing in Graff using a simple $100 robot. The robot is cheap, the data is messy, and we still a good solution. Concepts highlighted:     1. Integrating Graff with MIT\'s LCM to process an LCM log     1. Processing offline camera data     1. Visualization"
+},
+
+{
+    "location": "examples/brookstone.html#Source-Code-1",
+    "page": "Brookstone Rover",
+    "title": "Source Code",
+    "category": "section",
+    "text": "The complete source code for this example can be found at Brookstone Rover Example."
+},
+
+{
+    "location": "examples/brookstone.html#An-Overview-of-the-Example-1",
+    "page": "Brookstone Rover",
+    "title": "An Overview of the Example",
+    "category": "section",
+    "text": ""
+},
+
+{
+    "location": "ref_user.html#",
+    "page": "User Service",
+    "title": "User Service",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "ref_user.html#User-Service-1",
+    "page": "User Service",
+    "title": "User Service",
+    "category": "section",
+    "text": "User calls are used to create, update, retrieve, or delete users from Synchrony. It is also used to retrieve runtime configuration information per user (e.g. streaming connection information)."
+},
+
+{
+    "location": "ref_user.html#GraffSDK.UserRequest",
+    "page": "User Service",
+    "title": "GraffSDK.UserRequest",
+    "category": "type",
+    "text": "The structure used for user requests.\n\n\n\n"
+},
+
+{
+    "location": "ref_user.html#GraffSDK.UserResponse",
+    "page": "User Service",
+    "title": "GraffSDK.UserResponse",
+    "category": "type",
+    "text": "The response structure for user calls.\n\n\n\n"
+},
+
+{
+    "location": "ref_user.html#User-Structures-1",
+    "page": "User Service",
+    "title": "User Structures",
+    "category": "section",
+    "text": "UserRequest\nUserResponse"
+},
+
+{
+    "location": "ref_user.html#GraffSDK.getUser",
+    "page": "User Service",
+    "title": "GraffSDK.getUser",
+    "category": "function",
+    "text": "getUser(config, userId)\n\n\nGets a user given the user ID. Return: The user for the given user ID.\n\n\n\n"
+},
+
+{
+    "location": "ref_user.html#GraffSDK.updateUser",
+    "page": "User Service",
+    "title": "GraffSDK.updateUser",
+    "category": "function",
+    "text": "updateUser(config, user)\n\n\nUpdate a user. Return: The updated user from the service.\n\n\n\n"
+},
+
+{
+    "location": "ref_user.html#GraffSDK.deleteUser",
+    "page": "User Service",
+    "title": "GraffSDK.deleteUser",
+    "category": "function",
+    "text": "deleteUser(config, userId)\n\n\nDelete a user given a user ID. NOTE: All robots must be deleted first, the call will fail if robots are still associated to the user. Return: The deleted user.\n\n\n\n"
+},
+
+{
+    "location": "ref_user.html#User-Functions-1",
+    "page": "User Service",
+    "title": "User Functions",
+    "category": "section",
+    "text": "getUser\nupdateUser\ndeleteUser"
+},
+
+{
+    "location": "ref_robot.html#",
+    "page": "Robot Service",
+    "title": "Robot Service",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "ref_robot.html#Robot-Service-1",
+    "page": "Robot Service",
+    "title": "Robot Service",
+    "category": "section",
+    "text": "Robot calls are used to create, update, retrieve, or delete robots related to users in the GraffSDK."
+},
+
+{
+    "location": "ref_robot.html#GraffSDK.RobotRequest",
+    "page": "Robot Service",
+    "title": "GraffSDK.RobotRequest",
+    "category": "type",
+    "text": "The structure used for robot requests.\n\n\n\n"
+},
+
+{
+    "location": "ref_robot.html#GraffSDK.RobotResponse",
+    "page": "Robot Service",
+    "title": "GraffSDK.RobotResponse",
+    "category": "type",
+    "text": "The structure returned when any robot requests are made.\n\n\n\n"
+},
+
+{
+    "location": "ref_robot.html#GraffSDK.RobotsResponse",
+    "page": "Robot Service",
+    "title": "GraffSDK.RobotsResponse",
+    "category": "type",
+    "text": "A list of robots provided by the /robots request.\n\n\n\n"
+},
+
+{
+    "location": "ref_robot.html#Robot-Structures-1",
+    "page": "Robot Service",
+    "title": "Robot Structures",
+    "category": "section",
+    "text": "RobotRequest\nRobotResponse\nRobotsResponse"
+},
+
+{
+    "location": "ref_robot.html#GraffSDK.getRobots",
+    "page": "Robot Service",
+    "title": "GraffSDK.getRobots",
+    "category": "function",
+    "text": "getRobots(config)\n\n\nGets all robots managed by the specified user. Return: A vector of robots for a given user.\n\n\n\n"
+},
+
+{
+    "location": "ref_robot.html#GraffSDK.isRobotExisting",
+    "page": "Robot Service",
+    "title": "GraffSDK.isRobotExisting",
+    "category": "function",
+    "text": "isRobotExisting(config, robotId)\n\n\nReturn: Returns true if the robot exists already.\n\n\n\nisRobotExisting(config)\n\n\nReturn: Returns true if the robot in the config exists already.\n\n\n\n"
+},
+
+{
+    "location": "ref_robot.html#GraffSDK.getRobot",
+    "page": "Robot Service",
+    "title": "GraffSDK.getRobot",
+    "category": "function",
+    "text": "getRobot(config, robotId)\n\n\nGet a specific robot given a user ID and robot ID. Will retrieve config.robotId by default. Return: The robot for the provided user ID and robot ID.\n\n\n\ngetRobot(config)\n\n\nGet a specific robot given a user ID and robot ID. Will retrieve config.robotId by default. Return: The robot for the provided user ID and robot ID.\n\n\n\n"
+},
+
+{
+    "location": "ref_robot.html#GraffSDK.addRobot",
+    "page": "Robot Service",
+    "title": "GraffSDK.addRobot",
+    "category": "function",
+    "text": "addRobot(config, robot)\n\n\nCreate a robot in Synchrony and associate it with the given user. Return: Returns the created robot.\n\n\n\n"
+},
+
+{
+    "location": "ref_robot.html#GraffSDK.updateRobot",
+    "page": "Robot Service",
+    "title": "GraffSDK.updateRobot",
+    "category": "function",
+    "text": "updateRobot(config, robot)\n\n\nUpdate a robot. Return: The updated robot from the service.\n\n\n\n"
+},
+
+{
+    "location": "ref_robot.html#GraffSDK.deleteRobot",
+    "page": "Robot Service",
+    "title": "GraffSDK.deleteRobot",
+    "category": "function",
+    "text": "deleteRobot(config, robotId)\n\n\nDelete a robot given a robot ID. Return: The deleted robot.\n\n\n\n"
+},
+
+{
+    "location": "ref_robot.html#Robot-Functions-1",
+    "page": "Robot Service",
+    "title": "Robot Functions",
+    "category": "section",
+    "text": "getRobots\nisRobotExisting\ngetRobot\naddRobot\nupdateRobot\ndeleteRobot"
+},
+
+{
+    "location": "ref_robot.html#GraffSDK.getRobotConfig",
+    "page": "Robot Service",
+    "title": "GraffSDK.getRobotConfig",
+    "category": "function",
+    "text": "getRobotConfig(config, robotId)\n\n\nWill retrieve the robot configuration (user settings) for the given robot ID. Return: The robot config for the provided user ID and robot ID.\n\n\n\ngetRobotConfig(config)\n\n\nWill retrieve the robot configuration (user settings) for the default robot ID. Return: The robot config for the provided user ID and robot ID.\n\n\n\n"
+},
+
+{
+    "location": "ref_robot.html#GraffSDK.updateRobotConfig",
+    "page": "Robot Service",
+    "title": "GraffSDK.updateRobotConfig",
+    "category": "function",
+    "text": "updateRobotConfig(config, robotId, robotConfig)\n\n\nUpdate a robot configuration. Return: The updated robot configuration from the service.\n\n\n\nupdateRobotConfig(config, robotConfig)\n\n\nUpdate a robot configuration. Return: The updated robot configuration from the service.\n\n\n\n"
+},
+
+{
+    "location": "ref_robot.html#Robot-Configuration-Functions-1",
+    "page": "Robot Service",
+    "title": "Robot Configuration Functions",
+    "category": "section",
+    "text": "getRobotConfig\nupdateRobotConfig"
+},
+
+{
+    "location": "ref_session.html#",
+    "page": "Session Service",
+    "title": "Session Service",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "ref_session.html#Session-Service-1",
+    "page": "Session Service",
+    "title": "Session Service",
+    "category": "section",
+    "text": "Session calls are used to ingest or retrieve runtime data from Graff. Every running robot saves data against a session, and the Session calls allow a user to retrieve data across all sessions."
+},
+
+{
+    "location": "ref_session.html#Interacting-with-Sessions-1",
+    "page": "Session Service",
+    "title": "Interacting with Sessions",
+    "category": "section",
+    "text": ""
+},
+
+{
+    "location": "ref_session.html#GraffSDK.SessionResponse",
+    "page": "Session Service",
+    "title": "GraffSDK.SessionResponse",
+    "category": "type",
+    "text": "A summary response for a single session.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#GraffSDK.SessionsResponse",
+    "page": "Session Service",
+    "title": "GraffSDK.SessionsResponse",
+    "category": "type",
+    "text": "A list of session response summaries.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#GraffSDK.SessionDetailsRequest",
+    "page": "Session Service",
+    "title": "GraffSDK.SessionDetailsRequest",
+    "category": "type",
+    "text": "The structure used for detailed session requests.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#GraffSDK.SessionDetailsResponse",
+    "page": "Session Service",
+    "title": "GraffSDK.SessionDetailsResponse",
+    "category": "type",
+    "text": "The structure used for detailed session responses.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#Structures-1",
+    "page": "Session Service",
+    "title": "Structures",
+    "category": "section",
+    "text": "SessionResponse\nSessionsResponse\nSessionDetailsRequest\nSessionDetailsResponse"
+},
+
+{
+    "location": "ref_session.html#GraffSDK.getSessions",
+    "page": "Session Service",
+    "title": "GraffSDK.getSessions",
+    "category": "function",
+    "text": "getSessions(config, robotId)\n\n\nGets all sessions for the current robot. Return: A vector of sessions for the current robot.\n\n\n\ngetSessions(config)\n\n\nGets all sessions for the current robot. Return: A vector of sessions for the current robot.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#GraffSDK.isSessionExisting",
+    "page": "Session Service",
+    "title": "GraffSDK.isSessionExisting",
+    "category": "function",
+    "text": "isSessionExisting(config, robotId, sessionId)\n\n\nReturn: Returns true if the session exists already.\n\n\n\nisSessionExisting(config)\n\n\nReturn: Returns true if the session exists already.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#GraffSDK.getSession",
+    "page": "Session Service",
+    "title": "GraffSDK.getSession",
+    "category": "function",
+    "text": "getSession(config, robotId, sessionId)\n\n\nGet a specific session given a user ID, robot ID, and session ID. Return: The session details for the provided user ID, robot ID, and session ID.\n\n\n\ngetSession(config)\n\n\nGet a specific session given a user ID, robot ID, and session ID. Return: The session details for the provided user ID, robot ID, and session ID.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#GraffSDK.deleteSession",
+    "page": "Session Service",
+    "title": "GraffSDK.deleteSession",
+    "category": "function",
+    "text": "deleteSession(config, robotId, sessionId)\n\n\nDelete a specific session given a user ID, robot ID, and session ID. Return: Nothing if success, error if failed.\n\n\n\ndeleteSession(config)\n\n\nDelete a specific session given a user ID, robot ID, and session ID. Return: Nothing if success, error if failed.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#GraffSDK.addSession",
+    "page": "Session Service",
+    "title": "GraffSDK.addSession",
+    "category": "function",
+    "text": "addSession(config, robotId, session)\n\n\nCreate a session in Synchrony and associate it with the given robot+user. Return: Returns the created session.\n\n\n\naddSession(config, session)\n\n\nCreate a session in Synchrony and associate it with the given robot+user. Return: Returns the created session.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#Functions-1",
+    "page": "Session Service",
+    "title": "Functions",
+    "category": "section",
+    "text": "getSessions\nisSessionExisting\ngetSession\ndeleteSession\naddSession"
+},
+
+{
+    "location": "ref_session.html#Getting-Graphs-Getting-Session-Nodes-1",
+    "page": "Session Service",
+    "title": "Getting Graphs - Getting Session Nodes",
+    "category": "section",
+    "text": ""
+},
+
+{
+    "location": "ref_session.html#GraffSDK.NodeResponse",
+    "page": "Session Service",
+    "title": "GraffSDK.NodeResponse",
+    "category": "type",
+    "text": "The structure used to briefly describe a node in a response.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#GraffSDK.NodesResponse",
+    "page": "Session Service",
+    "title": "GraffSDK.NodesResponse",
+    "category": "type",
+    "text": "The structure used to briefly describe a set of nodes in a response.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#GraffSDK.NodeDetailsResponse",
+    "page": "Session Service",
+    "title": "GraffSDK.NodeDetailsResponse",
+    "category": "type",
+    "text": "The structure describing a complete node in a response.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#Structures-2",
+    "page": "Session Service",
+    "title": "Structures",
+    "category": "section",
+    "text": "NodeResponse\nNodesResponse\nNodeDetailsResponse"
+},
+
+{
+    "location": "ref_session.html#GraffSDK.getNodes",
+    "page": "Session Service",
+    "title": "GraffSDK.getNodes",
+    "category": "function",
+    "text": "getNodes(config, robotId, sessionId)\n\n\nGets all nodes for a given session. Return: A vector of nodes for a given robot.\n\n\n\ngetNodes(config)\n\n\nGets all nodes for a given session. Return: A vector of nodes for a given robot.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#GraffSDK.getNode",
+    "page": "Session Service",
+    "title": "GraffSDK.getNode",
+    "category": "function",
+    "text": "getNode(config, robotId, sessionId, nodeIdOrLabel)\n\n\nGets a node\'s details by either its ID or name. Return: A node\'s details.\n\n\n\ngetNode(config, nodeIdOrLabel)\n\n\nGets a node\'s details by either its ID or name. Return: A node\'s details.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#Functions-2",
+    "page": "Session Service",
+    "title": "Functions",
+    "category": "section",
+    "text": "getNodes\ngetNode"
+},
+
+{
+    "location": "ref_session.html#Building-Graphs-Adding-Nodes/Variables/Factors-1",
+    "page": "Session Service",
+    "title": "Building Graphs - Adding Nodes/Variables/Factors",
+    "category": "section",
+    "text": ""
+},
+
+{
+    "location": "ref_session.html#Structures-3",
+    "page": "Session Service",
+    "title": "Structures",
+    "category": "section",
+    "text": "NodeResponse\nNodesResponse\nNodeDetailsResponse\nAddOdometryRequest\nAddOdometryResponse\nVariableRequest\nVariableResponse\nDistributionRequest\nBearingRangeRequest\nFactorBody\nFactorRequest"
+},
+
+{
+    "location": "ref_session.html#GraffSDK.addVariable",
+    "page": "Session Service",
+    "title": "GraffSDK.addVariable",
+    "category": "function",
+    "text": "addVariable(config, robotId, sessionId, variableRequest)\n\n\nCreate a variable in Synchrony. Return: Returns the ID+label of the created variable.\n\n\n\naddVariable(config, variableRequest)\n\n\nCreate a variable in Synchrony. Return: Returns the ID+label of the created variable.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#GraffSDK.addFactor",
+    "page": "Session Service",
+    "title": "GraffSDK.addFactor",
+    "category": "function",
+    "text": "addFactor(config, robotId, sessionId, factorRequest)\n\n\nCreate a factor in Synchrony. Return: Returns the ID+label of the created factor.\n\n\n\naddFactor(config, factorRequest)\n\n\nCreate a factor in Synchrony. Return: Returns the ID+label of the created factor.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#GraffSDK.addBearingRangeFactor",
+    "page": "Session Service",
+    "title": "GraffSDK.addBearingRangeFactor",
+    "category": "function",
+    "text": "addBearingRangeFactor(config, robotId, sessionId, bearingRangeRequest)\n\n\nCreate a variable in Synchrony and associate it with the given robot+user. Return: Returns ID+label of the created factor.\n\n\n\naddBearingRangeFactor(config, bearingRangeRequest)\n\n\nCreate a variable in Synchrony and associate it with the given robot+user. Return: Returns ID+label of the created factor.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#GraffSDK.addOdometryMeasurement",
+    "page": "Session Service",
+    "title": "GraffSDK.addOdometryMeasurement",
+    "category": "function",
+    "text": "addOdometryMeasurement(config, robotId, sessionId, addOdoRequest)\n\n\nCreate a session in Synchrony and associate it with the given robot+user. Return: Returns the added odometry information.\n\n\n\naddOdometryMeasurement(config, addOdoRequest)\n\n\nCreate a session in Synchrony and associate it with the given robot+user. Return: Returns the added odometry information.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#GraffSDK.putReady",
+    "page": "Session Service",
+    "title": "GraffSDK.putReady",
+    "category": "function",
+    "text": "putReady(config, robotId, sessionId, isReady)\n\n\nSet the ready status for a session.\n\n\n\nputReady(config, isReady)\n\n\nSet the ready status for a session.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#Functions-3",
+    "page": "Session Service",
+    "title": "Functions",
+    "category": "section",
+    "text": "addVariable\naddFactor\naddBearingRangeFactor\naddOdometryMeasurement\nputReady"
+},
+
+{
+    "location": "ref_session.html#Working-with-Node-Data-1",
+    "page": "Session Service",
+    "title": "Working with Node Data",
+    "category": "section",
+    "text": ""
+},
+
+{
+    "location": "ref_session.html#GraffSDK.BigDataElementRequest",
+    "page": "Session Service",
+    "title": "GraffSDK.BigDataElementRequest",
+    "category": "type",
+    "text": "Body of a request for creating or updating a data element.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#GraffSDK.BigDataEntryResponse",
+    "page": "Session Service",
+    "title": "GraffSDK.BigDataEntryResponse",
+    "category": "type",
+    "text": "Summary of data entry returned from request.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#GraffSDK.BigDataElementResponse",
+    "page": "Session Service",
+    "title": "GraffSDK.BigDataElementResponse",
+    "category": "type",
+    "text": "Complete data element response (including data).\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#Structures-4",
+    "page": "Session Service",
+    "title": "Structures",
+    "category": "section",
+    "text": "BigDataElementRequest\nBigDataEntryResponse\nBigDataElementResponse"
+},
+
+{
+    "location": "ref_session.html#GraffSDK.getDataEntries",
+    "page": "Session Service",
+    "title": "GraffSDK.getDataEntries",
+    "category": "function",
+    "text": "getDataEntries(config, robotId, sessionId, node)\n\n\nGet data entries associated with a node. Return: Summary of all data associated with a node.\n\n\n\ngetDataEntries(config, node)\n\n\nGet data entries associated with a node. Return: Summary of all data associated with a node.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#GraffSDK.getDataElement",
+    "page": "Session Service",
+    "title": "GraffSDK.getDataElement",
+    "category": "function",
+    "text": "getDataElement(config, robotId, sessionId, node, bigDataKey)\n\n\nGet data elment associated with a node. Return: Full data element associated with the specified node.\n\n\n\ngetDataElement(config, node, bigDataKey)\n\n\nGet data elment associated with a node. Return: Full data element associated with the specified node.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#GraffSDK.getRawDataElement",
+    "page": "Session Service",
+    "title": "GraffSDK.getRawDataElement",
+    "category": "function",
+    "text": "getRawDataElement(config, robotId, sessionId, node, bigDataKey)\n\n\nGet data elment associated with a node. Return: Full data element associated with the specified node.\n\n\n\ngetRawDataElement(config, node, bigDataKey)\n\n\nGet data elment associated with a node. Return: Full data element associated with the specified node.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#GraffSDK.addDataElement",
+    "page": "Session Service",
+    "title": "GraffSDK.addDataElement",
+    "category": "function",
+    "text": "addDataElement(config, robotId, sessionId, node, bigDataElement)\n\n\nAdd a data element associated with a node. Return: Nothing if succeed, error if failed.\n\n\n\naddDataElement(config, node, bigDataElement)\n\n\nAdd a data element associated with a node. Return: Nothing if succeed, error if failed.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#GraffSDK.updateDataElement",
+    "page": "Session Service",
+    "title": "GraffSDK.updateDataElement",
+    "category": "function",
+    "text": "updateDataElement(config, robotId, sessionId, node, bigDataElement)\n\n\nUpdate a data element associated with a node. Return: Nothing if succeed, error if failed.\n\n\n\nupdateDataElement(config, node, bigDataElement)\n\n\nUpdate a data element associated with a node. Return: Nothing if succeed, error if failed.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#GraffSDK.addOrUpdateDataElement",
+    "page": "Session Service",
+    "title": "GraffSDK.addOrUpdateDataElement",
+    "category": "function",
+    "text": "addOrUpdateDataElement(config, robotId, sessionId, node, dataElement)\n\n\nAdd or update a data element associated with a node. Will check if the key exists, if so it updates, otherwise it adds. Return: Nothing if succeed, error if failed.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#GraffSDK.deleteDataElement",
+    "page": "Session Service",
+    "title": "GraffSDK.deleteDataElement",
+    "category": "function",
+    "text": "deleteDataElement(config, robotId, sessionId, node, dataId)\n\n\nDelete a data element associated with a node. Return: Nothing if succeed, error if failed.\n\n\n\ndeleteDataElement(config, node, dataId)\n\n\nDelete a data element associated with a node. Return: Nothing if succeed, error if failed.\n\n\n\n"
+},
+
+{
+    "location": "ref_session.html#Functions-4",
+    "page": "Session Service",
+    "title": "Functions",
+    "category": "section",
+    "text": "getDataEntries\ngetDataElement\ngetRawDataElement\naddDataElement\nupdateDataElement\naddOrUpdateDataElement\ndeleteDataElement"
 },
 
 {
