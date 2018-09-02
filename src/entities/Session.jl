@@ -96,11 +96,17 @@ struct AddOdometryRequest
     AddOdometryRequest(deltaMeasurement::Vector{Float64}, pOdo::Array{Float64, 2}) = new(string(Dates.Time(now(Dates.UTC))), deltaMeasurement, pOdo, nothing)
 end
 
+"""
+Result of an AddOdometryRequest - provides the variable and factor details for the created node.
+"""
 struct AddOdometryResponse
     variable::NodeResponse
     factor::NodeResponse
 end
 
+"""
+The parameters structure for CreateVariable request.
+"""
 struct VariableRequest
     label::String
     variableType::String
@@ -108,16 +114,22 @@ struct VariableRequest
     labels::Vector{String}
 end
 
+"""
+Result of a CreateVariableRequest.
+"""
 struct VariableResponse
 end
 
+"""
+Parameters for a general distribution request - the distribution type and the accompanying parameters.
+"""
 struct DistributionRequest
     distType::String
     params::Vector{Float64}
 end
 
 """
-A 2D bearing range request body.
+A 2D bearing+range request body.
 """
 struct BearingRangeRequest
     pose2Id::String
@@ -126,6 +138,9 @@ struct BearingRangeRequest
     range::DistributionRequest
 end
 
+"""
+Parameter for a CreateFactor request - the factor type and packed factor details.
+"""
 struct FactorBody
     factorType::String
     packedFactorType::String
@@ -133,9 +148,13 @@ struct FactorBody
     body::String
 end
 
+"""
+The body of a CreateFactor request - the variables to be linked, the body of the factor, and whether it should be autoinitialized and is ready for solving.
+"""
 struct FactorRequest
     variables::Vector{String}
     body::FactorBody
     autoinit::Nullable{Bool}
     ready::Nullable{Bool}
 end
+    
