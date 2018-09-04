@@ -31,11 +31,19 @@ Adding odometry data creates everything all at once for a standard 2D factor of 
 Just create the AddOdometryRequest request and fire it off:
 
 ```julia
-deltaMeasurement = [1.0; 1.0; pi/4] # x5's pose is (1, 1) away from x4 and the bearing increased by 45 degrees   
+deltaMeasurement = [1.0; 1.0; pi/4] # x2's pose is (1, 1) away from x1 and the bearing increased by 45 degrees   
 pOdo = Float64[0.1 0 0; 0 0.1 0; 0 0 0.01] # Uncertainty in the measurement is in pOdo along the principal diagonal, i.e. [0.1, 0.1, 0.01]
 newOdo = AddOdometryRequest(deltaMeasurement, pOdo)
 @show addOdoResponse = addOdometryMeasurement(synchronyConfig, newOdo)
+
+# Above would produce x1 in an empty graph.
+# Let's run again to produce x2 - assuming the robot travelled the same delta measurement
+@show addOdoResponse = addOdometryMeasurement(synchronyConfig, newOdo)
 ```
+
+The result would be the following image if run against an empty session:
+
+![Simple Odometry Graph](images/x0_x2_nodes.png)
 
 ### Adding and Attaching Landmarks
 
@@ -55,8 +63,8 @@ We now create the factors to link x1 to l1, and x2 to l1 respectively. The facto
 
 ```julia
 newBearingRangeFactor = BearingRangeRequest("x1", "l1",
-                          DistributionRequest("Normal", Float64[-pi/4; 0.1]), # A statistical measurement of the bearing from x2 to l1 - normal distribution with 0 mean and 0.1 std
-                          DistributionRequest("Normal", Float64[18; 1.0]) # A statistical measurement of the range/distance from x2 to l1 - normal distribution with 0 mean and 0.1 std
+                          DistributionRequest("Normal", Float64[0; 0.1]), # A statistical measurement of the bearing from x2 to l1 - normal distribution with 0 mean and 0.1 std
+                          DistributionRequest("Normal", Float64[20; 1.0]) # A statistical measurement of the range/distance from x2 to l1 - normal distribution with 0 mean and 0.1 std
                           )
 addBearingRangeFactor(synchronyConfig, newBearingRangeFactor)
 ```
@@ -65,14 +73,16 @@ We can add another one between x2 and l1:
 
 ```julia
 newBearingRangeFactor = BearingRangeRequest("x2", "l1",
-                          DistributionRequest("Normal", Float64[; 0.1]), # A statistical measurement of the bearing from x1 to l1 - normal distribution with 0 mean and 0.1 std
-                          DistributionRequest("Normal", Float64[20; 1.0]) # A statistical measurement of the range/distance from x1 to l1 - normal distribution with 0 mean and 0.1 std
+                          DistributionRequest("Normal", Float64[-pi/4; 0.1]), # A statistical measurement of the bearing from x1 to l1 - normal distribution with 0 mean and 0.1 std
+                          DistributionRequest("Normal", Float64[18; 1.0]) # A statistical measurement of the range/distance from x1 to l1 - normal distribution with 0 mean and 0.1 std
                           )
 addBearingRangeFactor(synchronyConfig, newBearingRangeFactor)
 ```
 
-[TODO: Show resultant graph]
-[TODO: Make measurements the make sense]
+The graph would then become:
+
+![Odometry Graph with bound landmark](images/x0_x2_l1_nodes.png)
+
 
 ### Attaching Sensor Data
 
@@ -82,7 +92,7 @@ addBearingRangeFactor(synchronyConfig, newBearingRangeFactor)
 
 ### Adding Variables
 
-Variables (a.k.a. poses in localization) are created as shown above for the landmark. Variables contain a label, a data type (e.g. a 2D Point or Pose). Note that variables are solved (i.e. given values) - they are what you wish to calculate when the solver runs - so you don't provide any measurements.
+Variables (a.k.a. poses in localization terminology) are created in the same way  shown above for the landmark. Variables contain a label, a data type (e.g. a 2D Point or Pose). Note that variables are solved - i.e. they are the product, what you wish to calculate when the solver runs - so you don't provide any measurements when creating them.
 
 For example, we can define x1 as follows:
 ```julia
@@ -129,7 +139,7 @@ using RoME
 subtypes(IncrementalInference.FunctorPairwise)
 ```
 
-The current listing of important factor types (there are many) is:
+The current factor types that you will find in the example are (there are many aside from these):
 
 * Point2Point2 -
 * Point2Point2WorldBearing -
