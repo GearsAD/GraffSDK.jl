@@ -43,7 +43,7 @@ newOdo = AddOdometryRequest(deltaMeasurement, pOdo)
 
 The result would be the following image if run against an empty session:
 
-![Simple Odometry Graph](images/x0_x2_nodes.png)
+![Simple Odometry Graph](images/x0_x2_nodes.jpg)
 
 ### Adding and Attaching Landmarks
 
@@ -109,6 +109,8 @@ We can also provide additional labels in the request, as was done with the landm
 newLandmark = VariableRequest("l1", "Point2", ["LANDMARK"])
 response = addVariable(synchronyConfig, newLandmark)
 ```
+
+NOTE: These are by default created with IsReady set to false. The assumption is that you are building lower-level elements, so you should call putReady once you want these nodes to be solved.
 
 #### Variable Types
 If you have installed RoME, you can check for the latest variable types with:

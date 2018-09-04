@@ -17,13 +17,16 @@ makedocs(
             "Basic Initialization" => "examples/basics_initialization.md",
             "Basic Robot" => "examples/basics_robot.md",
             "Basic Session" => "examples/basics_session.md",
+            "Building Graphs" => "examples/basics_variablesandfactors.md"
+        ],
+        "End-to-End Examples" => [
             "Hexagonal Robot" => "examples/hexagonal.md",
             "Brookstone Rover" => "examples/brookstone.md"
         ],
         "Service Reference" => [
             "User Service" => "ref_user.md",
             "Robot Service" => "ref_robot.md",
-            "Session Service" => "ref_session.md"   
+            "Session Service" => "ref_session.md"
         ],
         "Reference" => "reference.md"
     ]
