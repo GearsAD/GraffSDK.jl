@@ -112,6 +112,9 @@ struct VariableRequest
     variableType::String
     N::Nullable{Int64}
     labels::Vector{String}
+    VariableRequest(label::String, variableType::String, N::Nullable{Int64}, labels::Vector{String}) = new(label, variableType, N, labels)
+    VariableRequest(label::String, variableType::String, labels::Vector{String}) = new(label, variableType, nothing, labels)
+    VariableRequest(label::String, variableType::String) = new(label, variableType, nothing, String[])
 end
 
 """
@@ -157,4 +160,3 @@ struct FactorRequest
     autoinit::Nullable{Bool}
     ready::Nullable{Bool}
 end
-    

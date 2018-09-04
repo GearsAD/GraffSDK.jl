@@ -23,7 +23,7 @@ makedocs(
         "Service Reference" => [
             "User Service" => "ref_user.md",
             "Robot Service" => "ref_robot.md",
-            "Session Service" => "ref_session.md"
+            "Session Service" => "ref_session.md"   
         ],
         "Reference" => "reference.md"
     ]
