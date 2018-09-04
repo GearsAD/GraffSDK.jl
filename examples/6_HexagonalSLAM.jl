@@ -1,11 +1,11 @@
 # Tutorial on conventional 2D SLAM example
 # This tutorial shows how to use some of the commonly used factor types
 # This tutorial follows from the ContinuousScalar example from IncrementalInference
-using SynchronySDK
+using GraffSDK
 using ProgressMeter
 
 # 1. Import the initialization code.
-cd(joinpath(Pkg.dir("SynchronySDK"),"examples"))
+cd(joinpath(Pkg.dir("GraffSDK"),"examples"))
 include("0_Initialization.jl")
 
 # 1a. Create a Configuration
@@ -23,7 +23,7 @@ printStatus(synchronyConfig)
 # 2. Confirm that the robot already exists, create if it doesn't.
 println(" - Creating or retrieving robot '$(synchronyConfig.robotId)'...")
 robot = nothing
-if(SynchronySDK.isRobotExisting(synchronyConfig))
+if(isRobotExisting(synchronyConfig))
     println(" -- Robot '$(synchronyConfig.robotId)' already exists, retrieving it...")
     robot = getRobot(synchronyConfig, robotId)
 else
@@ -38,7 +38,7 @@ println(robot)
 # Get sessions, if it already exists, add to it.
 println(" - Creating or retrieving data session '$(synchronyConfig.sessionId)' for robot...")
 session = nothing
-if(SynchronySDK.isSessionExisting(synchronyConfig))
+if(isSessionExisting(synchronyConfig))
     println(" -- Session '$(synchronyConfig.sessionId)' already exists for robot '$(synchronyConfig.robotId)', retrieving it...")
     session = getSession(synchronyConfig)
 else

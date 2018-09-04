@@ -1,13 +1,13 @@
 using Base
 using JSON, Unmarshal
-using SynchronySDK
+using GraffSDK
 
 # 0. Constants
 robotId = "NewRobot"
 
 # 1. Get a Synchrony configuration
 # Assume that you're running in local directory
-cd(joinpath(Pkg.dir("SynchronySDK"),"examples"))
+cd(joinpath(Pkg.dir("GraffSDK"),"examples"))
 configFile = open("synchronyConfig.json")
 configData = JSON.parse(readstring(configFile))
 close(configFile)
