@@ -309,7 +309,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Introduction",
     "title": "Conceptual Examples",
     "category": "section",
-    "text": "There are a few simple examples that take you through the creation of a robot, a session, and add data. These are:Graff Initialization\nCreating a Robot and Adding Configuration Data\nCreating Sessions, Adding Nodes\nA Deep Dive into Variables and Factors"
+    "text": "There are a few simple examples that take you through the creation of a robot, a session, and add data. These are:Graff Initialization\nCreating a Robot and Adding Configuration Data\nCreating Sessions, Adding Simple Odometry Measurements\nA Deep Dive into Variables and Factors"
 },
 
 {
@@ -342,6 +342,118 @@ var documenterSearchIndex = {"docs": [
     "title": "Basic Session",
     "category": "page",
     "text": "Complete code example can be found at Creating Sessions, Adding Nodes"
+},
+
+{
+    "location": "examples/basics_variablesandfactors.html#",
+    "page": "Building Graphs",
+    "title": "Building Graphs",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "examples/basics_variablesandfactors.html#Adding-Variables-and-Factors-(Building-Graphs)-1",
+    "page": "Building Graphs",
+    "title": "Adding Variables and Factors (Building Graphs)",
+    "category": "section",
+    "text": "Irrespective of your application - real-time robotics, batch processing of survey data, or really complex multi-hypothesis modeling - you\'re going to need to need to add factors and variables to a graph. This section discusses how to do that with SlamInDb/Graff:For the frequently-occurring cases, like streaming robotics, we have added convenience methods. We will also continue to do so for other scenarios, hopefully incrementally building easier/cleaner libraries and expertise for the wide variety of solutions that SlamInDb/Graff can solve. Right now, we have a convenience methods for building graphs from streams of odometry data (e.g. an LCM log or a ROS bag file).  \nWe also have lower-level methods, more generalized calls to add variables and factors."
+},
+
+{
+    "location": "examples/basics_variablesandfactors.html#A-Quick-Discussion-on-IsReady-1",
+    "page": "Building Graphs",
+    "title": "A Quick Discussion on IsReady",
+    "category": "section",
+    "text": "Ideally, we want to solve any updated graph as quickly as possible. We\'re actually architecting the underlying solver structure to do that the moment new data becomes available, so in an ideal world, there is no such thing as a ready graph that doesn\'t have a solution yet.However, in some scenarios you want to incrementally build graphs and then let it solve. The IsReady flag on variables provides you with a means to delay that solving.In a simple scenario, imagine that you want to add two variables (x1 and x2) and relate them with a shared landmark. You may want to delay solving until you\'ve provided all the information. This can be done with the IsReady flag:Add x1 pose with isReady = false\nAdd x2 pose with isReady = false\nAdd l1 landmark with isReady = false\nCreate odometry factor between x1 and x2 (I moved from x1 to x2 and the new factor contains the odometry difference)\nCreate bearing+range factor between x1 and l1 (I saw something in x1)\nCreate bearing+range factor between x2 and l1 (I saw the same something in x2)\nCall PutReady for this set of nodes\n-> Solver will detect new data and run off to solve itLast note of this: Some methods automatically set IsReady to true (such as the addOdometryMeasurement convenience functions) - this is great for examples and continuous incremental solving. That means that you don\'t need to worry about it, and when we discuss those methods we\'ll try indicate which automatically set it."
+},
+
+{
+    "location": "examples/basics_variablesandfactors.html#High-Level-Convenience-Functions-for-Adding-Data-to-a-Graff-1",
+    "page": "Building Graphs",
+    "title": "High-Level Convenience Functions for Adding Data to a Graff",
+    "category": "section",
+    "text": ""
+},
+
+{
+    "location": "examples/basics_variablesandfactors.html#Adding-Odometry-Data-1",
+    "page": "Building Graphs",
+    "title": "Adding Odometry Data",
+    "category": "section",
+    "text": "Adding odometry data creates everything all at once for a standard 2D factor of type (x, y, angle). It creates a new variable (say x2) at the end of the graph, links it to the last variable (x1) via a Pose2Pose2 factor, and updates IsReady flags to true.Just create the AddOdometryRequest request and fire it off:deltaMeasurement = [1.0; 1.0; pi/4] # x2\'s pose is (1, 1) away from x1 and the bearing increased by 45 degrees   \npOdo = Float64[0.1 0 0; 0 0.1 0; 0 0 0.01] # Uncertainty in the measurement is in pOdo along the principal diagonal, i.e. [0.1, 0.1, 0.01]\nnewOdo = AddOdometryRequest(deltaMeasurement, pOdo)\n@show addOdoResponse = addOdometryMeasurement(synchronyConfig, newOdo)\n\n# Above would produce x1 in an empty graph.\n# Let\'s run again to produce x2 - assuming the robot travelled the same delta measurement\n@show addOdoResponse = addOdometryMeasurement(synchronyConfig, newOdo)The result would be the following image if run against an empty session:(Image: Simple Odometry Graph)"
+},
+
+{
+    "location": "examples/basics_variablesandfactors.html#Adding-and-Attaching-Landmarks-1",
+    "page": "Building Graphs",
+    "title": "Adding and Attaching Landmarks",
+    "category": "section",
+    "text": "We may have seen the same identifying feature in both x1 and x2 (eg. an AprilTag), and want to represent this information. There is a convenience function addBearingRangeFactor that is used to add the factor between the landmark and the variable.Technically adding landmarks is a lower-level function (addVariable), but in this scenario we want to show the binding of the landmark to variables, so we need to add a landmark with a addVariable call:newLandmark = VariableRequest(\n  \"l1\", #The variables label\n  \"Point2\", #The type of variable - in this instance it\'s a 2D point in space, refer to Variable Types section below for the other variable types\n  [\"LANDMARK\"]) #Labels - we are identifying this as a landmark for readability\nresponse = addVariable(synchronyConfig, newLandmark)We now create the factors to link x1 to l1, and x2 to l1 respectively. The factors are type specific (in this case, relating a 2D position+angle to a 2D point), and include a distribution capturing the uncertainty. You don\'t need to make them normal distributions, but that\'s a discussion for later:newBearingRangeFactor = BearingRangeRequest(\"x1\", \"l1\",\n                          DistributionRequest(\"Normal\", Float64[0; 0.1]), # A statistical measurement of the bearing from x2 to l1 - normal distribution with 0 mean and 0.1 std\n                          DistributionRequest(\"Normal\", Float64[20; 1.0]) # A statistical measurement of the range/distance from x2 to l1 - normal distribution with 0 mean and 0.1 std\n                          )\naddBearingRangeFactor(synchronyConfig, newBearingRangeFactor)We can add another one between x2 and l1:newBearingRangeFactor = BearingRangeRequest(\"x2\", \"l1\",\n                          DistributionRequest(\"Normal\", Float64[-pi/4; 0.1]), # A statistical measurement of the bearing from x1 to l1 - normal distribution with 0 mean and 0.1 std\n                          DistributionRequest(\"Normal\", Float64[18; 1.0]) # A statistical measurement of the range/distance from x1 to l1 - normal distribution with 0 mean and 0.1 std\n                          )\naddBearingRangeFactor(synchronyConfig, newBearingRangeFactor)The graph then becomes:(Image: Odometry Graph with bound landmark)"
+},
+
+{
+    "location": "examples/basics_variablesandfactors.html#Attaching-Sensor-Data-1",
+    "page": "Building Graphs",
+    "title": "Attaching Sensor Data",
+    "category": "section",
+    "text": "[TODO]"
+},
+
+{
+    "location": "examples/basics_variablesandfactors.html#Low-Level-Functions-for-Adding-Data-to-a-Graff-1",
+    "page": "Building Graphs",
+    "title": "Low-Level Functions for Adding Data to a Graff",
+    "category": "section",
+    "text": ""
+},
+
+{
+    "location": "examples/basics_variablesandfactors.html#Adding-Variables-1",
+    "page": "Building Graphs",
+    "title": "Adding Variables",
+    "category": "section",
+    "text": "Variables (a.k.a. poses in localization terminology) are created in the same way  shown above for the landmark. Variables contain a label, a data type (e.g. a 2D Point or Pose). Note that variables are solved - i.e. they are the product, what you wish to calculate when the solver runs - so you don\'t provide any measurements when creating them.For example, we can define x1 as follows:x1Request = VariableRequest(\"x1\", \"Pose2\")\nresponse = addVariable(synchronyConfig, x1Request)\n\nx2Request = VariableRequest(\"x2\", \"Pose2\", [\"AdditionalLabel\"])\nresponse = addVariable(synchronyConfig, x2Request)We can also provide additional labels in the request, as was done with the landmark, to help identify the variables later:newLandmark = VariableRequest(\"l1\", \"Point2\", [\"LANDMARK\"])\nresponse = addVariable(synchronyConfig, newLandmark)NOTE: These are by default created with IsReady set to false. The assumption is that you are building lower-level elements, so you should call putReady once you want these nodes to be solved."
+},
+
+{
+    "location": "examples/basics_variablesandfactors.html#Variable-Types-1",
+    "page": "Building Graphs",
+    "title": "Variable Types",
+    "category": "section",
+    "text": "If you have installed RoME, you can check for the latest variable types with:using RoME\nsubtypes(IncrementalInference.InferenceVariable)The current list of available variable types is:Point2 - A 2D coordinate\nPoint3 - A 3D coordinate\nPose2 - A 2D coordinate and a rotation (i.e. bearing)\nPose3 - A 3D coordinate and 3 associated rotations\nDynPoint2 - A 2D coordinate and linear velocities\nDynPose2 - A 2D coordinate, linear velocities, and a rotation"
+},
+
+{
+    "location": "examples/basics_variablesandfactors.html#Adding-Factors-1",
+    "page": "Building Graphs",
+    "title": "Adding Factors",
+    "category": "section",
+    "text": ""
+},
+
+{
+    "location": "examples/basics_variablesandfactors.html#Creating-Factors-with-RoME-1",
+    "page": "Building Graphs",
+    "title": "Creating Factors with RoME",
+    "category": "section",
+    "text": "If you have RoME installed, you can lever the RoME library for creating various factors. To continue the prior example, to create the Pose2->Pose2 odometry relationship:using RoME\nusing Distributions\n\n# Our measurements\ndeltaMeasurement = [1.0; 1.0; pi/4] #Same as above - a (1,1) move with a 45 degree heading change\npOdo = Float64[0.1 0 0; 0 0.1 0; 0 0 0.01]\n# Creating the factor body - We are working on making this cleaner\np2p2 = Pose2Pose2(MvNormal(deltaMeasurement, pOdo.^2))\np2p2Conv = convert(PackedPose2Pose2, p2p2)\np2p2Request = FactorRequest([\"x0\", \"x1\"], \"Pose2Pose2\", p2p2Conv)\n\n# Send the request for the x0->x1 link\naddFactor(synchronyConfig, p2p2Request)\n# Update the request to make the same link between x1 and x2\np2p2Request.variables = [\"x1\", \"x2\"]\naddFactor(synchronyConfig, p2p2Request)Now we can add the factors between the variables and the landmark. As above, this is a 2D pose to 2D point+bearing factor, and is built similar to above:# Lastly, let\'s add the bearing+range factor between x1 and landmark l1\nbearingDist = Normal(-pi/4, 0.1)\nrangeDist = Normal(18, 1.0)\np2br2 = Pose2Point2BearingRange(bearingDist, rangeDist)\np2br2Conv = convert(PackedPose2Point2BearingRange, p2br2)\np2br2Request = FactorRequest([\"x1\", \"l1\"], \"Pose2Point2BearingRange\", p2br2Conv)\n\naddFactor(synchronyConfig, p2br2Request)\n# Now add the x1->l1 bearing+range factor\np2br2Request.variables = [\"x2\", \"l1\"]\naddFactor(synchronyConfig, p2br2Request)"
+},
+
+{
+    "location": "examples/basics_variablesandfactors.html#Creating-Factors-Natively-1",
+    "page": "Building Graphs",
+    "title": "Creating Factors Natively",
+    "category": "section",
+    "text": "[TODO] In some instances, you are running a parallel local solver, so RoME will be available for factor creation. In other, smaller instances, you may rely solely on the cloud solution. In this case, you need to create factors without pulling in RoME. TBD - Still working on this."
+},
+
+{
+    "location": "examples/basics_variablesandfactors.html#Factor-Types-1",
+    "page": "Building Graphs",
+    "title": "Factor Types",
+    "category": "section",
+    "text": "If you have installed RoME, you can check for the latest factor types with:using RoME\nsubtypes(IncrementalInference.FunctorPairwise)The current factor types that you will find in the example are (there are many aside from these):Point2Point2 -A factor between two 2D points\nPoint2Point2WorldBearing - A factor between two 2D points with bearing\nPose2Point2Bearing - A factor between two 2D points with bearing\nPose2Point2BearingRange - A factor between two 2D points with bearing and range\nPose2Point2Range - A factor between a 2D pose and a 2D point, with range\nPose2Pose2 - A factor between two 2D poses\nPose3Pose3 - A factor between two 3D poses"
 },
 
 {
