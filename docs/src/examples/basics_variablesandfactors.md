@@ -79,7 +79,7 @@ newBearingRangeFactor = BearingRangeRequest("x2", "l1",
 addBearingRangeFactor(synchronyConfig, newBearingRangeFactor)
 ```
 
-The graph would then become:
+The graph then becomes:
 
 ![Odometry Graph with bound landmark](images/x0_x2_l1_nodes.png)
 
@@ -131,9 +131,52 @@ The current list of available variable types is:
 
 ### Adding Factors
 
-[TODO]
+#### Creating Factors with RoME
 
-### Factor Types
+If you have RoME installed, you can lever the RoME library for creating various factors. To continue the prior example, to create the Pose2->Pose2 odometry relationship:
+
+```julia
+using RoME
+using Distributions
+
+# Our measurements
+deltaMeasurement = [1.0; 1.0; pi/4] #Same as above - a (1,1) move with a 45 degree heading change
+pOdo = Float64[0.1 0 0; 0 0.1 0; 0 0 0.01]
+# Creating the factor body - We are working on making this cleaner
+p2p2 = Pose2Pose2(MvNormal(deltaMeasurement, pOdo.^2))
+p2p2Conv = convert(PackedPose2Pose2, p2p2)
+p2p2Request = FactorRequest(["x0", "x1"], "Pose2Pose2", p2p2Conv)
+
+# Send the request for the x0->x1 link
+addFactor(synchronyConfig, p2p2Request)
+# Update the request to make the same link between x1 and x2
+p2p2Request.variables = ["x1", "x2"]
+addFactor(synchronyConfig, p2p2Request)
+```
+
+Now we can add the factors between the variables and the landmark. As above, this is a 2D pose to 2D point+bearing factor, and is built similar to above:
+
+```julia
+# Lastly, let's add the bearing+range factor between x1 and landmark l1
+bearingDist = Normal(-pi/4, 0.1)
+rangeDist = Normal(18, 1.0)
+p2br2 = Pose2Point2BearingRange(bearingDist, rangeDist)
+p2br2Conv = convert(PackedPose2Point2BearingRange, p2br2)
+p2br2Request = FactorRequest(["x1", "l1"], "Pose2Point2BearingRange", p2br2Conv)
+
+addFactor(synchronyConfig, p2br2Request)
+# Now add the x1->l1 bearing+range factor
+p2br2Request.variables = ["x2", "l1"]
+addFactor(synchronyConfig, p2br2Request)
+```
+
+#### Creating Factors Natively
+
+[TODO] In some instances, you are running a parallel local solver, so RoME will be available for factor creation. In other, smaller instances, you may rely solely on the cloud solution. In this case, you need to create factors without pulling in RoME.
+TBD - Still working on this.
+
+
+#### Factor Types
 If you have installed RoME, you can check for the latest factor types with:
 
 ```julia
@@ -143,10 +186,10 @@ subtypes(IncrementalInference.FunctorPairwise)
 
 The current factor types that you will find in the example are (there are many aside from these):
 
-* Point2Point2 -
-* Point2Point2WorldBearing -
-* Pose2Point2Bearing -
-* Pose2Point2BearingRange -
-* Pose2Point2Range -
-* Pose2Pose2 -
-* Pose3Pose3 -
+* Point2Point2 -A factor between two 2D points
+* Point2Point2WorldBearing - A factor between two 2D points with bearing
+* Pose2Point2Bearing - A factor between two 2D points with bearing
+* Pose2Point2BearingRange - A factor between two 2D points with bearing and range
+* Pose2Point2Range - A factor between a 2D pose and a 2D point, with range
+* Pose2Pose2 - A factor between two 2D poses
+* Pose3Pose3 - A factor between two 3D poses

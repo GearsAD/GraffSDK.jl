@@ -294,7 +294,7 @@ function addFactor(config::SynchronyConfig, factorRequest::FactorRequest)::NodeR
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return addFactor(config, config.robotId, config.sessionId, FactorRequest)
+    return addFactor(config, config.robotId, config.sessionId, factorRequest)
 end
 
 """

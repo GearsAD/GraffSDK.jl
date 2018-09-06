@@ -88,7 +88,7 @@ end
 """
 The structure describing a high-level add-odometry request.
 """
-struct AddOdometryRequest
+mutable struct AddOdometryRequest
     timestamp::String
     deltaMeasurement::Vector{Float64}
     pOdo::Array{Float64, 2}
@@ -107,7 +107,7 @@ end
 """
 The parameters structure for CreateVariable request.
 """
-struct VariableRequest
+mutable struct VariableRequest
     label::String
     variableType::String
     N::Nullable{Int64}
@@ -126,7 +126,7 @@ end
 """
 Parameters for a general distribution request - the distribution type and the accompanying parameters.
 """
-struct DistributionRequest
+mutable struct DistributionRequest
     distType::String
     params::Vector{Float64}
 end
@@ -134,7 +134,7 @@ end
 """
 A 2D bearing+range request body.
 """
-struct BearingRangeRequest
+mutable struct BearingRangeRequest
     pose2Id::String
     point2Id::String
     bearing::DistributionRequest
@@ -144,7 +144,7 @@ end
 """
 Parameter for a CreateFactor request - the factor type and packed factor details.
 """
-struct FactorBody
+mutable struct FactorBody
     factorType::String
     packedFactorType::String
     encoding::String
@@ -154,9 +154,19 @@ end
 """
 The body of a CreateFactor request - the variables to be linked, the body of the factor, and whether it should be autoinitialized and is ready for solving.
 """
-struct FactorRequest
+mutable struct FactorRequest
     variables::Vector{String}
     body::FactorBody
     autoinit::Nullable{Bool}
     ready::Nullable{Bool}
+    FactorRequest(variables::Vector{String}, factorType::String, packedFactor; autoinit::Bool = false, ready::Bool = false ) = begin
+        # try
+            #TODO: Simplify this
+            factBody = FactorBody(factorType, string(typeof(packedFactor)), "application/json", JSON.json(packedFactor))
+            return FactorRequest(variables, factBody; autoinit=autoinit, ready=ready)
+        # catch ex
+        #     error("Unable to serialize the factor body - $ex")
+        # end
+    end
+    FactorRequest(variables::Vector{String}, body::FactorBody; autoinit::Bool = false, ready::Bool = false ) = new(variables, body, autoinit, ready)
 end
