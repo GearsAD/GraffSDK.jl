@@ -5,7 +5,7 @@
 There are a few simple examples that take you through the creation of a robot, a session, and add data. These are:
 1. [Graff Initialization](basics_initialization.md)
 1. [Creating a Robot and Adding Configuration Data](basics_robot.md)
-1. [Creating Sessions, Adding Nodes](basics_session.md)
+1. [Creating Sessions, Adding Simple Odometry Measurements](basics_session.md)
 1. [A Deep Dive into Variables and Factors](nope)
 
 ## End-To-End Examples
