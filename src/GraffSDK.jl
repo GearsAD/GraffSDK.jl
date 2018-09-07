@@ -74,12 +74,21 @@ $SIGNATURES
 Produces the authorization and sends the REST request.
 """
 function _sendRestRequest(synchronyConfig::SynchronyConfig, verbFunction, url::String; data::String="", headers::Dict{String, String}=Dict{String, String}(), debug::Bool=false)::HTTP.Response
-    verbFunction(url, headers, data;
-        aws_authorization=true,
-        aws_service="execute-api",
-        aws_region=synchronyConfig.region,
-        aws_access_key_id=synchronyConfig.accessKey,
-        aws_secret_access_key=synchronyConfig.secretKey)
+    if length(headers) == 0 && data == "" # Special case for HTTP.delete
+        verbFunction(url;
+            aws_authorization=true,
+            aws_service="execute-api",
+            aws_region=synchronyConfig.region,
+            aws_access_key_id=synchronyConfig.accessKey,
+            aws_secret_access_key=synchronyConfig.secretKey)
+    else
+        verbFunction(url, headers, data;
+            aws_authorization=true,
+            aws_service="execute-api",
+            aws_region=synchronyConfig.region,
+            aws_access_key_id=synchronyConfig.accessKey,
+            aws_secret_access_key=synchronyConfig.secretKey)
+    end
 end
 
 # Exports
