@@ -99,11 +99,11 @@ For example, we can define x1 as follows:
 x1Request = VariableRequest("x1", "Pose2")
 response = addVariable(synchronyConfig, x1Request)
 
-x2Request = VariableRequest("x2", "Pose2", ["AdditionalLabel"])
+x2Request = VariableRequest("x2", "Pose2")
 response = addVariable(synchronyConfig, x2Request)
 ```
 
-We can also provide additional labels in the request, as was done with the landmark, to help identify the variables later:
+We can also create landmarks in a similar way, and give them an additional label (additional labels can only be 'POSE', 'LANDMARK', or 'EMPTY' for the moment):
 
 ```julia
 newLandmark = VariableRequest("l1", "Point2", ["LANDMARK"])
