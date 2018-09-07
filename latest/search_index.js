@@ -397,7 +397,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Building Graphs",
     "title": "Attaching Sensor Data",
     "category": "section",
-    "text": "[TODO]"
+    "text": "Many examples of this can be found in Working with Data"
 },
 
 {
@@ -405,7 +405,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Building Graphs",
     "title": "Low-Level Functions for Adding Data to a Graff",
     "category": "section",
-    "text": ""
+    "text": "_NOTE:_ By default, these are created with isReady = false"
 },
 
 {
@@ -429,7 +429,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Building Graphs",
     "title": "Adding Factors",
     "category": "section",
-    "text": ""
+    "text": "_NOTE:_ By default, these are created with isReady = false"
 },
 
 {
