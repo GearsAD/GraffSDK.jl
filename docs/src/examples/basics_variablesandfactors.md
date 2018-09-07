@@ -86,9 +86,11 @@ The graph then becomes:
 
 ### Attaching Sensor Data
 
-[TODO]
+Many examples of this can be found in [Working with Data](../working_with_data.md)
 
 ## Low-Level Functions for Adding Data to a Graff
+
+**_NOTE:_** By default, these are created with isReady = false
 
 ### Adding Variables
 
@@ -130,6 +132,8 @@ The current list of available variable types is:
 
 
 ### Adding Factors
+
+**_NOTE:_** By default, these are created with isReady = false
 
 #### Creating Factors with RoME
 
