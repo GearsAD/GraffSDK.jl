@@ -1,10 +1,10 @@
 ![GraffSDK Logo](graff_logo_white.png)
 
 # GraffSDK.jl
-Build status: [![Build Status](https://travis-ci.org/GearsAD/SynchronySDK.jl.svg?branch=master)](https://travis-ci.org/GearsAD/SynchronySDK.jl)
+Build status: [![Build Status](https://travis-ci.org/GearsAD/GraffSDK.jl.svg?branch=master)](https://travis-ci.org/GearsAD/GraffSDK.jl)
 
 ## Overview
-A Julia SDK for the SlamInDb/Graff project!
+A Julia SDK for the Graff/SlamInDb project!
 
 ## Installation
 This package is not yet registered with JuliaLang/METADATA.jl, but can be easily installed in Julia 0.6 with:
