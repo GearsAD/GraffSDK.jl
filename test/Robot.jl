@@ -21,13 +21,13 @@ facts("Robot API") do
     apply(sendRequestListMock) do
         context("getSessions") do
             # Act
-            callResponse = getSessions(mockConfig, "")
+            callResponse = getSessions("")
             # Assert
             @fact length(callResponse.sessions) --> 1
         end
         context("isSessionExisting") do
             # Act
-            callResponse = isSessionExisting(mockConfig, "", "")
+            callResponse = isSessionExisting("", "")
             # Assert
             @fact callResponse --> true
         end
@@ -35,23 +35,23 @@ facts("Robot API") do
     apply(sendRequestMock) do
         context("getSession") do
             # Act
-            callResponse = getSession(mockConfig, "", "")
+            callResponse = getSession("", "")
             # Assert
             @fact callResponse.id --> "TestSession"
         end
         # context("updateSession") do
         #     # Act
-        #     callResponse = addSession(mockConfig, "", mockRequest)
+        #     callResponse = addSession("", mockRequest)
         #     # Assert
         #     @fact callResponse.name --> "TestRobot"
         # end
         context("deleteSession") do
             # Act & Assert
-            callResponse = deleteSession(mockConfig, "", "")
+            callResponse = deleteSession("", "")
         end
         context("addSession") do
             # Act
-            callResponse = addSession(mockConfig, "", mockRequest)
+            callResponse = addSession("", mockRequest)
             # Assert
             @fact callResponse.id --> "TestSession"
         end
@@ -60,13 +60,13 @@ facts("Robot API") do
     # apply(sendRequestMock) do
     #     context("getNodes") do
     #         # Act
-    #         callResponse = getRobotConfig(mockConfig, "GearsAD")
+    #         callResponse = getRobotConfig("GearsAD")
     #         # Assert
     #         @fact callResponse["name"] --> "TestRobot"
     #     end
     #     context("updateRobotConfig") do
     #         # Act
-    #         callResponse = updateRobotConfig(mockConfig, "GearsAD", robotConfig)
+    #         callResponse = updateRobotConfig("GearsAD", robotConfig)
     #         # Assert
     #         @fact callResponse["name"] --> "TestRobot"
     #     end
@@ -77,27 +77,26 @@ facts("Robot API") do
     # apply(sendRequestErrorMock) do
     #     context("getRobots - Failure Mode") do
     #         # Act & Assert
-    #         @fact_throws ErrorException getRobots(mockConfig)
-    #     end
+    #         @fact_throws ErrorException getRobots(    #     end
     #     context("getRobot - Failure Mode") do
     #         # Act & Assert
-    #         @fact_throws ErrorException getRobot(mockConfig, "TestRobot")
+    #         @fact_throws ErrorException getRobot("TestRobot")
     #     end
     #     context("addRobot - Failure Mode") do
     #         # Act & Assert
-    #         @fact_throws ErrorException addRobot(mockConfig, mockRequest)
+    #         @fact_throws ErrorException addRobot(mockRequest)
     #     end
     #     context("deleteRobot - Failure Mode") do
     #         # Act & Assert
-    #         @fact_throws ErrorException deleteRobot(mockConfig, "GearsAD")
+    #         @fact_throws ErrorException deleteRobot("GearsAD")
     #     end
     #     context("getRobotConfig - Failure Mode") do
     #         # Act & Assert
-    #         @fact_throws ErrorException getRobotConfig(mockConfig, "GearsAD")
+    #         @fact_throws ErrorException getRobotConfig("GearsAD")
     #     end
     #     context("updateRobotConfig - Failure Mode") do
     #         # Act & Assert
-    #         @fact_throws ErrorException updateRobotConfig(mockConfig, "GearsAD", robotConfig)
+    #         @fact_throws ErrorException updateRobotConfig("GearsAD", robotConfig)
     #     end
     # end
 end

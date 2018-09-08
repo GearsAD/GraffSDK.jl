@@ -32,14 +32,19 @@ $(SIGNATURES)
 Visualize a session using MeshCat.
 Return: Void.
 """
-function visualizeSession(config::SynchronyConfig, robotId::String, sessionId::String, bigDataImageKey::String = "", pointCloudKey::String = "")::Void
+function visualizeSession(robotId::String, sessionId::String, bigDataImageKey::String = "", pointCloudKey::String = "")::Void
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+
     # Create a new visualizer instance
     vis = Visualizer()
     open(vis)
 
     # Get the session info
     println("Get the session info for session '$sessionId'...")
-    sessionInfo = getSession(config, robotId, sessionId)
+    sessionInfo = getSession(robotId, sessionId)
     println("Looking if we have a pose transform for '$(sessionInfo.initialPoseType)'...")
     if isempty(sessionInfo.initialPoseType)
         error("The session doesn't have a specified pose type - please provide a pose type when creating the session with the parameter 'initialPoseType'")
@@ -52,10 +57,10 @@ function visualizeSession(config::SynchronyConfig, robotId::String, sessionId::S
 
     # Retrieve all variables and render them.
     println("Retrieving all variables and rendering them...")
-    nodesResponse = getNodes(config, robotId, sessionId)
+    nodesResponse = getNodes(robotId, sessionId)
     println(" -- Rendering $(length(nodesResponse.nodes)) nodes for session $sessionId for robot $robotId...")
     @showprogress for nSummary in nodesResponse.nodes
-        node = getNode(config, robotId, sessionId, nSummary.id)
+        node = getNode(robotId, sessionId, nSummary.id)
         label = node.label
 
         println(" - Rendering $(label)...")
@@ -72,7 +77,7 @@ function visualizeSession(config::SynchronyConfig, robotId::String, sessionId::S
     end
     # Rendering the point clouds and images
     @showprogress for nSummary in nodesResponse.nodes
-        node = getNode(config, robotId, sessionId, nSummary.id)
+        node = getNode(robotId, sessionId, nSummary.id)
         label = node.label
 
         println(" - Rendering $(label)...")
@@ -94,10 +99,10 @@ function visualizeSession(config::SynchronyConfig, robotId::String, sessionId::S
 
             if pointCloudKey != "" # Get and render point clouds
                 println(" - Rendering point cloud data for keys that have id = $bigDataImageKey...")
-                bigEntries = getDataEntries(config, robotId, sessionId, nSummary.id)
+                bigEntries = getDataEntries(robotId, sessionId, nSummary.id)
                 for bigEntry in bigEntries
                     if bigEntry.id == pointCloudKey
-                        dataFrame = getDataElement(config, robotId, sessionId, nSummary.id, bigEntry.id)
+                        dataFrame = getDataElement(robotId, sessionId, nSummary.id, bigEntry.id)
 
                         # Form the data.
                         pointData = eval(parse(dataFrame.data))
@@ -119,12 +124,12 @@ function visualizeSession(config::SynchronyConfig, robotId::String, sessionId::S
             # Camera imagery
             if bigDataImageKey != "" # Get and render big data images and pointclouds
                 println(" - Rendering image data for keys that have id = $bigDataImageKey...")
-                bigEntries = getDataEntries(config, robotId, sessionId, nSummary.id)
+                bigEntries = getDataEntries(robotId, sessionId, nSummary.id)
                 for bigEntry in bigEntries
                     if bigEntry.id == bigDataImageKey
                         # HyperRectangle until we have sprites
                         box = HyperRectangle(Vec(0,0,0), Vec(0.01, 9.0/16.0/2.0, 16.0/9.0/2.0))
-                        dataFrame = getDataElement(config, robotId, sessionId, nSummary.id, bigEntry.id)
+                        dataFrame = getDataElement(robotId, sessionId, nSummary.id, bigEntry.id)
                         image = PngImage(base64decode(dataFrame.data))
 
                         # Make an image and put it in the right place.
@@ -147,10 +152,15 @@ $(SIGNATURES)
 Visualize a session using MeshCat.
 Return: Void.
 """
-function visualizeSession(config::SynchronyConfig, bigDataImageKey::String = "", pointCloudKey::String = "")::Void
+function visualizeSession(bigDataImageKey::String = "", pointCloudKey::String = "")::Void
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+
     if config.robotId == "" || config.sessionId == ""
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    visualizeSession(config, config.robotId, config.sessionId, bigDataImageKey, pointCloudKey)
+    visualizeSession(config.robotId, config.sessionId, bigDataImageKey, pointCloudKey)
 end
