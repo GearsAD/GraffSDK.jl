@@ -52,7 +52,7 @@ function getSessions()::SessionsResponse
         error("Your config doesn't have a robot specified, please attach your config to a valid robot by setting the robotId field. Robot = $(config.robotId)")
     end
 
-    return getSessions(config, config.robotId)
+    return getSessions(config.robotId)
 end
 
 """
@@ -64,8 +64,24 @@ function isSessionExisting(robotId::String, sessionId::String)::Bool
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
     end
-    sessions = getSessions(config, robotId)
+    sessions = getSessions(robotId)
     return count(sess -> lowercase(strip(sess.id)) == lowercase(strip(sessionId)), sessions.sessions) > 0
+end
+
+"""
+$(SIGNATURES)
+Return: Returns true if the session exists already.
+"""
+function isSessionExisting(sessionId::String)::Bool
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    if config.robotId == ""
+        error("Your config doesn't have a robot specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return isSessionExisting(config.robotId, sessionId)
 end
 
 """
@@ -81,7 +97,7 @@ function isSessionExisting()::Bool
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return isSessionExisting(config, config.robotId, config.sessionId)
+    return isSessionExisting(config.robotId, config.sessionId)
 end
 
 """
@@ -116,7 +132,7 @@ function getSession()::SessionDetailsResponse
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return getSession(config, config.robotId, config.sessionId)
+    return getSession(config.robotId, config.sessionId)
 end
 
 """
@@ -151,7 +167,7 @@ function deleteSession()::Void
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return deleteSession(config, config.robotId, config.sessionId)
+    return deleteSession(config.robotId, config.sessionId)
 end
 
 
@@ -187,7 +203,7 @@ function addSession(session::SessionDetailsRequest)::SessionDetailsResponse
         error("Your config doesn't have a robot specified, please attach your config to a valid robot by setting the robotId fields. Robot = $(config.robotId)")
     end
 
-    return addSession(config, config.robotId, session)
+    return addSession(config.robotId, session)
 end
 
 """
@@ -229,7 +245,7 @@ function getNodes()::NodesResponse
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return getNodes(config, config.robotId, config.sessionId)
+    return getNodes(config.robotId, config.sessionId)
 end
 
 
@@ -271,7 +287,7 @@ function getNode(nodeIdOrLabel::Union{Int, String})::NodeDetailsResponse
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return getNode(config, config.robotId, config.sessionId, nodeIdOrLabel)
+    return getNode(config.robotId, config.sessionId, nodeIdOrLabel)
 end
 
 """
@@ -304,7 +320,7 @@ function putReady(isReady::Bool)::Void
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return putReady(config, config.robotId, config.sessionId, isReady)
+    return putReady(config.robotId, config.sessionId, isReady)
 end
 
 """
@@ -339,7 +355,7 @@ function addVariable(variableRequest::VariableRequest)::NodeResponse
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return addVariable(config, config.robotId, config.sessionId,variableRequest)
+    return addVariable(config.robotId, config.sessionId,variableRequest)
 end
 
 """
@@ -374,7 +390,7 @@ function addFactor(factorRequest::FactorRequest)::NodeResponse
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return addFactor(config, config.robotId, config.sessionId, factorRequest)
+    return addFactor(config.robotId, config.sessionId, factorRequest)
 end
 
 """
@@ -409,7 +425,7 @@ function addBearingRangeFactor(bearingRangeRequest::BearingRangeRequest)::NodeRe
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return addBearingRangeFactor(config, config.robotId, config.sessionId, bearingRangeRequest)
+    return addBearingRangeFactor(config.robotId, config.sessionId, bearingRangeRequest)
 end
 
 """
@@ -444,7 +460,7 @@ function addOdometryMeasurement(addOdoRequest::AddOdometryRequest)::AddOdometryR
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return addOdometryMeasurement(config, config.robotId, config.sessionId, addOdoRequest)
+    return addOdometryMeasurement(config.robotId, config.sessionId, addOdoRequest)
 end
 
 """
@@ -488,7 +504,7 @@ function getDataEntries(node::Union{Int, NodeResponse, NodeDetailsResponse})::Ve
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return getDataEntries(config, config.robotId, config.sessionId, node)
+    return getDataEntries(config.robotId, config.sessionId, node)
 end
 
 """
@@ -526,7 +542,7 @@ function getDataElement( node::Union{Int, NodeResponse, NodeDetailsResponse}, bi
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return getDataElement(config, config.robotId, config.sessionId, node, bigDataKey)
+    return getDataElement(config.robotId, config.sessionId, node, bigDataKey)
 end
 
 """
@@ -564,7 +580,7 @@ function getRawDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, 
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return getRawDataElement(config, config.robotId, config.sessionId, node, bigDataKey)
+    return getRawDataElement(config.robotId, config.sessionId, node, bigDataKey)
 end
 
 """
@@ -602,7 +618,7 @@ function addDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, big
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return addDataElement(config, config.robotId, config.sessionId, node, bigDataElement)
+    return addDataElement(config.robotId, config.sessionId, node, bigDataElement)
 end
 
 """
@@ -640,7 +656,7 @@ function updateDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, 
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return updateDataElement(config, config.robotId, config.sessionId, node, bigDataElement)
+    return updateDataElement(config.robotId, config.sessionId, node, bigDataElement)
 end
 
 """
@@ -672,7 +688,7 @@ function addOrUpdateDataElement(node::Union{Int, NodeResponse, NodeDetailsRespon
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
     end
-    return addOrUpdateDataElement(config, config.robotId, config.sessionId, node, dataElement)
+    return addOrUpdateDataElement(config.robotId, config.sessionId, node, dataElement)
 end
 
 """
@@ -710,5 +726,5 @@ function deleteDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, 
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return deleteDataElement(config, config.robotId, config.sessionId, node, dataId)
+    return deleteDataElement(config.robotId, config.sessionId, node, dataId)
 end
