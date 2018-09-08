@@ -43,6 +43,17 @@ end
 # Includes
 include("./entities/SynchronySDK.jl")
 
+global __graffConfig = nothing
+
+function setGraffConfig(graffConfig::SynchronyConfig):Void
+    global __graffConfig
+    __graffConfig = graffConfig
+    return nothing
+end
+function getGraffConfig()::Union{Void, SynchronyConfig}
+    return __graffConfig
+end
+
 include("./entities/User.jl")
 include("./services/UserService.jl")
 
@@ -93,6 +104,7 @@ end
 
 # Exports
 export SynchronyConfig, ErrorResponse
+export setGraffConfig, getGraffConfig
 export getStatus, printStatus
 export UserRequest, UserResponse, KafkaConfig, UserConfig, addUser, getUser, updateUser, deleteUser, getUserConfig
 export RobotRequest, RobotResponse, RobotsResponse, getRobots, isRobotExisting, getRobot, addRobot, updateRobot, deleteRobot, getRobotConfig, updateRobotConfig

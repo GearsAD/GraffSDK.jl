@@ -6,7 +6,11 @@ statusEndpoint = "api/v0/status"
 $(SIGNATURES)
 Get the status of the Synchrony service.
 """
-function getStatus(config::SynchronyConfig)::String
+function getStatus()::String
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
     url = "$(config.apiEndpoint)/$(statusEndpoint)"
     response = @mock _sendRestRequest(config, HTTP.get, url)
     if(response.status != 200)
@@ -19,9 +23,13 @@ end
 $(SIGNATURES)
 Print the current service status.
 """
-function printStatus(config::SynchronyConfig)::Void
+function printStatus()::Void
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
     try
-        serviceStatus = getStatus(config)
+        serviceStatus = getStatus()
         print_with_color(:blue, "Synchrony service status: ")
         print_with_color(serviceStatus == "UP!" ? :green : :red, "$(serviceStatus)\r\n")
     catch ex

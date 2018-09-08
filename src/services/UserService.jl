@@ -9,7 +9,11 @@ $(SIGNATURES)
 Add a user to Synchrony.
 Return: Returns the created user.
 """
-function addUser(config::SynchronyConfig, user::UserRequest)::UserResponse
+function addUser(user::UserRequest)::UserResponse
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
     url = "$(config.apiEndpoint)/$(format(userEndpoint, user.id))"
     response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(user), debug=true)
     if(response.status != 200)
@@ -23,7 +27,11 @@ $(SIGNATURES)
 Gets a user given the user ID.
 Return: The user for the given user ID.
 """
-function getUser(config::SynchronyConfig, userId::String)::UserResponse
+function getUser(userId::String)::UserResponse
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
     url = "$(config.apiEndpoint)/$(format(userEndpoint, userId))"
     response = @mock _sendRestRequest(config, HTTP.get, url)
     if(response.status != 200)
@@ -37,7 +45,11 @@ $(SIGNATURES)
 Update a user.
 Return: The updated user from the service.
 """
-function updateUser(config::SynchronyConfig, user::UserRequest)::UserResponse
+function updateUser(user::UserRequest)::UserResponse
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
     url = "$(config.apiEndpoint)/$(format(userEndpoint, user.id))"
     response = @mock _sendRestRequest(config, HTTP.put, url, data=JSON.json(user))
     if(response.status != 200)
@@ -52,7 +64,11 @@ Delete a user given a user ID.
 NOTE: All robots must be deleted first, the call will fail if robots are still associated to the user.
 Return: The deleted user.
 """
-function deleteUser(config::SynchronyConfig, userId::String)::UserResponse
+function deleteUser(userId::String)::UserResponse
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
     url = "$(config.apiEndpoint)/$(format(userEndpoint, userId))"
     response = @mock _sendRestRequest(config, HTTP.delete, url)
     if(response.status != 200)

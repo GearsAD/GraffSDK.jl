@@ -15,7 +15,9 @@ synchronyConfig = loadConfig("synchronyConfig.json")
 # Can also do this in the config file.
 synchronyConfig.robotId = "Hexagonal"
 synchronyConfig.sessionId = "HexDemoSamAgain1"
-println(synchronyConfig)
+setGraffConfig(synchronyConfig)
+println(getGraffConfig())
+
 
 # 1b. Check the credentials and the service status
 printStatus(synchronyConfig)

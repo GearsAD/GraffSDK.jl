@@ -6,7 +6,12 @@ $(SIGNATURES)
 Gets all robots managed by the specified user.
 Return: A vector of robots for a given user.
 """
-function getRobots(config::SynchronyConfig)::RobotsResponse
+function getRobots()::RobotsResponse
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+
     url = "$(config.apiEndpoint)/$(format(robotsEndpoint, config.userId))"
     response = @mock _sendRestRequest(config, HTTP.get, url)
     if(response.status != 200)
@@ -26,7 +31,11 @@ end
 $(SIGNATURES)
 Return: Returns true if the robot exists already.
 """
-function isRobotExisting(config::SynchronyConfig, robotId::String)::Bool
+function isRobotExisting(robotId::String)::Bool
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
     robots = getRobots(config)
     return robotId in map(robot -> robot.id, robots.robots)
 end
@@ -35,7 +44,12 @@ end
 $(SIGNATURES)
 Return: Returns true if the robot in the config exists already.
 """
-function isRobotExisting(config::SynchronyConfig)::Bool
+function isRobotExisting()::Bool
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+
     if config.robotId == ""
         error("Your config doesn't have a robot specified, please attach your config to a valid robot by setting the robotId field. Robot = $(config.robotId)")
     end
@@ -49,7 +63,12 @@ $(SIGNATURES)
 Get a specific robot given a user ID and robot ID. Will retrieve config.robotId by default.
 Return: The robot for the provided user ID and robot ID.
 """
-function getRobot(config::SynchronyConfig, robotId::String)::RobotResponse
+function getRobot(robotId::String)::RobotResponse
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+
     url = "$(config.apiEndpoint)/$(format(robotEndpoint, config.userId, robotId))"
     response = @mock _sendRestRequest(config, HTTP.get, url)
     if(response.status != 200)
@@ -63,7 +82,12 @@ $(SIGNATURES)
 Get a specific robot given a user ID and robot ID. Will retrieve config.robotId by default.
 Return: The robot for the provided user ID and robot ID.
 """
-function getRobot(config::SynchronyConfig)::RobotResponse
+function getRobot()::RobotResponse
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+
     if config.robotId == ""
         error("Your config doesn't have a robot specified, please attach your config to a valid robot by setting the robotId field. Robot = $(config.robotId)")
     end
@@ -76,7 +100,11 @@ $(SIGNATURES)
 Create a robot in Synchrony and associate it with the given user.
 Return: Returns the created robot.
 """
-function addRobot(config::SynchronyConfig, robot::RobotRequest)::RobotResponse
+function addRobot(robot::RobotRequest)::RobotResponse
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
     url = "$(config.apiEndpoint)/$(format(robotEndpoint, config.userId, robot.id))"
     response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(robot))
     if(response.status != 200)
@@ -90,7 +118,11 @@ $(SIGNATURES)
 Update a robot.
 Return: The updated robot from the service.
 """
-function updateRobot(config::SynchronyConfig, robot::RobotRequest)::RobotResponse
+function updateRobot(robot::RobotRequest)::RobotResponse
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
     url = "$(config.apiEndpoint)/$(format(robotEndpoint, config.userId, robot.id))"
     response = @mock _sendRestRequest(config, HTTP.put, url, data=JSON.json(robot))
     if(response.status != 200)
@@ -104,7 +136,11 @@ $(SIGNATURES)
 Delete a robot given a robot ID.
 Return: The deleted robot.
 """
-function deleteRobot(config::SynchronyConfig, robotId::String)::RobotResponse
+function deleteRobot(robotId::String)::RobotResponse
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
     url = "$(config.apiEndpoint)/$(format(robotEndpoint, config.userId, robotId))"
     response = @mock _sendRestRequest(config, HTTP.delete, url)
     if(response.status != 200)
@@ -118,7 +154,11 @@ $(SIGNATURES)
 Will retrieve the robot configuration (user settings) for the given robot ID.
 Return: The robot config for the provided user ID and robot ID.
 """
-function getRobotConfig(config::SynchronyConfig, robotId::String)::Dict{Any, Any}
+function getRobotConfig(robotId::String)::Dict{Any, Any}
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
     url = "$(config.apiEndpoint)/$(format(robotEndpoint, config.userId, robotId))/config"
     response = @mock _sendRestRequest(config, HTTP.get, url)
     if(response.status != 200)
@@ -132,7 +172,11 @@ $(SIGNATURES)
 Will retrieve the robot configuration (user settings) for the default robot ID.
 Return: The robot config for the provided user ID and robot ID.
 """
-function getRobotConfig(config::SynchronyConfig)::Dict{Any, Any}
+function getRobotConfig(:Dict{Any, Any    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    }
     if config.robotId == ""
         error("Your config doesn't have a robot specified, please attach your config to a valid robot by setting the robotId field. Robot = $(config.robotId)")
     end
@@ -145,7 +189,11 @@ $(SIGNATURES)
 Update a robot configuration.
 Return: The updated robot configuration from the service.
 """
-function updateRobotConfig(config::SynchronyConfig, robotId::String, robotConfig::Dict{String, String})::Dict{Any, Any}
+function updateRobotConfig(robotId::String, robotConfig::Dict{String, String})::Dict{Any, Any}
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
     url = "$(config.apiEndpoint)/$(format(robotEndpoint, config.userId, robotId))/config"
     response = @mock _sendRestRequest(config, HTTP.put, url, data=JSON.json(robotConfig))
     if(response.status != 200)
@@ -159,7 +207,11 @@ $(SIGNATURES)
 Update a robot configuration.
 Return: The updated robot configuration from the service.
 """
-function updateRobotConfig(config::SynchronyConfig, robotConfig::Dict{String, String})::Dict{Any, Any}
+function updateRobotConfig(robotConfig::Dict{String, String})::Dict{Any, Any}
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
     if config.robotId == ""
         error("Your config doesn't have a robot specified, please attach your config to a valid robot by setting the robotId field. Robot = $(config.robotId)")
     end
