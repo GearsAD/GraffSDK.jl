@@ -36,7 +36,7 @@ function isRobotExisting(robotId::String)::Bool
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
     end
-    robots = getRobots(config)
+    robots = getRobots()
     return robotId in map(robot -> robot.id, robots.robots)
 end
 
@@ -54,7 +54,7 @@ function isRobotExisting()::Bool
         error("Your config doesn't have a robot specified, please attach your config to a valid robot by setting the robotId field. Robot = $(config.robotId)")
     end
 
-    return isRobotExisting(config, config.robotId)
+    return isRobotExisting(config.robotId)
 end
 
 
@@ -92,7 +92,7 @@ function getRobot()::RobotResponse
         error("Your config doesn't have a robot specified, please attach your config to a valid robot by setting the robotId field. Robot = $(config.robotId)")
     end
 
-    return getRobot(config, config.robotId)
+    return getRobot(config.robotId)
 end
 
 """
@@ -172,16 +172,17 @@ $(SIGNATURES)
 Will retrieve the robot configuration (user settings) for the default robot ID.
 Return: The robot config for the provided user ID and robot ID.
 """
-function getRobotConfig(:Dict{Any, Any    config = getGraffConfig()
+function getRobotConfig()::Dict{Any, Any}
+    config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
     end
-    }
+
     if config.robotId == ""
         error("Your config doesn't have a robot specified, please attach your config to a valid robot by setting the robotId field. Robot = $(config.robotId)")
     end
 
-    return getRobotConfig(config, config.robotId)
+    return getRobotConfig(config.robotId)
 end
 
 """
@@ -216,5 +217,5 @@ function updateRobotConfig(robotConfig::Dict{String, String})::Dict{Any, Any}
         error("Your config doesn't have a robot specified, please attach your config to a valid robot by setting the robotId field. Robot = $(config.robotId)")
     end
 
-    return updateRobotConfig(config, config.robotId, robotConfig)
+    return updateRobotConfig(config.robotId, robotConfig)
 end

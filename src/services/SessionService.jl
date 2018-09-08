@@ -43,7 +43,7 @@ $(SIGNATURES)
 Gets all sessions for the current robot.
 Return: A vector of sessions for the current robot.
 """
-function getSessions(:SessionsResponse
+function getSessions()::SessionsResponse
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -72,7 +72,7 @@ end
 $(SIGNATURES)
 Return: Returns true if the session exists already.
 """
-function isSessionExisting(:Bool
+function isSessionExisting()::Bool
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -107,7 +107,7 @@ $(SIGNATURES)
 Get a specific session given a user ID, robot ID, and session ID.
 Return: The session details for the provided user ID, robot ID, and session ID.
 """
-function getSession(:SessionDetailsResponse
+function getSession()::SessionDetailsResponse
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -142,7 +142,7 @@ $(SIGNATURES)
 Delete a specific session given a user ID, robot ID, and session ID.
 Return: Nothing if success, error if failed.
 """
-function deleteSession(:Void
+function deleteSession()::Void
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -220,7 +220,7 @@ $(SIGNATURES)
 Gets all nodes for a given session.
 Return: A vector of nodes for a given robot.
 """
-function getNodes(:NodesResponse
+function getNodes()::NodesResponse
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")

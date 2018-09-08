@@ -30,3 +30,6 @@ struct ErrorResponse
     message::String
     returnCode::Int
 end
+
+# The current Graff config.
+global __graffConfig = nothing

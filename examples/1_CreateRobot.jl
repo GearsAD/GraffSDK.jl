@@ -1,36 +1,32 @@
 using Base
-using JSON, Unmarshal
 using GraffSDK
-
-robotId = "NewRobotSam2"
 
 # 1. Get a Synchrony configuration
 # Assume that you're running in local directory
 cd(joinpath(Pkg.dir("GraffSDK"),"examples"))
-configFile = open("synchronyConfig_NaviEast_DEV.json")
-configData = JSON.parse(readstring(configFile))
-close(configFile)
-synchronyConfig = Unmarshal.unmarshal(SynchronyConfig, configData)
+config = loadGraffConfig("synchronyConfig.json")
+#Update the config (updates internal config too as it's by reference)
+robotId = "NewRobotSam4"
+config.robotId = "NewRobotSam4"
 
 # 2a. Robot creation and retrieval
 # Creating a bot allows us to create session data for that robot.
 # and associate it with data sessions
-newRobot = RobotRequest(robotId, "My New Bot", "Njord in AWS", "Active")
-retRobot = addRobot(synchronyConfig, newRobot)
-@show retRobot
-# Now we can get it as well if we want
-getRobotDetails = getRobot(synchronyConfig, newRobot.id)
-if (JSON.json(retRobot) != JSON.json(getRobotDetails))
-    error("Hmm, robots should match")
+if !isRobotExisting(robotId)
+    newRobot = RobotRequest(robotId, "My New Bot", "Cloudy Robot", "Active")
+    retRobot = addRobot(newRobot)
 end
+
+# Now we can get it as well if we want
+getRobotDetails = getRobot(newRobot.id)
 
 # 2b. Get robots
 # Just for example's sake - let's retrieve all robots associated with our user
-robots = getRobots(synchronyConfig)
+robots = getRobots()
 @show robots
 
 # 3. Set some user configuration parameters for the robot
-robotConfig = getRobotConfig(synchronyConfig, newRobot.id)
+robotConfig = getRobotConfig(newRobot.id)
 testConfiguration = Dict{String, String}("myUserConfigSetting" => "Testing", "MoreSettings" => "Store your robot settings here!")
-updatedConfig = updateRobotConfig(synchronyConfig, newRobot.id, testConfiguration)
-refreshedConfig = getRobotConfig(synchronyConfig, newRobot.id)
+updatedConfig = updateRobotConfig(testConfiguration)
+refreshedConfig = getRobotConfig(newRobot.id)

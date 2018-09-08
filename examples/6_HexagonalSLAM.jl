@@ -18,9 +18,8 @@ synchronyConfig.sessionId = "HexDemoSamAgain1"
 setGraffConfig(synchronyConfig)
 println(getGraffConfig())
 
-
 # 1b. Check the credentials and the service status
-printStatus(synchronyConfig)
+printStatus()
 
 # 2. Confirm that the robot already exists, create if it doesn't.
 println(" - Creating or retrieving robot '$(synchronyConfig.robotId)'...")

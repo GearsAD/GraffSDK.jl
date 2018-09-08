@@ -9,6 +9,9 @@ using ProgressMeter
 
 import Base.show
 
+# Base includes
+include("./entities/GraffSDK.jl")
+
 # Utility functions
 """
 $(SIGNATURES)
@@ -26,34 +29,39 @@ function _unmarshallWithLinks(responseBody::String, t::Type)
 end
 
 """
-$(SIGNATURES)
-Load a config file from a file name.
+    $(SIGNATURES)
+Load a config file from a file name, internally calls setGraffConfig, and returns the config data.
 """
-function loadConfigFile(filename::String)::SynchronyConfig
+function loadGraffConfig(filename::String)::SynchronyConfig
     if !isfile(filename)
         error("Cannot locate the configuration file '$filename'. Please check that it exists.")
     end
-    configFile = open("synchronyConfig.json")
+    configFile = open(filename)
     configData = JSON.parse(readstring(configFile))
     close(configFile)
-    synchronyConfig = Unmarshal.unmarshal(SynchronyConfig, configData)
-    return synchronyConfig
+    config = Unmarshal.unmarshal(SynchronyConfig, configData)
+    setGraffConfig(config)
+    return config
 end
 
-# Includes
-include("./entities/SynchronySDK.jl")
-
-global __graffConfig = nothing
-
+"""
+    $(SIGNATURES)
+Set the configuration that the GraffSDK should use.
+"""
 function setGraffConfig(graffConfig::SynchronyConfig):Void
     global __graffConfig
     __graffConfig = graffConfig
     return nothing
 end
+"""
+    $(SIGNATURES)
+Get the current GraffSDK configuration.
+"""
 function getGraffConfig()::Union{Void, SynchronyConfig}
     return __graffConfig
 end
 
+# Includes
 include("./entities/User.jl")
 include("./services/UserService.jl")
 
@@ -104,7 +112,7 @@ end
 
 # Exports
 export SynchronyConfig, ErrorResponse
-export setGraffConfig, getGraffConfig
+export loadGraffConfig, setGraffConfig, getGraffConfig
 export getStatus, printStatus
 export UserRequest, UserResponse, KafkaConfig, UserConfig, addUser, getUser, updateUser, deleteUser, getUserConfig
 export RobotRequest, RobotResponse, RobotsResponse, getRobots, isRobotExisting, getRobot, addRobot, updateRobot, deleteRobot, getRobotConfig, updateRobotConfig
@@ -117,6 +125,6 @@ export AddOdometryRequest, AddOdometryResponse, NodeResponseInfo, addOdometryMea
 export VariableRequest, VariableResponse, BearingRangeRequest, BearingRangeResponse, DistributionRequest, FactorBody, FactorRequest, addVariable, addBearingRangeFactor, addFactor
 export VisualizationRequest, visualizeSession
 # For testing
-export _unmarshallWithLinks, loadConfigFile
+export _unmarshallWithLinks
 export nodeDetail2ExVertex
 end

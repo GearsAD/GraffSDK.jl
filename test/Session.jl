@@ -21,55 +21,51 @@ facts("Sessions API") do
     apply(sendRequestListMock) do
         context("getSessions") do
             # Act
-            callResponse = getSessions(mockConfig, "TestRobot")
+            callResponse = getSessions("TestRobot")
             # Assert
             @fact length(callResponse.sessions) --> 1
             # Act
-            callResponse = getSessions(mockConfig)
-            # Assert
+            callResponse = getSessions(            # Assert
             @fact length(callResponse.sessions) --> 1
         end
         context("isSessionExisting") do
             # Act
-            callResponse = isSessionExisting(mockConfig, "TestRobot", "TestSession")
+            callResponse = isSessionExisting("TestRobot", "TestSession")
             # Assert
             @fact callResponse --> true
             # Act
-            callResponse = isSessionExisting(mockConfig)
-            # Assert
+            callResponse = isSessionExisting(            # Assert
             @fact callResponse --> true
         end
     end
     apply(sendRequestMock) do
         context("getSession") do
             # Act
-            callResponse = getSession(mockConfig, "", "")
+            callResponse = getSession("", "")
             # Assert
             @fact callResponse.id --> "TestSession"
             # Act
-            callResponse = getSession(mockConfig)
-            # Assert
+            callResponse = getSession(            # Assert
             @fact callResponse.id --> "TestSession"
         end
         # context("updateSession") do
         #     # Act
-        #     callResponse = addSession(mockConfig, "", mockRequest)
+        #     callResponse = addSession("", mockRequest)
         #     # Assert
         #     @fact callResponse.name --> "TestRobot"
         # end
         context("deleteSession") do
             # Act
-            callResponse = deleteSession(mockConfig, "", "")
+            callResponse = deleteSession("", "")
             # Act
-            callResponse = deleteSession(mockConfig)
-        end
+            callResponse = deleteSession(        end
         # context("addSession") do
         #     # Act
-        #     callResponse = deleteRobot(mockConfig, "", mockRequest)
+        #     callResponse = deleteRobot("", mockRequest)
         #     # Assert
         #     @fact callResponse.name --> "TestSession"
         #     # Act
-        #     callResponse = deleteRobot(mockConfig, mockRequest)
+        #     callResponse = deleteRobot(mockRequest)
         #     # Assert
         #     @fact callResponse.name --> "TestSession"
         # end
@@ -78,13 +74,13 @@ facts("Sessions API") do
     apply(sendRequestMock) do
         # context("getRobotConfig") do
         #     # Act
-        #     callResponse = getRobotConfig(mockConfig, "GearsAD")
+        #     callResponse = getRobotConfig("GearsAD")
         #     # Assert
         #     @fact callResponse["name"] --> "TestRobot"
         # end
         # context("updateRobotConfig") do
         #     # Act
-        #     callResponse = updateRobotConfig(mockConfig, "GearsAD", robotConfig)
+        #     callResponse = updateRobotConfig("GearsAD", robotConfig)
         #     # Assert
         #     @fact callResponse["name"] --> "TestRobot"
         # end
