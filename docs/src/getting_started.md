@@ -18,67 +18,113 @@ using Base
 using GraffSDK
 ```
 
-## Loading a Synchrony Configuration
-In the same location as the new script, create a file called 'synchronyConfig.json', and paste in your Synchrony endpoint which was provided when you created your account:
+## Loading a Graff Configuration
+In the same location as the new script, create a file called 'synchronyConfig.json', and paste in your SlamInDb/Graff endpoint which was provided when you created your account:
 ```json
 {
-  "apiEndpoint":"http://myserver...",
-  "apiPort":8000
+  "apiEndpoint":"...",
+  "accessKey":"...",
+  "secretKey":"...",
+  "region":"...",
+  "userId":"...",
+  "robotId":"...",
+  "sessionId":"..."
 }
 ```
+
+The robotId and sessionId fields are optional, you can leave them blank if you like. They are defaults that can be set so you can call convenience methods and don't need to specify the robot and session every time. If you don't have a robot or session set up, no worries! Pick anything you like (no spaces or special characters) and in the later examples this robot and session will be created.
 
 It is assumed that Julia was started in the same folder as the script, so add the following code to the script to load the configuration:
 
 ```julia
 # 1. Get a Synchrony configuration
 # Assume that you're running in local directory
-configFile = open("synchronyConfig.json")
-configData = JSON.parse(readstring(configFile))
-close(configFile)
-synchronyConfig = Unmarshal.unmarshal(SynchronyConfig, configData)
+config = loadGraffConfig("synchronyConfig.json")
+#Change your session or robot if you like
+#config.sessionId = "HexDemoSample1"
+println(getGraffConfig())
 ```
 
-## Creating a Token
-Next step is to create a token for your user. Add the following code with your user and API key:
+## Checking Credentials and Status of SlamInDb/Graff
+
+There's a quick call to check whether your credentials are working, and whether the services are all working:
 
 ```julia
-# 2. Authorizing ourselves for requests
-authRequest = AuthRequest("user", "apiKey")
-auth = authenticate(synchronyConfig, authRequest)
+# 1b. Check the credentials and the service status
+printStatus()
 ```
 
-This will fire off an authentication request, and return an AuthRespose that contains a token.
+That should show 'UP', otherwise examine the error to figure what is causing it to fail.
 
-## Getting your User and Runtime Configuration Information
+## Getting your User
 Users maintain the runtime configuration, which is the connection information to ingest data as well as receive notifications when the graph is updated.
 
 Just to confirm our user information, we do the following:
 
 ```julia
-userId = "myUserId" #TODO: Replace with your user ID
-user = getUser(synchronyConfig, auth, myUserId)
+user = getUser(config.userId)
 ```
 
 The 'user' variable should contain all our account information. This isn't a necessary step, but helps us check a new user account to make sure all is correct.
 
-We do need to get the runtime information to subscribe to notifications and ingest data though, so let's retrieve the runtime configuration for this user:
-
-```julia
-# 3. Config retrieval
-# This contains all the parameters required to ingest or retrieve
-# data from the system.
-runtimeConfig = getUserConfig(synchronyConfig, auth, userId)
-```
-
-We can now use the runtime configuration to ingest data for a given robot as well as subscribe for graph updates. Firstly though, we need to create robot and a new session for the data.
-
 ## Creating a Robot
 Users manage robots, and in this example we have assumed that your user currently has no robots assigned to them. Let's create a robot!
 
-TODO
+Most of the examples will follow this pattern to create a robot if it doesn't already exist:
+
+```julia
+# 2. Confirm that the robot already exists, create if it doesn't.
+println(" - Creating or retrieving robot '$(config.robotId)'...")
+robot = nothing
+if isRobotExisting()
+    println(" -- Robot '$(config.robotId)' already exists, retrieving it...")
+    robot = getRobot()
+else
+    # Create a new one programatically - can also do this via the UI.
+    println(" -- Robot '$(config.robotId)' doesn't exist, creating it...")
+    newRobot = RobotRequest(config.robotId, "My New Bot", "Description of my neat robot", "Active")
+    robot = addRobot(newRobot)
+end
+println(robot)
+```
 
 ## Creating a New Session
 
-## Importing Data into the New Session
+Each robot has a number of sessions - which can be used for solving graphs, multi-session data retrieval, etc. - so you every time you work with data, you will need to be associated to a session.
 
-TODO
+You can create or retrieve a session using this snippet:
+
+```julia
+# 3. Create or retrieve the session.
+# Get sessions, if it already exists, add to it.
+println(" - Creating or retrieving data session '$(config.sessionId)' for robot...")
+session = nothing
+if isSessionExisting()
+    println(" -- Session '$(config.sessionId)' already exists for robot '$(config.robotId)', retrieving it...")
+    session = getSession()
+else
+    # Create a new one
+    println(" -- Session '$(config.sessionId)' doesn't exist for robot '$(config.robotId)', creating it...")
+    newSessionRequest = SessionDetailsRequest(config.sessionId, "A test dataset demonstrating data ingestion for a wheeled vehicle driving in a hexagon.", "Pose2")
+    session = addSession(newSessionRequest)
+end
+println(session)
+```
+
+## Retrieving Data
+
+You can now retrieve information about this session like this:
+
+```julia
+nodes = getNodes();
+
+if length(nodes.nodes) > 0
+  @show node = getNode( nodes.nodes[1].id);
+end
+```
+
+Unless you added data to it earlier, it'll probably just contain a single variable x0. Take a look at some of the examples now to ingest, solve, or examine data!
+
+## Next Steps
+
+There are extensive examples in the [examples folder](./examples/examples.md) that examine use cases of SlamInDb/Graff.
