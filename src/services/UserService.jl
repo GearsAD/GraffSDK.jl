@@ -1,4 +1,3 @@
-include("../entities/Visualization.jl")
 using Mocking
 
 userEndpoint = "api/v0/users/{1}"

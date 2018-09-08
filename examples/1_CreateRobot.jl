@@ -17,8 +17,8 @@ if !isRobotExisting(robotId)
     retRobot = addRobot(newRobot)
 end
 
-# Now we can get it as well if we want
-getRobotDetails = getRobot(newRobot.id)
+# Now we can get it as well if we want, just asking for our default robot set in the config
+getRobotDetails = getRobot()
 
 # 2b. Get robots
 # Just for example's sake - let's retrieve all robots associated with our user
@@ -26,7 +26,7 @@ robots = getRobots()
 @show robots
 
 # 3. Set some user configuration parameters for the robot
-robotConfig = getRobotConfig(newRobot.id)
+robotConfig = getRobotConfig()
 testConfiguration = Dict{String, String}("myUserConfigSetting" => "Testing", "MoreSettings" => "Store your robot settings here!")
 updatedConfig = updateRobotConfig(testConfiguration)
-refreshedConfig = getRobotConfig(newRobot.id)
+refreshedConfig = getRobotConfig()

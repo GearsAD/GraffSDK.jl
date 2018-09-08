@@ -672,13 +672,13 @@ function addOrUpdateDataElement(robotId::String, sessionId::String, node::Union{
     # Get the node ID.
     nodeId = typeof(node) != Int ? node.id : node;
 
-    dataEntries = getDataEntries(config, robotId, sessionId, nodeId)
+    dataEntries = getDataEntries(robotId, sessionId, nodeId)
     if count(entry -> entry.id == dataElement.id, dataEntries) == 0
         println("Existence test for ID '$(dataElement.id)' failed - Adding it!")
-        return addDataElement(config, robotId, sessionId, nodeId, dataElement)
+        return addDataElement(robotId, sessionId, nodeId, dataElement)
     else
         println("Existence test for ID '$(dataElement.id)' passed - Updating it!")
-        updateDataElement(config, robotId, sessionId, nodeId, dataElement)
+        updateDataElement(robotId, sessionId, nodeId, dataElement)
     end
     return nothing
 end
