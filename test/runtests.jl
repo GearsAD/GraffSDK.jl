@@ -9,7 +9,8 @@ using HTTP
 
 using GraffSDK
 
-mockConfig = SynchronyConfig("http://mock", "9000", "", "", "")
+mockConfig = SynchronyConfig("http://mock", "9000", "QAUSER", "QAROBOT", "QASESSION")
+setGraffConfig(mockConfig)
 
 include("User.jl")
 include("Session.jl")

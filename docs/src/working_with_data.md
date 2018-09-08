@@ -1,10 +1,10 @@
 # Working with Data
 
-The Synchrony Project is not just for building and solving factor graphs. You can also store and link arbitrary data to nodes in the graph. The graph then becomes a natural index for all sensory (and processed data), so you can  randomly access all sensory information across multiple sessions and multiple robots. Timestamped poses are naturally great indices for searching data in the time-domain, in locations or regions, or across multiple devices. Think shared, collective, successively growing memory :)
+The SlamInDb/Graff Project is not just for building and solving factor graphs. You can also store and link arbitrary data to nodes in the graph. The graph then becomes a natural index for all sensory (and processed data), so you can  randomly access all sensory information across multiple sessions and multiple robots. Timestamped poses are naturally great indices for searching data in the time-domain, in locations or regions, or across multiple devices. Think shared, collective, successively growing memory :)
 
 We're still working on the best ways to do this, but it's one our key missions: to provide you with a simple way to insert massive amounts of sensory data into the graph and efficiently query+extract it at some point in the future across multiple systems.
 
-If you want to see the start of this at work, take a look at the [Brookstone Rover example](examples.md), where we:
+If you want to see the start of this at work, take a look at the [Brookstone Rover example](examples/brookstone.md), where we:
 * Insert data + video imagery from a LCM log (pretending to be a robot)
 * Extract the images in another process and identify AprilTags (pretending to be a Apri processor either on the robot, on a base station, or in the cloud :))
 * Insert new loop closures into the graph together with the AprilTag ID's
@@ -94,7 +94,7 @@ Don't worry too much about `sourceName` for now (it really only features in our 
 * ID is the key of this data element
 * Description is a user string, store whatever you want in here
 * MIME type gives us a hint for the data type. This is important, because if you tell us it's an image, we can show in the web pages and in the visualization.
-  * When you add data, use one of these MIME types [Mime Types](link!)
+  * When you add data, use one of these MIME types [Mime Types](https://www.iana.org/assignments/media-types/media-types.xhtml)
   * Two often-used types are "application/octet-stream" and "application/json". By default, if you don't specify a type, we internally set it to "application/octet-stream" - that indicates binary data.
 
 ## Getting and Viewing Data Elements
