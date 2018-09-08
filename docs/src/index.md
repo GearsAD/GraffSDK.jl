@@ -2,8 +2,7 @@
 
 # GraffSDK.jl Documentation
 
-
-This package is an SDK for SlamInDb/Graff.
+This package is a Julia SDK for SlamInDb/Graff.
 
 ## Installation
 This package is not yet registered with JuliaLang/METADATA.jl, but can be easily installed in Julia 0.6 with:
