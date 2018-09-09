@@ -4,7 +4,7 @@
 Build status: [![Build Status](https://travis-ci.org/GearsAD/GraffSDK.jl.svg?branch=master)](https://travis-ci.org/GearsAD/GraffSDK.jl)
 
 ## Overview
-A Julia SDK for the Graff/SlamInDb project!
+A Julia SDK for the Graff/SlamInDb project!nc
 
 ## Installation
 This package is not yet registered with JuliaLang/METADATA.jl, but can be easily installed in Julia 0.6 with:
@@ -12,6 +12,16 @@ This package is not yet registered with JuliaLang/METADATA.jl, but can be easily
 Pkg.clone("https://github.com/GearsAD/GraffSDK.jl.git")
 Pkg.build("GraffSDK")
 ```
+
+## Dependencies
+
+If you're starting from a completely fresh Linux image (e.g. Docker), you'll need some essential tools, such as make, unzip, and patch. You can install these independently, or you can just pull them with this command:
+
+```julia
+sudo apt-get install unzip patch build-essential
+```
+
+That should get you started! (You probably don't need the full 216Mb build-essential, but it's probably going to crop up as a dependency later during your endeavours)
 
 ## Documentation
 You can find all the Graff SDK documentation at [GraffSDK.jl GitHub Page](https://gearsad.github.io/GraffSDK.jl/latest/)
