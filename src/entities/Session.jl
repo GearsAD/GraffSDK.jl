@@ -8,12 +8,23 @@ mutable struct SessionResponse
     links::Dict{String, String}
 end
 
+function show(io::IO, c::SessionResponse)
+    println(io, "GraffSDK Session, ID = $(c.id)")
+end
+
 """
 A list of session response summaries.
 """
 mutable struct SessionsResponse
     sessions::Vector{SessionResponse}
     links::Dict{String, String}
+end
+
+function show(io::IO, c::SessionsResponse)
+    println(io, "GraffSDK Sessions (count = $(length(c.sessions))):")
+    for s in c.sessions
+        print(io, " - $s")
+    end
 end
 
 """
@@ -41,6 +52,19 @@ mutable struct SessionDetailsResponse
     lastSolvedTimestamp::String # Can remove nullable as soon as we stabilize.
     isSolverEnabled::Int # If 1 then the ad-hoc solver will pick up on it, otherwise will ignore this session.
     links::Dict{String, String}
+end
+
+function show(io::IO, c::SessionDetailsResponse)
+    println(io, "GraffSDK Session:")
+    println(io, " - ID: $(c.id)")
+    println(io, " - Description: $(c.description)")
+    println(io, " - User ID: $(c.userId)")
+    println(io, " - Robot ID: $(c.robotId)")
+    println(io, " - Initial Pose Type: $(c.initialPoseType)")
+    println(io, " - Node Count: $(c.nodeCount)")
+    println(io, " - Solved Enabled: $(c.isSolverEnabled)")
+    println(io, " - Created: $(c.createdTimestamp)")
+    println(io, " - Last Solved: $(c.lastSolvedTimestamp)")
 end
 
 # function show(io::IO, obj::SessionDetailsResponse)
