@@ -6,17 +6,17 @@ To test the service, you can call `getStatus` or `printStatus`:
 
 ```julia
 # Get the service status - should respond with 'UP!'
-@show serviceStatus = getStatus(synchronyConfig)
+@show serviceStatus = getStatus()
 
 # Print the service status.
-printStatus(sychronyConfig)
+printStatus()
 ```
 
 We recommend catching the exceptions in service calls. That way, you can either bubble the exception further, or mask an error. The recommended approach for a robust SDK call is:
 
 ```julia
 try
-    robot = getRobot(synchronyConfig, "IDONTEXIST")
+    robot = getRobot("IDONTEXIST")
 catch ex
     println("Unable to get robot, error is:");
     showerror(STDERR, ex, catch_backtrace())
@@ -27,7 +27,7 @@ If you want to go further and use the return code to determine what to do (depen
 
 ```julia
 try
-    robot = getRobot(synchronyConfig, "IDONTEXIST")
+    robot = getRobot("IDONTEXIST")
 catch ex
     println("Unable to get robot, error is:");
     showerror(STDERR, ex, catch_backtrace())

@@ -1,10 +1,10 @@
 # Working with Data
 
-The Synchrony Project is not just for building and solving factor graphs. You can also store and link arbitrary data to nodes in the graph. The graph then becomes a natural index for all sensory (and processed data), so you can  randomly access all sensory information across multiple sessions and multiple robots. Timestamped poses are naturally great indices for searching data in the time-domain, in locations or regions, or across multiple devices. Think shared, collective, successively growing memory :)
+The SlamInDb/Graff Project is not just for building and solving factor graphs. You can also store and link arbitrary data to nodes in the graph. The graph then becomes a natural index for all sensory (and processed data), so you can  randomly access all sensory information across multiple sessions and multiple robots. Timestamped poses are naturally great indices for searching data in the time-domain, in locations or regions, or across multiple devices. Think shared, collective, successively growing memory :)
 
 We're still working on the best ways to do this, but it's one our key missions: to provide you with a simple way to insert massive amounts of sensory data into the graph and efficiently query+extract it at some point in the future across multiple systems.
 
-If you want to see the start of this at work, take a look at the [Brookstone Rover example](examples.md), where we:
+If you want to see the start of this at work, take a look at the [Brookstone Rover example](examples/brookstone.md), where we:
 * Insert data + video imagery from a LCM log (pretending to be a robot)
 * Extract the images in another process and identify AprilTags (pretending to be a Apri processor either on the robot, on a base station, or in the cloud :))
 * Insert new loop closures into the graph together with the AprilTag ID's
@@ -45,13 +45,13 @@ using SynchronySDK
 
 # 1. Get a Synchrony configuration
 # Assume that you're running in local directory
-synchronyConfig = loadConfigFile("synchronyConfig.json")
-
-robotId = "Hexagonal" # Update these
-sessionId = "HexDemo1" # Update these
+config = loadGraffConfig("synchronyConfig.json")
+config.robotId = "Hexagonal" # Update these
+config.sessionId = "HexDemo1" # Update these
+println(getGraffConfig())
 
 # Get all nodes and select the first for this example
-sessionNodes = getNodes(synchronyConfig, robotId, sessionId);
+sessionNodes = getNodes();
 if length(sessionNodes.nodes) == 0
   error("Please update the robotId and sessionId to give back some existing nodes, or run the hexagonal example to make a new dataset.")
 end
@@ -64,7 +64,7 @@ node = sessionNodes.nodes[1]
 We can extract all data entries with the `getDataEntries` method:
 
 ```julia
-dataEntries = getDataEntries(synchronyConfig, robotId, sessionId, node)
+dataEntries = getDataEntries(node)
 @show dataEntries
 
 dataEntry = nothing
@@ -94,7 +94,7 @@ Don't worry too much about `sourceName` for now (it really only features in our 
 * ID is the key of this data element
 * Description is a user string, store whatever you want in here
 * MIME type gives us a hint for the data type. This is important, because if you tell us it's an image, we can show in the web pages and in the visualization.
-  * When you add data, use one of these MIME types [Mime Types](link!)
+  * When you add data, use one of these MIME types [Mime Types](https://www.iana.org/assignments/media-types/media-types.xhtml)
   * Two often-used types are "application/octet-stream" and "application/json". By default, if you don't specify a type, we internally set it to "application/octet-stream" - that indicates binary data.
 
 ## Getting and Viewing Data Elements
@@ -103,7 +103,7 @@ Entries are distinct from elements, because we want you to be able to list data 
 We can now get the element:
 
 ```julia
-@show dataElem = getDataElement(synchronyConfig, robotId, sessionId, node, dataEntry)
+@show dataElem = getDataElement(node, dataEntry)
 ```
 
 This contains the same information as the entry, but there is now a `data` string property with the data in it. Generally we base64 encode this data to make sure it fits into a string datatype, and if you've retrieved the image from the Hexagonal example, it should just look like a bunch of ASCII.
@@ -111,10 +111,10 @@ This contains the same information as the entry, but there is now a `data` strin
 If we want to skip getting all the entry information again, we can just call `getRawDataElement`, which returns a string:
 
 ```julia
-@show dataElemRaw = getRawDataElement(synchronyConfig, robotId, sessionId, node dataEntry)
+@show dataElemRaw = getRawDataElement(node dataEntry)
 ```  
 
-In the Hexagonal example, we base64 encoded an image and attached it to every pose. Note that at the moment if a big data element has an image MIME type, it's automatically base64 decoded whenever `gerRawDataElement` is called. If you're using that data set, we can visualize this image with the following snippet:
+In the Hexagonal example, we base64 encoded an image and attached it to every pose. Note that at the moment if a big data element has an image MIME type, it's automatically base64 decoded whenever `getRawDataElement` is called. If you're using that data set, we can visualize this image with the following snippet:
 
 ```julia
 imgBytes = dataElemRaw
@@ -151,12 +151,12 @@ end
 testStruct = TestStruct(1:10, "A test struct", 3.14159)
 enc = JSON.json(testStruct)
 request = BigDataElementRequest("Struct_Entry", "", "An example struct", enc)
-@show structElement = addOrUpdateDataElement(synchronyConfig, robotId, sessionId, node, request)
+@show structElement = addOrUpdateDataElement(node, request)
 ```
 
 Now we can retrieve it to see it again:
 ```julia
-@show dataElemRaw = getRawDataElement(synchronyConfig, robotId, sessionId, node, "Struct_Entry")
+@show dataElemRaw = getRawDataElement(node, "Struct_Entry")
 ```  
 
 Actually, we've ended up doing this so much we've made a simple helper method for it as well:
@@ -164,7 +164,7 @@ Actually, we've ended up doing this so much we've made a simple helper method fo
 ```julia
 using SynchronySDK.DataHelpers
 request = encodeJsonData("Struct_Entry", "An example struct", testStruct)
-structElement = addOrUpdateDataElement(synchronyConfig, robotId, sessionId, node, request)
+structElement = addOrUpdateDataElement(node, request)
 ```
 
 #### A Matrix
@@ -176,12 +176,12 @@ dataBytes = JSON.json(myMat);
 # Make a Data request
 request = BigDataElementRequest("Matrix_Entry", "", "An example matrix", dataBytes, "application/json");
 # Attach it to the node
-addOrUpdateDataElement(synchronyConfig, robotId, sessionId, node, request);
+addOrUpdateDataElement(node, request);
 ```
 
 Now we can retrieve it to see it again:
 ```julia
-dataElemRaw = getRawDataElement(synchronyConfig, robotId, sessionId, node, "Matrix_Entry");
+dataElemRaw = getRawDataElement(node, "Matrix_Entry");
 myMatDeser = JSON.parse(dataElemRaw);
 # JSON matrices as deserialized as Put it back into a 2D matrix #TODO - There's probably an easier way to do this.
 els = myMatDeser[1];
@@ -203,7 +203,7 @@ using SynchronySDK.DataHelpers
 
 request = encodeBinaryData("Matrix_Entry", "An example matrix", dataBytes)
 # Attach it to the node
-@show matrixElement = addOrUpdateDataElement(synchronyConfig, robotId, sessionId, node, request)
+@show matrixElement = addOrUpdateDataElement(node, request)
 ```
 
 #### Images
@@ -211,7 +211,7 @@ Images can be sent as their raw encoded bytes with an image MIME type - they wil
 
 ```julia
 request = DataHelpers.readFileIntoDataRequest(joinpath(Pkg.dir("SynchronySDK"), "examples", "pexels-photo-1004665.jpeg"), "TestImage", "Pretty neat public domain image", "image/jpeg");
-imgElement = addOrUpdateDataElement(synchronyConfig, robotId, sessionId, node, request)
+imgElement = addOrUpdateDataElement(node, request)
 ```
 
 As above, blobs with the `image/*` datatypes are automatically base64 decoded before they are returned when using the `getRawDataElement` method. Let's retrieve it and use the Julia image libraries to show this:
@@ -221,7 +221,7 @@ using Images, ImageView, ImageMagick
 
 # Read it, decode it, and make an image all in one line
 # NOTE: Normally we have to do base64 decoding, but images are automatically decoded so that they can be shown in browser.
-image = readblob(getRawDataElement(synchronyConfig, robotId, sessionId, node, "TestImage"));
+image = readblob(getRawDataElement(node, "TestImage"));
 # Show it
 imshow(image)
 ```
@@ -232,9 +232,9 @@ Deleting data is done by calling `deleteDataElement`. For example, we can delete
 ```julia
 
 # Delete by element reference
-@show deleteDataElement(synchronyConfig, robotId, sessionId, node, matrixElement)
+@show deleteDataElement(node, matrixElement)
 # Delete by string key
-@show deleteDataElement(synchronyConfig, robotId, sessionId, node, "Struct_Entry")
+@show deleteDataElement(node, "Struct_Entry")
 ```
 
 ## Discussion on Base64 Encoding and Decoding

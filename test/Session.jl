@@ -25,7 +25,8 @@ facts("Sessions API") do
             # Assert
             @fact length(callResponse.sessions) --> 1
             # Act
-            callResponse = getSessions(            # Assert
+            callResponse = getSessions()
+            # Assert
             @fact length(callResponse.sessions) --> 1
         end
         context("isSessionExisting") do
@@ -34,7 +35,8 @@ facts("Sessions API") do
             # Assert
             @fact callResponse --> true
             # Act
-            callResponse = isSessionExisting(            # Assert
+            callResponse = isSessionExisting()
+            # Assert
             @fact callResponse --> true
         end
     end
@@ -45,7 +47,8 @@ facts("Sessions API") do
             # Assert
             @fact callResponse.id --> "TestSession"
             # Act
-            callResponse = getSession(            # Assert
+            callResponse = getSession()
+            # Assert
             @fact callResponse.id --> "TestSession"
         end
         # context("updateSession") do
@@ -58,7 +61,8 @@ facts("Sessions API") do
             # Act
             callResponse = deleteSession("", "")
             # Act
-            callResponse = deleteSession(        end
+            callResponse = deleteSession()
+        end
         # context("addSession") do
         #     # Act
         #     callResponse = deleteRobot("", mockRequest)

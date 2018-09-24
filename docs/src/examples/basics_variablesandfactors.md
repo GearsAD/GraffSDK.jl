@@ -34,11 +34,11 @@ Just create the AddOdometryRequest request and fire it off:
 deltaMeasurement = [1.0; 1.0; pi/4] # x2's pose is (1, 1) away from x1 and the bearing increased by 45 degrees   
 pOdo = Float64[0.1 0 0; 0 0.1 0; 0 0 0.01] # Uncertainty in the measurement is in pOdo along the principal diagonal, i.e. [0.1, 0.1, 0.01]
 newOdo = AddOdometryRequest(deltaMeasurement, pOdo)
-@show addOdoResponse = addOdometryMeasurement(synchronyConfig, newOdo)
+@show addOdoResponse = addOdometryMeasurement(newOdo)
 
 # Above would produce x1 in an empty graph.
 # Let's run again to produce x2 - assuming the robot travelled the same delta measurement
-@show addOdoResponse = addOdometryMeasurement(synchronyConfig, newOdo)
+@show addOdoResponse = addOdometryMeasurement(newOdo)
 ```
 
 The result would be the following image if run against an empty session:
@@ -56,7 +56,7 @@ newLandmark = VariableRequest(
   "l1", #The variables label
   "Point2", #The type of variable - in this instance it's a 2D point in space, refer to Variable Types section below for the other variable types
   ["LANDMARK"]) #Labels - we are identifying this as a landmark for readability
-response = addVariable(synchronyConfig, newLandmark)
+response = addVariable(newLandmark)
 ```
 
 We now create the factors to link x1 to l1, and x2 to l1 respectively. The factors are type specific (in this case, relating a 2D position+angle to a 2D point), and include a distribution capturing the uncertainty. You don't need to make them normal distributions, but that's a discussion for later:
@@ -66,7 +66,7 @@ newBearingRangeFactor = BearingRangeRequest("x1", "l1",
                           DistributionRequest("Normal", Float64[0; 0.1]), # A statistical measurement of the bearing from x2 to l1 - normal distribution with 0 mean and 0.1 std
                           DistributionRequest("Normal", Float64[20; 1.0]) # A statistical measurement of the range/distance from x2 to l1 - normal distribution with 0 mean and 0.1 std
                           )
-addBearingRangeFactor(synchronyConfig, newBearingRangeFactor)
+addBearingRangeFactor(newBearingRangeFactor)
 ```
 
 We can add another one between x2 and l1:
@@ -76,7 +76,7 @@ newBearingRangeFactor = BearingRangeRequest("x2", "l1",
                           DistributionRequest("Normal", Float64[-pi/4; 0.1]), # A statistical measurement of the bearing from x1 to l1 - normal distribution with 0 mean and 0.1 std
                           DistributionRequest("Normal", Float64[18; 1.0]) # A statistical measurement of the range/distance from x1 to l1 - normal distribution with 0 mean and 0.1 std
                           )
-addBearingRangeFactor(synchronyConfig, newBearingRangeFactor)
+addBearingRangeFactor(newBearingRangeFactor)
 ```
 
 The graph then becomes:
@@ -99,17 +99,17 @@ Variables (a.k.a. poses in localization terminology) are created in the same way
 For example, we can define x1 as follows:
 ```julia
 x1Request = VariableRequest("x1", "Pose2")
-response = addVariable(synchronyConfig, x1Request)
+response = addVariable(x1Request)
 
 x2Request = VariableRequest("x2", "Pose2")
-response = addVariable(synchronyConfig, x2Request)
+response = addVariable(x2Request)
 ```
 
 We can also create landmarks in a similar way, and give them an additional label (additional labels can only be 'POSE', 'LANDMARK', or 'EMPTY' for the moment):
 
 ```julia
 newLandmark = VariableRequest("l1", "Point2", ["LANDMARK"])
-response = addVariable(synchronyConfig, newLandmark)
+response = addVariable(newLandmark)
 ```
 
 NOTE: These are by default created with IsReady set to false. The assumption is that you are building lower-level elements, so you should call putReady once you want these nodes to be solved.
@@ -152,10 +152,10 @@ p2p2Conv = convert(PackedPose2Pose2, p2p2)
 p2p2Request = FactorRequest(["x0", "x1"], "Pose2Pose2", p2p2Conv)
 
 # Send the request for the x0->x1 link
-addFactor(synchronyConfig, p2p2Request)
+addFactor(p2p2Request)
 # Update the request to make the same link between x1 and x2
 p2p2Request.variables = ["x1", "x2"]
-addFactor(synchronyConfig, p2p2Request)
+addFactor(p2p2Request)
 ```
 
 Now we can add the factors between the variables and the landmark. As above, this is a 2D pose to 2D point+bearing factor, and is built similar to above:
@@ -168,10 +168,10 @@ p2br2 = Pose2Point2BearingRange(bearingDist, rangeDist)
 p2br2Conv = convert(PackedPose2Point2BearingRange, p2br2)
 p2br2Request = FactorRequest(["x1", "l1"], "Pose2Point2BearingRange", p2br2Conv)
 
-addFactor(synchronyConfig, p2br2Request)
+addFactor(p2br2Request)
 # Now add the x1->l1 bearing+range factor
 p2br2Request.variables = ["x2", "l1"]
-addFactor(synchronyConfig, p2br2Request)
+addFactor(p2br2Request)
 ```
 
 #### Creating Factors Natively
