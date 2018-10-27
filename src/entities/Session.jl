@@ -120,6 +120,13 @@ mutable struct NodeDetailsResponse
     links::Dict{String, String}
 end
 
+function show(io::IO, n::NodeDetailsResponse)
+    println(io, "GraffSDK Node:")
+    println(io, " - ID: $(c.id)")
+    println(io, " - Label: $(c.label)")
+    println(io, " - Graph Labels: $(c.labels)")
+end
+
 """
 The structure describing a high-level add-odometry request.
 """
