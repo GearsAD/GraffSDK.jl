@@ -116,7 +116,7 @@ mutable struct AddOdometryRequest
     timestamp::String
     deltaMeasurement::Vector{Float64}
     pOdo::Array{Float64, 2}
-    N::Nullable{Int64}
+    N::Union{Nothing, Int64}
     AddOdometryRequest(deltaMeasurement::Vector{Float64}, pOdo::Array{Float64, 2}) = new(string(Dates.Time(now(Dates.UTC))), deltaMeasurement, pOdo, nothing)
 end
 
@@ -134,9 +134,9 @@ The parameters structure for CreateVariable request.
 mutable struct VariableRequest
     label::String
     variableType::String
-    N::Nullable{Int64}
+    N::Union{Nothing, Int64}
     labels::Vector{String}
-    VariableRequest(label::String, variableType::String, N::Nullable{Int64}, labels::Vector{String}) = new(label, variableType, N, labels)
+    VariableRequest(label::String, variableType::String, N::Union{Nothing, Int64}, labels::Vector{String}) = new(label, variableType, N, labels)
     VariableRequest(label::String, variableType::String, labels::Vector{String}) = new(label, variableType, nothing, labels)
     VariableRequest(label::String, variableType::String) = new(label, variableType, nothing, String[])
 end
@@ -181,8 +181,8 @@ The body of a CreateFactor request - the variables to be linked, the body of the
 mutable struct FactorRequest
     variables::Vector{String}
     body::FactorBody
-    autoinit::Nullable{Bool}
-    ready::Nullable{Bool}
+    autoinit::Union{Nothing, Bool}
+    ready::Union{Nothing, Bool}
     FactorRequest(variables::Vector{String}, factorType::String, packedFactor; autoinit::Bool = false, ready::Bool = false ) = begin
         # try
             #TODO: Simplify this

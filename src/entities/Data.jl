@@ -15,7 +15,7 @@ Summary of data entry returned from request.
 """
 mutable struct BigDataEntryResponse
     id::String
-    nodeId::Nullable{Int}
+    nodeId::Union{Nothing, Int}
     sourceName::String
     description::String
     mimeType::String
@@ -28,7 +28,7 @@ Complete data element response (including data).
 """
 mutable struct BigDataElementResponse
     id::String
-    nodeId::Nullable{Int}
+    nodeId::Union{Nothing, Int}
     sourceName::String
     description::String
     data::String

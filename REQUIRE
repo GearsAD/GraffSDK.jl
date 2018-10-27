@@ -9,3 +9,6 @@ Mocking
 DocStringExtensions
 MeshCat
 ProgressMeter
+CoordinateTransformations
+GeometryTypes
+ColorTypes
