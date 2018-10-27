@@ -2,10 +2,10 @@ module GraffSDK
 
 # Imports
 using HTTP, JSON, Unmarshal
-using Formatting
 using Graphs
 using DocStringExtensions
 using ProgressMeter
+using Formatting
 
 import Base.show
 
@@ -48,7 +48,7 @@ end
     $(SIGNATURES)
 Set the configuration that the GraffSDK should use.
 """
-function setGraffConfig(graffConfig::SynchronyConfig):Void
+function setGraffConfig(graffConfig::SynchronyConfig):Nothing
     global __graffConfig
     __graffConfig = graffConfig
     return nothing
@@ -57,7 +57,7 @@ end
     $(SIGNATURES)
 Get the current GraffSDK configuration.
 """
-function getGraffConfig()::Union{Void, SynchronyConfig}
+function getGraffConfig()::Union{Nothing, SynchronyConfig}
     return __graffConfig
 end
 

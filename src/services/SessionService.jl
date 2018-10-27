@@ -140,7 +140,7 @@ $(SIGNATURES)
 Delete a specific session given a user ID, robot ID, and session ID.
 Return: Nothing if success, error if failed.
 """
-function deleteSession(robotId::String, sessionId::String)::Void
+function deleteSession(robotId::String, sessionId::String)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -158,7 +158,7 @@ $(SIGNATURES)
 Delete a specific session given a user ID, robot ID, and session ID.
 Return: Nothing if success, error if failed.
 """
-function deleteSession()::Void
+function deleteSession()::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -294,7 +294,7 @@ end
 $(SIGNATURES)
 Set the ready status for a session.
 """
-function putReady(robotId::String, sessionId::String, isReady::Bool)::Void
+function putReady(robotId::String, sessionId::String, isReady::Bool)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -311,7 +311,7 @@ end
 $(SIGNATURES)
 Set the ready status for a session.
 """
-function putReady(isReady::Bool)::Void
+function putReady(isReady::Bool)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -588,7 +588,7 @@ $(SIGNATURES)
 Add a data element associated with a node.
 Return: Nothing if succeed, error if failed.
 """
-function addDataElement(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataElement::BigDataElementRequest)::Void
+function addDataElement(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataElement::BigDataElementRequest)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -609,7 +609,7 @@ $(SIGNATURES)
 Add a data element associated with a node.
 Return: Nothing if succeed, error if failed.
 """
-function addDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataElement::BigDataElementRequest)::Void
+function addDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataElement::BigDataElementRequest)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -626,7 +626,7 @@ $(SIGNATURES)
 Update a data element associated with a node.
 Return: Nothing if succeed, error if failed.
 """
-function updateDataElement(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataElement::Union{BigDataElementRequest, BigDataElementResponse})::Void
+function updateDataElement(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataElement::Union{BigDataElementRequest, BigDataElementResponse})::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -647,7 +647,7 @@ $(SIGNATURES)
 Update a data element associated with a node.
 Return: Nothing if succeed, error if failed.
 """
-function updateDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataElement::Union{BigDataElementRequest, BigDataElementResponse})::Void
+function updateDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataElement::Union{BigDataElementRequest, BigDataElementResponse})::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -664,7 +664,7 @@ $(SIGNATURES)
 Add or update a data element associated with a node. Will check if the key exists, if so it updates, otherwise it adds.
 Return: Nothing if succeed, error if failed.
 """
-function addOrUpdateDataElement(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, dataElement::Union{BigDataElementRequest, BigDataElementResponse})::Void
+function addOrUpdateDataElement(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, dataElement::Union{BigDataElementRequest, BigDataElementResponse})::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -683,7 +683,7 @@ function addOrUpdateDataElement(robotId::String, sessionId::String, node::Union{
     return nothing
 end
 
-function addOrUpdateDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, dataElement::Union{BigDataElementRequest, BigDataElementResponse})::Void
+function addOrUpdateDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, dataElement::Union{BigDataElementRequest, BigDataElementResponse})::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -696,7 +696,7 @@ $(SIGNATURES)
 Delete a data element associated with a node.
 Return: Nothing if succeed, error if failed.
 """
-function deleteDataElement(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, dataId::String)::Void
+function deleteDataElement(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, dataId::String)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -717,7 +717,7 @@ $(SIGNATURES)
 Delete a data element associated with a node.
 Return: Nothing if succeed, error if failed.
 """
-function deleteDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, dataId::String)::Void
+function deleteDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, dataId::String)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")

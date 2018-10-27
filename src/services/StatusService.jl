@@ -23,7 +23,7 @@ end
 $(SIGNATURES)
 Print the current service status.
 """
-function printStatus()::Void
+function printStatus()::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
