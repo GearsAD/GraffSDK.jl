@@ -80,6 +80,10 @@ mutable struct NodeResponse
     links::Dict{String, String}
 end
 
+function show(io::IO, n::NodeResponse)
+    println(io, "GraffSDK Node - ID: $(n.id), label: $(n.label)")
+end
+
 # function show(io::IO, obj::NodeResponse)
 #     print("\r\nNode: \r\n - ID: $(obj.id)\r\n  - Name: $(obj.name)")
 # end
@@ -90,6 +94,13 @@ The structure used to briefly describe a set of nodes in a response.
 mutable struct NodesResponse
     nodes::Vector{NodeResponse}
     links::Dict{String, String}
+end
+
+function show(io::IO, n::NodesResponse)
+    println(io, "GraffSDK Nodes (count = $(length(n.nodes))):")
+    for node in n.nodes
+        print(io, " - $node")
+    end
 end
 
 # function show(io::IO, obj::NodesResponse)
@@ -117,7 +128,7 @@ mutable struct AddOdometryRequest
     deltaMeasurement::Vector{Float64}
     pOdo::Array{Float64, 2}
     N::Union{Nothing, Int64}
-    AddOdometryRequest(deltaMeasurement::Vector{Float64}, pOdo::Array{Float64, 2}) = new(string(Dates.Time(now(Dates.UTC))), deltaMeasurement, pOdo, nothing)
+    AddOdometryRequest(deltaMeasurement::Vector{Float64}, pOdo::Array{Float64, 2}) = new(string(Time(now(UTC))), deltaMeasurement, pOdo, nothing)
 end
 
 """

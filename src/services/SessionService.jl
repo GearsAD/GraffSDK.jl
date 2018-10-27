@@ -35,6 +35,9 @@ function getSessions(robotId::String)::SessionsResponse
         session = _unmarshallWithLinks(JSON.json(session), SessionResponse)
         push!(sessions.sessions, session)
     end
+
+    #Sort
+    sort!(sessions.sessions, by=(s -> s.id))
     return sessions
 end
 
@@ -228,6 +231,8 @@ function getNodes(robotId::String, sessionId::String)::NodesResponse
         node = _unmarshallWithLinks(JSON.json(node), NodeResponse)
         push!(nodes.nodes, node)
     end
+
+    sort!(nodes.nodes; by=(n -> n.label))
     return nodes
 end
 
@@ -486,6 +491,9 @@ function getDataEntries(robotId::String, sessionId::String, node::Union{Int, Nod
         for bd in bigDataRaw
             push!(datas, _unmarshallWithLinks(JSON.json(bd), BigDataEntryResponse))
         end
+
+        sort(datas; by=(d -> n.id))
+
         return datas
     end
 end
