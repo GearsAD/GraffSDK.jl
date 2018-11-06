@@ -1,4 +1,4 @@
-# import Base: show
+    # import Base: show
 
 """
 A summary response for a single session.
@@ -122,9 +122,9 @@ end
 
 function show(io::IO, n::NodeDetailsResponse)
     println(io, "GraffSDK Node:")
-    println(io, " - ID: $(c.id)")
-    println(io, " - Label: $(c.label)")
-    println(io, " - Graph Labels: $(c.labels)")
+    println(io, " - ID: $(n.id)")
+    println(io, " - Label: $(n.label)")
+    println(io, " - Graph Labels: $(n.labels)")
 end
 
 """
