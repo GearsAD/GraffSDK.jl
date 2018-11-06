@@ -13,7 +13,6 @@ include("0_Initialization.jl")
 config = loadGraffConfig("synchronyConfig.json")
 #Create a hexagonal sessions
 config.sessionId = "6_HexagonalSLAM_Demo_" + Dates.now()
-
 println(getGraffConfig())
 
 # 1b. Check the credentials and the service status
@@ -60,9 +59,7 @@ println(" - Adding hexagonal driving pattern to session...")
     @time @show addOdoResponse = addOdometryMeasurement(newOdometryMeasurement)
     println("  - Adding image data to the pose...")
     # Adding image data
-    if i % 6 == 1
-        addOrUpdateDataElement(addOdoResponse.variable, imgRequest)
-    end
+    addOrUpdateDataElement(addOdoResponse.variable, imgRequest)
 end
 
 # # 5. Now retrieve the dataset
@@ -76,16 +73,17 @@ node = getNode( nodes.nodes[1].label);
 
 # 6. Now lets add a couple landmarks
 # Ref: https://github.com/dehann/RoME.jl/blob/master/examples/Slam2dExample.jl#L35
-newLandmark = VariableRequest("l1", "Point2", ["LANDMARK"])
-response = addVariable(newLandmark)
-newBearingRangeFactor = BearingRangeRequest("x1", "l1",
-                          DistributionRequest("Normal", Float64[0; 0.1]),
-                          DistributionRequest("Normal", Float64[20; 1.0]))
-addBearingRangeFactor(newBearingRangeFactor)
-newBearingRangeFactor2 = BearingRangeRequest("x6", "l1",
-                           DistributionRequest("Normal", Float64[0; 0.1]),
-                           DistributionRequest("Normal", Float64[20; 1.0]))
-addBearingRangeFactor(newBearingRangeFactor2)
+# TODO: FIX tonight here
+# newLandmark = VariableRequest("l1", "Point2", ["LANDMARK"])
+# response = addVariable(newLandmark)
+# newBearingRangeFactor = BearingRangeRequest("x1", "l1",
+#                           DistributionRequest("Normal", Float64[0; 0.1]),
+#                           DistributionRequest("Normal", Float64[20; 1.0]))
+# addBearingRangeFactor(newBearingRangeFactor)
+# newBearingRangeFactor2 = BearingRangeRequest("x6", "l1",
+#                            DistributionRequest("Normal", Float64[0; 0.1]),
+#                            DistributionRequest("Normal", Float64[20; 1.0]))
+# addBearingRangeFactor(newBearingRangeFactor2)
 
 # 7. Now let's tell the solver to pick up on all the latest changes.
 # TODO: Allow for putReady to take in a list.
