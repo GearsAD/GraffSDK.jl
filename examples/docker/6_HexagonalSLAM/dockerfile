@@ -1,0 +1,21 @@
+# Create the image: (Run from the root git cloned folder)
+# docker build -t hexdemo -f .\examples\docker\6_HexagonalSLAM\dockerfile .
+
+# Run the demo:
+# docker run hexdemo
+
+FROM jimhillr/julia:0.7.0
+
+COPY . /graffsdk/GraffSDK.jl
+
+WORKDIR /graffsdk
+#RUN apt-get update
+#RUN apt-get -y install git  
+#RUN git clone -b 'master' --single-branch --depth 1 "https://github.com/GearsAD/GraffSDK.jl.git";
+
+WORKDIR /graffsdk/GraffSDK.jl/examples
+
+RUN julia ./docker/6_HexagonalSLAM/install.jl
+
+
+CMD ["julia", "6_HexagonalSLAM.jl"]

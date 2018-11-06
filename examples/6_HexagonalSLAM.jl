@@ -3,6 +3,7 @@
 # This tutorial follows from the ContinuousScalar example from IncrementalInference
 using GraffSDK
 using ProgressMeter
+import Dates
 
 # 1. Import the initialization code.
 cd(joinpath(Pkg.dir("GraffSDK"),"examples"))
@@ -11,7 +12,7 @@ include("0_Initialization.jl")
 # 1a. Create a Configuration
 config = loadGraffConfig("synchronyConfig.json")
 #Create a hexagonal sessions
-config.sessionId = "HexDemoSample1"
+config.sessionId = "6_HexagonalSLAM_Demo_" + Dates.now()
 println(getGraffConfig())
 
 # 1b. Check the credentials and the service status
