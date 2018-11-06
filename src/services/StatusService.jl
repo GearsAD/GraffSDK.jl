@@ -23,17 +23,17 @@ end
 $(SIGNATURES)
 Print the current service status.
 """
-function printStatus()::Void
+function printStatus()::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
     end
     try
         serviceStatus = getStatus()
-        print_with_color(:blue, "Synchrony service status: ")
-        print_with_color(serviceStatus == "UP!" ? :green : :red, "$(serviceStatus)\r\n")
+        printstyled("Synchrony service status: ", color=:blue)
+        printstyled("$(serviceStatus)\r\n", color=(serviceStatus == "UP!" ? :green : :red))
     catch ex
         println("Unable to get service status, error is:");
-        showerror(STDERR, ex, catch_backtrace())
+        showerror(stderr, ex, catch_backtrace())
     end
 end

@@ -13,6 +13,7 @@ include("0_Initialization.jl")
 config = loadGraffConfig("synchronyConfig.json")
 #Create a hexagonal sessions
 config.sessionId = "6_HexagonalSLAM_Demo_" + Dates.now()
+
 println(getGraffConfig())
 
 # 1b. Check the credentials and the service status
@@ -59,7 +60,9 @@ println(" - Adding hexagonal driving pattern to session...")
     @time @show addOdoResponse = addOdometryMeasurement(newOdometryMeasurement)
     println("  - Adding image data to the pose...")
     # Adding image data
-    addOrUpdateDataElement(addOdoResponse.variable, imgRequest)
+    if i % 6 == 1
+        addOrUpdateDataElement(addOdoResponse.variable, imgRequest)
+    end
 end
 
 # # 5. Now retrieve the dataset

@@ -4,5 +4,6 @@
 deps/deps.jl
 examples/synchronyConfig*.json
 docs/build
+deps
 
 src/test.jl

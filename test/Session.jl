@@ -1,11 +1,18 @@
 mockConfig = SynchronyConfig("http://mock", "9000", "", "", "")
 mockConfig.sessionId = "TestSession"
 mockConfig.robotId = "TestRobot"
+setGraffConfig(mockConfig)
 
-facts("Sessions API") do
+@testset "Sessions API" begin
     # Arrange
     mockResponse = HTTP.Response(200, "{\"id\": \"TestSession\",\"description\": \"\",\"robotId\": \"\",\"userId\": \"\",\"initialPoseType\": \"\",\"nodeCount\": 0,\"shouldInitialize\": \"true\",\"createdTimestamp\": \"\",\"lastUpdatedTimestamp\": \"\", \"lastSolvedTimestamp\": \"\", \"isSolverEnabled\": 1, \"links\": {\"self\": \"https://api.synchronysandbox.com/mocking\"}}")
+    mockDuplicate = deepcopy(mockResponse)
+    mockDuplicate.body = deepcopy(mockResponse.body)
+
     mockListResponse = HTTP.Response(200, "{\"sessions\": [{\"id\": \"TestSession\", \"links\": {\"self\": \"https://api.synchronysandbox.com/mocking\"}}], \"links\": {\"self\": \"https://api.synchronysandbox.com/mocking\"}}")
+    mockListDuplicate = deepcopy(mockListResponse)
+    mockListDuplicate.body = deepcopy(mockListResponse.body)
+
     mockErrorResponse = HTTP.Response(403)
     mockRequest = SessionDetailsRequest("mockId", "desc", "Pose2", true)
     robotConfig = Dict{String, String}()
@@ -19,74 +26,79 @@ facts("Sessions API") do
 
     # Success criteria
     apply(sendRequestListMock) do
-        context("getSessions") do
+        @testset "getSessions" begin
             # Act
             callResponse = getSessions("TestRobot")
             # Assert
-            @fact length(callResponse.sessions) --> 1
+            @test length(callResponse.sessions) == 1
+            mockListResponse.body = deepcopy(mockListDuplicate.body)
             # Act
             callResponse = getSessions()
             # Assert
-            @fact length(callResponse.sessions) --> 1
+            @test length(callResponse.sessions) == 1
         end
-        context("isSessionExisting") do
+        @testset "isSessionExisting" begin
+            mockListResponse.body = deepcopy(mockListDuplicate.body)
             # Act
             callResponse = isSessionExisting("TestRobot", "TestSession")
             # Assert
-            @fact callResponse --> true
+            @test callResponse == true
+            mockListResponse.body = deepcopy(mockListDuplicate.body)
             # Act
             callResponse = isSessionExisting()
             # Assert
-            @fact callResponse --> true
+            @test callResponse == true
         end
     end
     apply(sendRequestMock) do
-        context("getSession") do
+        @testset "getSession" begin
+            mockResponse.body = deepcopy(mockDuplicate.body)
             # Act
             callResponse = getSession("", "")
             # Assert
-            @fact callResponse.id --> "TestSession"
+            @test callResponse.id == "TestSession"
+            mockResponse.body = deepcopy(mockDuplicate.body)
             # Act
             callResponse = getSession()
             # Assert
-            @fact callResponse.id --> "TestSession"
+            @test callResponse.id == "TestSession"
         end
-        # context("updateSession") do
+        # @testset "updateSession" begin
         #     # Act
         #     callResponse = addSession("", mockRequest)
         #     # Assert
-        #     @fact callResponse.name --> "TestRobot"
+        #     @test callResponse.name == "TestRobot"
         # end
-        context("deleteSession") do
+        @testset "deleteSession" begin
             # Act
             callResponse = deleteSession("", "")
             # Act
             callResponse = deleteSession()
         end
-        # context("addSession") do
+        # @testset "addSession" begin
         #     # Act
         #     callResponse = deleteRobot("", mockRequest)
         #     # Assert
-        #     @fact callResponse.name --> "TestSession"
+        #     @test callResponse.name == "TestSession"
         #     # Act
         #     callResponse = deleteRobot(mockRequest)
         #     # Assert
-        #     @fact callResponse.name --> "TestSession"
+        #     @test callResponse.name == "TestSession"
         # end
     end
 
     apply(sendRequestMock) do
-        # context("getRobotConfig") do
+        # @testset "getRobotConfig") do
         #     # Act
         #     callResponse = getRobotConfig("GearsAD")
         #     # Assert
-        #     @fact callResponse["name"] --> "TestRobot"
+        #     @test callResponse["name"] == "TestRobot"
         # end
-        # context("updateRobotConfig") do
+        # @testset "updateRobotConfig") do
         #     # Act
         #     callResponse = updateRobotConfig("GearsAD", robotConfig)
         #     # Assert
-        #     @fact callResponse["name"] --> "TestRobot"
+        #     @test callResponse["name"] == "TestRobot"
         # end
 
     end
