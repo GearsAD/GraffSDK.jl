@@ -30,7 +30,8 @@ matrix:
 
 ## uncomment the following lines to override the default test script
 script:
-  - julia --compiled-modules=no --check-bounds=yes --color=yes -e "using Pkg; Pkg.develop(\"https://github.com/GearsAD/GraffSDK.jl.git\"); Pkg.test(\"GraffSDK.jl\", coverage=true)"
+  - julia --compiled-modules=no --check-bounds=yes --color=yes -e "using Pkg; Pkg.develop(PackageSpec(url=""https://github.com/GearsAD/GraffSDK.jl.git")); Pkg.test("GraffSDK.jl", coverage=true)"
+
 after_success:
   # push coverage results to Codecov
   - julia -e 'using Pkg; cd(Pkg.dir("GraffSDK")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
