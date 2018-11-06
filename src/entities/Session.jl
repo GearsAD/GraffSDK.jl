@@ -80,6 +80,10 @@ mutable struct NodeResponse
     links::Dict{String, String}
 end
 
+function show(io::IO, n::NodeResponse)
+    println(io, "GraffSDK Node - ID: $(n.id), label: $(n.label)")
+end
+
 # function show(io::IO, obj::NodeResponse)
 #     print("\r\nNode: \r\n - ID: $(obj.id)\r\n  - Name: $(obj.name)")
 # end
@@ -90,6 +94,13 @@ The structure used to briefly describe a set of nodes in a response.
 mutable struct NodesResponse
     nodes::Vector{NodeResponse}
     links::Dict{String, String}
+end
+
+function show(io::IO, n::NodesResponse)
+    println(io, "GraffSDK Nodes (count = $(length(n.nodes))):")
+    for node in n.nodes
+        print(io, " - $node")
+    end
 end
 
 # function show(io::IO, obj::NodesResponse)
@@ -109,6 +120,13 @@ mutable struct NodeDetailsResponse
     links::Dict{String, String}
 end
 
+function show(io::IO, n::NodeDetailsResponse)
+    println(io, "GraffSDK Node:")
+    println(io, " - ID: $(c.id)")
+    println(io, " - Label: $(c.label)")
+    println(io, " - Graph Labels: $(c.labels)")
+end
+
 """
 The structure describing a high-level add-odometry request.
 """
@@ -116,8 +134,8 @@ mutable struct AddOdometryRequest
     timestamp::String
     deltaMeasurement::Vector{Float64}
     pOdo::Array{Float64, 2}
-    N::Nullable{Int64}
-    AddOdometryRequest(deltaMeasurement::Vector{Float64}, pOdo::Array{Float64, 2}) = new(string(Dates.Time(now(Dates.UTC))), deltaMeasurement, pOdo, nothing)
+    N::Union{Nothing, Int64}
+    AddOdometryRequest(deltaMeasurement::Vector{Float64}, pOdo::Array{Float64, 2}) = new(string(Time(now(UTC))), deltaMeasurement, pOdo, nothing)
 end
 
 """
@@ -134,9 +152,9 @@ The parameters structure for CreateVariable request.
 mutable struct VariableRequest
     label::String
     variableType::String
-    N::Nullable{Int64}
+    N::Union{Nothing, Int64}
     labels::Vector{String}
-    VariableRequest(label::String, variableType::String, N::Nullable{Int64}, labels::Vector{String}) = new(label, variableType, N, labels)
+    VariableRequest(label::String, variableType::String, N::Union{Nothing, Int64}, labels::Vector{String}) = new(label, variableType, N, labels)
     VariableRequest(label::String, variableType::String, labels::Vector{String}) = new(label, variableType, nothing, labels)
     VariableRequest(label::String, variableType::String) = new(label, variableType, nothing, String[])
 end
@@ -181,8 +199,8 @@ The body of a CreateFactor request - the variables to be linked, the body of the
 mutable struct FactorRequest
     variables::Vector{String}
     body::FactorBody
-    autoinit::Nullable{Bool}
-    ready::Nullable{Bool}
+    autoinit::Union{Nothing, Bool}
+    ready::Union{Nothing, Bool}
     FactorRequest(variables::Vector{String}, factorType::String, packedFactor; autoinit::Bool = false, ready::Bool = false ) = begin
         # try
             #TODO: Simplify this

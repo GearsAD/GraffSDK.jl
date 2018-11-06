@@ -5,14 +5,14 @@ import GeometryTypes: HyperRectangle, Vec, Point, HomogenousMesh, SignedDistance
 import ColorTypes: RGBA, RGB
 
 # Internal transform functions
-function projectPose2(renderObject, node::NodeDetailsResponse)::Void
+function projectPose2(renderObject, node::NodeDetailsResponse)::Nothing
     mapEst = node.properties["MAP_est"]
     trans = Translation(mapEst[1],mapEst[2],0) ∘ LinearMap(RotZ(mapEst[3]))
     settransform!(renderObject, trans)
     return nothing
 end
 
-function projectPose3(renderObject, node::NodeDetailsResponse)::Void
+function projectPose3(renderObject, node::NodeDetailsResponse)::Nothing
     mapEst = node.properties["MAP_est"]
      # one day when this changes to quaternions -- for now though Pose3 is using Euler angles during infinite product approximations (but convolutions are generally done on a proper rotation manifold)
      # yaw = convert(q).theta3
@@ -30,9 +30,9 @@ poseTransforms = Dict{String, Function}(
 """
 $(SIGNATURES)
 Visualize a session using MeshCat.
-Return: Void.
+Return: Nothing.
 """
-function visualizeSession(robotId::String, sessionId::String, bigDataImageKey::String = "", pointCloudKey::String = "")::Void
+function visualizeSession(robotId::String, sessionId::String, bigDataImageKey::String = "", pointCloudKey::String = "")::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -150,9 +150,9 @@ end
 """
 $(SIGNATURES)
 Visualize a session using MeshCat.
-Return: Void.
+Return: Nothing.
 """
-function visualizeSession(bigDataImageKey::String = "", pointCloudKey::String = "")::Void
+function visualizeSession(bigDataImageKey::String = "", pointCloudKey::String = "")::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")

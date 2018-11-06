@@ -1,8 +1,13 @@
 mockConfig = SynchronyConfig("http://mock", "9000", "", "", "")
 
-facts("User API") do
+@testset "User API" begin
     # Arrange
+    # NOTE: When you read the body as String(resp.body), it clears (at least in HTTP 0.6.14)
+    # So fixing it to not.
     mockResponse = HTTP.Response(200, "{\"id\": \"\",\"name\": \"GearsAD\",\"email\": \"\",\"address\": \"\",\"organization\": \"\",\"licenseType\": \"\",\"billingId\": \"\",\"createdTimestamp\": \"\",\"lastUpdatedTimestamp\": \"\",\"links\": {\"self\": \"https://api.synchronysandbox.com/mocking\"}}")
+    mockDuplicate = deepcopy(mockResponse)
+    mockDuplicate.body = deepcopy(mockResponse.body)
+
     mockErrorResponse = HTTP.Response(403)
     mockUserRequest = UserRequest("mockId", "GearsAD", "", "", "", "", "")
 
@@ -12,49 +17,55 @@ facts("User API") do
 
     # Success criteria
     apply(sendRequestMock) do
-        context("addUser") do
+        @testset "addUser" begin
             # Act
             callResponse = addUser(mockUserRequest)
             # Assert
-            @fact callResponse.name --> "GearsAD"
+            @test callResponse.name == "GearsAD"
         end
-        context("getUser") do
+        #Making it alive again for testing.
+        mockResponse.body = deepcopy(mockDuplicate.body)
+        @testset "getUser" begin
             # Act
             callResponse = getUser("GearsAD")
             # Assert
-            @fact callResponse.name --> "GearsAD"
+            @test callResponse.name == "GearsAD"
         end
-        context("updateUser") do
+        #Making it alive again for testing.
+        mockResponse.body = deepcopy(mockDuplicate.body)
+        @testset "updateUser" begin
             # Act
             callResponse = updateUser(mockUserRequest)
             # Assert
-            @fact callResponse.name --> "GearsAD"
+            @test callResponse.name == "GearsAD"
         end
-        context("deleteUser") do
+        #Making it alive again for testing.
+        mockResponse.body = deepcopy(mockDuplicate.body)
+        @testset "deleteUser" begin
             # Act
             callResponse = deleteUser("GearsAD")
             # Assert
-            @fact callResponse.name --> "GearsAD"
+            @test callResponse.name == "GearsAD"
         end
     end
 
     # Failure mode
     apply(sendRequestErrorMock) do
-        context("addUser - Failure Mode") do
+        @testset "addUser - Failure Mode" begin
             # Act & Assert
-            @fact_throws ErrorException addUser(mockUserRequest)
+            @test_throws ErrorException addUser(mockUserRequest)
         end
-        context("getUser - Failure Mode") do
+        @testset "getUser - Failure Mode" begin
             # Act & Assert
-            @fact_throws ErrorException getUser("GearsAD")
+            @test_throws ErrorException getUser("GearsAD")
         end
-        context("updateUser - Failure Mode") do
+        @testset "updateUser - Failure Mode" begin
             # Act & Assert
-            @fact_throws ErrorException updateUser(mockUserRequest)
+            @test_throws ErrorException updateUser(mockUserRequest)
         end
-        context("deleteUser - Failure Mode") do
+        @testset "deleteUser - Failure Mode" begin
             # Act & Assert
-            @fact_throws ErrorException deleteUser("GearsAD")
+            @test_throws ErrorException deleteUser("GearsAD")
         end
     end
 end

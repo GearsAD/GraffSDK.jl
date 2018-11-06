@@ -33,10 +33,11 @@ function getUser(userId::String)::UserResponse
     end
     url = "$(config.apiEndpoint)/$(format(userEndpoint, userId))"
     response = @mock _sendRestRequest(config, HTTP.get, url)
+    body = String(response.body)
     if(response.status != 200)
-        error("Error getting user, received $(response.status) with body '$(String(response.body))'.")
+        error("Error getting user, received $(response.status) with body '$(body)'.")
     end
-    return _unmarshallWithLinks(String(response.body), UserResponse)
+    return _unmarshallWithLinks(body, UserResponse)
 end
 
 """

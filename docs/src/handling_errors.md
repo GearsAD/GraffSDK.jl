@@ -19,7 +19,7 @@ try
     robot = getRobot("IDONTEXIST")
 catch ex
     println("Unable to get robot, error is:");
-    showerror(STDERR, ex, catch_backtrace())
+    showerror(stderr, ex, catch_backtrace())
 end
 ```
 
@@ -30,7 +30,7 @@ try
     robot = getRobot("IDONTEXIST")
 catch ex
     println("Unable to get robot, error is:");
-    showerror(STDERR, ex, catch_backtrace())
+    showerror(stderr, ex, catch_backtrace())
     println()
     if ex.status == 500
         warn("It's an internal service error, please confirm that 'IDONTEXIST' exists :)")
