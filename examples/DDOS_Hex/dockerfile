@@ -1,8 +1,11 @@
 # Create the image: (Run from the root git cloned folder)
-# docker build -t hexdemo -f .\examples\docker\6_HexagonalSLAM\dockerfile .
+# docker build -t hexdemo -f .\examples\DDOS_Hex\dockerfile .
 
 # Run the demo:
-# docker run hexdemo
+# docker run -it hexdemo
+
+# To Debug:
+# docker run -it hexdemo /bin/bash
 
 FROM jimhillr/julia:0.7.0
 
@@ -13,9 +16,9 @@ WORKDIR /graffsdk
 #RUN apt-get -y install git  
 #RUN git clone -b 'master' --single-branch --depth 1 "https://github.com/GearsAD/GraffSDK.jl.git";
 
-WORKDIR /graffsdk/GraffSDK.jl/examples
+WORKDIR /graffsdk/GraffSDK.jl/examples/DDOS_Hex
 
-RUN julia ./docker/6_HexagonalSLAM/install.jl
+RUN julia install.jl
 
 
-CMD ["julia", "6_HexagonalSLAM.jl"]
+CMD ["julia", "DDOS_Hex.jl"]
