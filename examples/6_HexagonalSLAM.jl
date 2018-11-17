@@ -22,12 +22,12 @@ println(" - Creating or retrieving robot '$(config.robotId)'...")
 robot = nothing
 if isRobotExisting()
     println(" -- Robot '$(config.robotId)' already exists, retrieving it...")
-    robot = getRobot()
+    robot = getRobot();
 else
     # Create a new one programatically - can also do this via the UI.
     println(" -- Robot '$(config.robotId)' doesn't exist, creating it...")
-    newRobot = RobotRequest(config.robotId, "My New Bot", "Description of my neat robot", "Active")
-    robot = addRobot(newRobot)
+    newRobot = RobotRequest(config.robotId, "My New Bot", "Description of my neat robot", "Active");
+    robot = addRobot(newRobot);
 end
 println(robot)
 

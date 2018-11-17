@@ -38,7 +38,7 @@ function loadGraffConfig(filename::String)::SynchronyConfig
         error("Cannot locate the configuration file '$filename'. Please check that it exists.")
     end
     configFile = open(filename)
-    configData = JSON.parse(readstring(configFile))
+    configData = JSON.parse(read(configFile, String))
     close(configFile)
     config = Unmarshal.unmarshal(SynchronyConfig, configData)
     setGraffConfig(config)

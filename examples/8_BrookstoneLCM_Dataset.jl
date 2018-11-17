@@ -2,92 +2,80 @@
 
 # 0. We need additional libraries to ingest the raw LCM datafile. Minimal installs, definitely worth the data :)
 #  - Note that a full Caesar install will give all these to you (later examples), but in case you don't have them, let's go through the steps.
-# Pkg.add("LCMCore")
-# Pkg.clone("https://github.com/JuliaRobotics/CaesarLCMTypes.jl.git") # For poses
+# ] then add LCMCore#v0.5.1 #Unsafe arrays don't work yet.
+# ] then dev CaesarLCMTypes
 
 using LCMCore, CaesarLCMTypes
 using JSON
-using SynchronySDK
+using GraffSDK
 
 # 1. Import the initialization code.
-cd(joinpath(Pkg.dir("SynchronySDK"),"examples"))
-include("0_Initialization.jl")
+cd(joinpath(dirname(pathof(GraffSDK)), "..", "examples"))
 # 1a. Constants
-robotId = "Brookstone"
-sessionId = "Hackathon8"
-synchronyConfig = loadConfig("synchronyConfig_NaviEast_DEV.json")
+graffConfig = loadGraffConfig("synchronyConfig.json")
+graffConfig.sessionId = "Hackathon808"
+graffConfig.robotId = "Brookstone"
 
 # 2. Confirm that the robot already exists, create if it doesn't.
-println(" - Creating or retrieving robot '$robotId'...")
+println(" - Creating or retrieving robot '$(graffConfig.robotId)'...")
 robot = nothing
-if(SynchronySDK.isRobotExisting(synchronyConfig, robotId))
-    println(" -- Robot '$robotId' already exists, retrieving it...")
-    robot = getRobot(synchronyConfig, robotId)
+if(GraffSDK.isRobotExisting())
+    println(" -- Robot '$(graffConfig.robotId)' already exists, retrieving it...")
+    robot = getRobot()
 else
     # Create a new one
-    println(" -- Robot '$robotId' doesn't exist, creating it...")
-    newRobot = RobotRequest(robotId, "My New Bot", "Description of my neat robot", "Active")
-    robot = addRobot(synchronyConfig, newRobot)
+    println(" -- Robot '$(graffConfig.robotId)' doesn't exist, creating it...")
+    newRobot = RobotRequest(graffConfig.robotId, "My New Bot", "Description of my neat robot", "Active")
+    robot = addRobot(graffConfig, newRobot)
 end
-println(robot)
 
 # 3. Create or retrieve the session.
 # Get sessions, if it already exists, add to it.
-println(" - Creating or retrieving data session '$sessionId' for robot...")
+println(" - Creating or retrieving data session '$(graffConfig.sessionId)' for robot...")
 session = nothing
-if(SynchronySDK.isSessionExisting(synchronyConfig, robotId, sessionId))
-    println(" -- Session '$sessionId' already exists for robot '$robotId', retrieving it...")
-    session = getSession(synchronyConfig, robotId, sessionId)
+if(GraffSDK.isSessionExisting())
+    println(" -- Session '$(graffConfig.sessionId)' already exists for robot '$(graffConfig.robotId)', retrieving it...")
+    session = getSession()
 else
     # Create a new one
-    println(" -- Session '$sessionId' doesn't exist for robot '$robotId', creating it...")
-    newSessionRequest = SessionDetailsRequest(sessionId, "A test dataset demonstrating data ingestion for a wheeled vehicle driving in a hexagon.", "Pose2")
-    session = addSession(synchronyConfig, robotId, newSessionRequest)
+    println(" -- Session '$(graffConfig.sessionId)' doesn't exist for robot '$(graffConfig.robotId)', creating it...")
+    newSessionRequest = SessionDetailsRequest(graffConfig.sessionId, "Brookstone test dataset - driving in a loop around the Work DoneGin.", "Pose2")
+    session = addSession(newSessionRequest)
 end
 println(session)
 
 # Adding the data!
 
-mutable struct RuntimeInfo
-    synchronyConfig::SynchronyConfig
-    robotId::String
-    sessionId::String
-end
-
 # 5. Set up the LCM callbacks
-function lcm_NewOdoAvailable(channel, msg::brookstone_supertype_t, runtimeInfo::RuntimeInfo)
+function lcm_NewOdoAvailable(channel, msg::brookstone_supertype_t, graffConfig::SynchronyConfig)
     # @show variable = msg.newvariable
     factor = msg.newfactor
     img = msg.img
     # Factor
     dataFrame = JSON.parse(String(factor.data))
     measurement = Float64.(dataFrame["meas"])
-    pOdo = Float64.(reshape(dataFrame["podo"], 3, 3))
+    @show pOdo = Float64.(reshape(dataFrame["podo"], 3, 3))
     newOdometryMeasurement = AddOdometryRequest(measurement, pOdo)
-    @time response = addOdometryMeasurement(synchronyConfig, robotId, sessionId, newOdometryMeasurement)
+    @time response = addOdometryMeasurement(newOdometryMeasurement)
 
     # Image
     # TODO: Finding the ID for the node - this shouldn't be necessary! Fix once we have response.variable.id
-    nodeLabel = response.variable.label
-    newNode = getNode(synchronyConfig, robotId, sessionId, nodeLabel)
-    nodeId = newNode.id
-    # Make a request payload
-    dataElementRequest = BigDataElementRequest("CamImage", "Mongo", "Brookstone camera data for timestamp $(factor.utime)", base64encode(img.data), "image/jpeg")
+    # nodeLabel = response.variable.label
+    # newNode = getNode(graffConfig, robotId, sessionId, nodeLabel)
+    # nodeId = newNode.id
+    # # Make a request payload
+    # dataElementRequest = BigDataElementRequest("CamImage", "Mongo", "Brookstone camera data for timestamp $(factor.utime)", base64encode(img.data), "image/jpeg")
     #   # add the data to the database
-    # addOrUpdateDataElement(synchronyConfig, robotId, sessionId, nodeId, dataElementRequest)
+    # addOrUpdateDataElement(graffConfig, robotId, sessionId, nodeId, dataElementRequest)
 end
 
-# Not ideal but i need these things.
-runtimeInfo = RuntimeInfo(synchronyConfig, robotId, sessionId)
-
-cd(Pkg.dir("SynchronySDK"))
-lcm = LCMLog("examples/data/brookstone_3.lcmlog")
-subscribe(lcm, "BROOKSTONE_ROVER", (c,m)->lcm_NewOdoAvailable(c,m, runtimeInfo), brookstone_supertype_t)
+lcmLog = LCMLog("data/brookstone_3.lcmlog")
+subscribe(lcmLog, "BROOKSTONE_ROVER", (c,m)->lcm_NewOdoAvailable(c,m, graffConfig), brookstone_supertype_t)
 # subscribe(lcm, "BROOKSTONE_NEW_FACTOR", (c,m) -> newFactor_Callback(c, m, runtimeInfo), generic_factor_t)
-# subscribe(lcm, "BROOKSTONE_CAM_IMAGE", (c,m)->keyframe_Callback(c,m, synchronyConfig, nodehist), image_t)
+# subscribe(lcm, "BROOKSTONE_CAM_IMAGE", (c,m)->keyframe_Callback(c,m, graffConfig, nodehist), image_t)
 
 # Run while there is data
-while handle(lcm)
+while handle(lcmLog)
 end
 
 # KAMEHAMEHA :D
@@ -95,4 +83,4 @@ end
 # How awesome is that?
 
 # Let's take a look at the data:
-visualizeSession(synchronyConfig, robotId, sessionId, "CamImage")
+visualizeSession(graffConfig, robotId, sessionId, "CamImage")
