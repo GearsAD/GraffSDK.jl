@@ -56,7 +56,7 @@ function lcm_NewOdoAvailable(channel, msg::brookstone_supertype_t, graffConfig::
     measurement = Float64.(dataFrame["meas"])
     @show pOdo = Float64.(reshape(dataFrame["podo"], 3, 3))
     newOdometryMeasurement = AddOdometryRequest(measurement, pOdo)
-    @time response = addOdometryMeasurement(newOdometryMeasurement)
+    @time @show response = addOdometryMeasurement(newOdometryMeasurement)
 
     # Image
     # TODO: Finding the ID for the node - this shouldn't be necessary! Fix once we have response.variable.id
