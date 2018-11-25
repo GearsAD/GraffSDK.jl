@@ -26,7 +26,7 @@ That should get you started! (You probably don't need the full 216Mb build-essen
 ## Documentation
 You can find all the Graff SDK documentation at [GraffSDK.jl GitHub Page](https://gearsad.github.io/GraffSDK.jl/latest/)
 
-> Important Note: User, robot, and session names cannot contain spaces or special characters. We're revising this in an upcoming release, but please ensure that you only use alphanumeric names for the moment.
+> **Important Note:** User, robot, and session names cannot contain spaces or special characters. We're revising this in an upcoming release, but please ensure that you only use alphanumeric names for the moment.
 
 ## Examples
 There are quite a few examples in the [Examples](examples) folder and we're constantly growing more. Here you'll find everything from an introductory 'Registering your First Robot' example through to a full Apil-tags driven localization example with a Brookstone Rover.  
