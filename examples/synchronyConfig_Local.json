@@ -1,9 +1,0 @@
-{
-  "apiEndpoint":"http://localhost:8000",
-  "accessKey":"AKIAJCWNGVP7KVKQGBGA",
-  "secretKey":"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",
-  "region":"us-east-2",
-  "userId":"NewUser",
-  "robotId":"DemoRobot",
-  "sessionId":"DemoSession"
-}
