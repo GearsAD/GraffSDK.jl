@@ -48,8 +48,8 @@ mutable struct SessionDetailsResponse
     userId::String
     initialPoseType::String
     nodeCount::Int
-    solveCount::Int
-    solveTimes::Vector{Any}
+    # solveCount::Int
+    # solveTimes::Vector{Any}
     createdTimestamp::String
     lastSolvedTimestamp::String # Can remove nullable as soon as we stabilize.
     isSolverEnabled::Int # If 1 then the ad-hoc solver will pick up on it, otherwise will ignore this session.
