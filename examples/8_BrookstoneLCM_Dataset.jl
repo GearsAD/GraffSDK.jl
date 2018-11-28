@@ -13,7 +13,7 @@ using GraffSDK
 cd(joinpath(dirname(pathof(GraffSDK)), "..", "examples"))
 # 1a. Constants
 graffConfig = loadGraffConfig("synchronyConfig.json")
-graffConfig.sessionId = "Hackathon808"
+graffConfig.sessionId = "Hackathon809"
 graffConfig.robotId = "Brookstone"
 
 # 2. Confirm that the robot already exists, create if it doesn't.

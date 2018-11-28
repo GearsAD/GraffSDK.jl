@@ -48,6 +48,8 @@ mutable struct SessionDetailsResponse
     userId::String
     initialPoseType::String
     nodeCount::Int
+    solveCount::Int
+    solveTimes::Vector{Any}
     createdTimestamp::String
     lastSolvedTimestamp::String # Can remove nullable as soon as we stabilize.
     isSolverEnabled::Int # If 1 then the ad-hoc solver will pick up on it, otherwise will ignore this session.
@@ -62,7 +64,7 @@ function show(io::IO, c::SessionDetailsResponse)
     println(io, " - Robot ID: $(c.robotId)")
     println(io, " - Initial Pose Type: $(c.initialPoseType)")
     println(io, " - Node Count: $(c.nodeCount)")
-    println(io, " - Solved Enabled: $(c.isSolverEnabled)")
+    println(io, " - Solver Enabled: $(c.isSolverEnabled)")
     println(io, " - Created: $(c.createdTimestamp)")
     println(io, " - Last Solved: $(c.lastSolvedTimestamp)")
 end
@@ -134,8 +136,9 @@ mutable struct AddOdometryRequest
     timestamp::String
     deltaMeasurement::Vector{Float64}
     pOdo::Array{Float64, 2}
-    N::Union{Nothing, Int64}
-    AddOdometryRequest(deltaMeasurement::Vector{Float64}, pOdo::Array{Float64, 2}) = new(string(Time(now(UTC))), deltaMeasurement, pOdo, nothing)
+    N::Int64
+    AddOdometryRequest(deltaMeasurement::Vector{Float64}, pOdo::Array{Float64, 2}, N::Int64) = new(string(now(UTC)), deltaMeasurement, pOdo, N)
+    AddOdometryRequest(deltaMeasurement::Vector{Float64}, pOdo::Array{Float64, 2}) = new(string(now(UTC)), deltaMeasurement, pOdo, 100)
 end
 
 """
@@ -152,11 +155,11 @@ The parameters structure for CreateVariable request.
 mutable struct VariableRequest
     label::String
     variableType::String
-    N::Union{Nothing, Int64}
+    N::Int64
     labels::Vector{String}
-    VariableRequest(label::String, variableType::String, N::Union{Nothing, Int64}, labels::Vector{String}) = new(label, variableType, N, labels)
-    VariableRequest(label::String, variableType::String, labels::Vector{String}) = new(label, variableType, nothing, labels)
-    VariableRequest(label::String, variableType::String) = new(label, variableType, nothing, String[])
+    VariableRequest(label::String, variableType::String, N::Int64, labels::Vector{String}) = new(label, variableType, N, labels)
+    VariableRequest(label::String, variableType::String, labels::Vector{String}) = new(label, variableType, 100, labels)
+    VariableRequest(label::String, variableType::String) = new(label, variableType, 100, String[])
 end
 
 """
@@ -199,8 +202,8 @@ The body of a CreateFactor request - the variables to be linked, the body of the
 mutable struct FactorRequest
     variables::Vector{String}
     body::FactorBody
-    autoinit::Union{Nothing, Bool}
-    ready::Union{Nothing, Bool}
+    autoinit::Bool
+    ready::Bool
     FactorRequest(variables::Vector{String}, factorType::String, packedFactor; autoinit::Bool = false, ready::Bool = false ) = begin
         # try
             #TODO: Simplify this

@@ -365,6 +365,15 @@ end
 
 """
 $(SIGNATURES)
+Create a variable in Synchrony.
+Return: Returns the ID+label of the created variable.
+"""
+function addVariable(label::String, varType::String, additionalLabels::Vector{String}=Vector{String}())::NodeResponse
+    return addVariable(VariableRequest(label, varType, additionalLabels))
+end
+
+"""
+$(SIGNATURES)
 Create a factor in Synchrony.
 Return: Returns the ID+label of the created factor.
 """
@@ -466,6 +475,24 @@ function addOdometryMeasurement(addOdoRequest::AddOdometryRequest)::AddOdometryR
     end
 
     return addOdometryMeasurement(config.robotId, config.sessionId, addOdoRequest)
+end
+
+
+"""
+$(SIGNATURES)
+Create a session in Synchrony and associate it with the given robot+user.
+Return: Returns the added odometry information.
+"""
+function addOdometryMeasurement(odoDelta::Vector{Float64}, pOdo::Matrix{Float64})::AddOdometryResponse
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return addOdometryMeasurement(config.robotId, config.sessionId, AddOdometryRequest(odoDelta, pOdo))
 end
 
 """
