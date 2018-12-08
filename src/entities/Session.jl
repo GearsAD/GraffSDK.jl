@@ -48,7 +48,7 @@ mutable struct SessionDetailsResponse
     userId::String
     initialPoseType::String
     nodeCount::Int
-    # solveCount::Int
+    solveCount::Int
     # solveTimes::Vector{Any}
     createdTimestamp::String
     lastSolvedTimestamp::String # Can remove nullable as soon as we stabilize.
@@ -65,6 +65,7 @@ function show(io::IO, c::SessionDetailsResponse)
     println(io, " - Initial Pose Type: $(c.initialPoseType)")
     println(io, " - Node Count: $(c.nodeCount)")
     println(io, " - Solver Enabled: $(c.isSolverEnabled)")
+    println(io, " - Solve Count: $(c.solveCount)")
     println(io, " - Created: $(c.createdTimestamp)")
     println(io, " - Last Solved: $(c.lastSolvedTimestamp)")
 end

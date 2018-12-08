@@ -9,9 +9,9 @@ using UUIDs
 cd(joinpath(dirname(pathof(GraffSDK)), "..", "examples"))
 
 # 1a. Create a Configuration
-config = loadGraffConfig("synchronyConfig_Local.json")
+config = loadGraffConfig("synchronyConfig1.json");
 #Create a hexagonal sessions
-config.sessionId = "HexDemoSample1_Train4_"*replace(string(uuid4()), "-" => "")
+config.sessionId = "HexDemoSample1_"*replace(string(uuid4()), "-" => "")
 println(getGraffConfig())
 
 # 1b. Check the credentials and the service status
@@ -66,7 +66,7 @@ end
 
 # By NeoID
 node = getNode( nodes.nodes[1].id)
-# By Synchrony label
+# By Graff label
 node = getNode( nodes.nodes[1].label)
 
 # 6. Now lets add a couple landmarks
@@ -87,7 +87,10 @@ addBearingRangeFactor(newBearingRangeFactor2)
 putReady(true)
 
 # 8. Let's check on the solver updates.
+session = getSession()
 sessionLatest = getSession()
+# Lets request a complete session solve (shouldn't be necessary but) we want to demonstrate that we can
+requestSessionSolve()
 while session.lastSolvedTimestamp != sessionLatest.lastSolvedTimestamp
     println("Comparing latest session solver timestamp $(sessionLatest.lastSolvedTimestamp) with original $(session.lastSolvedTimestamp) - still the same so sleeping for 2 seconds")
     sleep(2)

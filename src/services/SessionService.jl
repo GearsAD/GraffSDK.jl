@@ -8,6 +8,7 @@ bigDataRawElementEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/nodes/{4}/
 nodeLabelledEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/nodes/labelled/{4}"
 odoEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/odometry"
 sessionReadyEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/ready/{4}"
+sessionSolveEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/solve"
 variableEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/variables/{4}"
 factorsEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/factors"
 factorEndpoint = "$factorsEndpoint/{4}"
@@ -326,6 +327,39 @@ function putReady(isReady::Bool)::Nothing
     end
 
     return putReady(config.robotId, config.sessionId, isReady)
+end
+
+"""
+$(SIGNATURES)
+Manually request that the session is solved in entirety (update whole session).
+"""
+function requestSessionSolve(robotId::String, sessionId::String)::Nothing
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    url = "$(config.apiEndpoint)/$(format(sessionSolveEndpoint, config.userId, robotId, sessionId))"
+    response = @mock _sendRestRequest(config, HTTP.put, url, data="")
+    if(response.status != 200)
+        error("Error manually requesting a session solve, received $(response.status) with body '$(String(response.body))'.")
+    end
+    return nothing
+end
+
+"""
+$(SIGNATURES)
+Request that the session is solved in entirety (update whole session).
+"""
+function requestSessionSolve()::Nothing
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return requestSessionSolve(config.robotId, config.sessionId)
 end
 
 """
