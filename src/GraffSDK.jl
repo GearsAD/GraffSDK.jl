@@ -38,7 +38,7 @@ function loadGraffConfig(filename::String)::SynchronyConfig
         error("Cannot locate the configuration file '$filename'. Please check that it exists.")
     end
     configFile = open(filename)
-    configData = JSON.parse(readstring(configFile))
+    configData = JSON.parse(read(configFile, String))
     close(configFile)
     config = Unmarshal.unmarshal(SynchronyConfig, configData)
     setGraffConfig(config)
@@ -117,7 +117,7 @@ export loadGraffConfig, setGraffConfig, getGraffConfig
 export getStatus, printStatus
 export UserRequest, UserResponse, KafkaConfig, UserConfig, addUser, getUser, updateUser, deleteUser, getUserConfig
 export RobotRequest, RobotResponse, RobotsResponse, getRobots, isRobotExisting, getRobot, addRobot, updateRobot, deleteRobot, getRobotConfig, updateRobotConfig
-export SessionsResponse, SessionResponse, SessionDetailsRequest, SessionDetailsResponse, addSession, getSessions, isSessionExisting, getSession, deleteSession, putReady
+export SessionsResponse, SessionResponse, SessionDetailsRequest, SessionDetailsResponse, addSession, getSessions, isSessionExisting, getSession, deleteSession, putReady, requestSessionSolve
 export BigDataElementRequest, BigDataEntryResponse, BigDataElementResponse
 export getDataEntries, getDataElement, getRawDataElement, addDataElement, updateDataElement, addOrUpdateDataElement, deleteDataElement
 export encodeJsonData, encodeBinaryData, readFileIntoDataRequest, isSafeToJsonSerialize

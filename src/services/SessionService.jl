@@ -8,6 +8,7 @@ bigDataRawElementEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/nodes/{4}/
 nodeLabelledEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/nodes/labelled/{4}"
 odoEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/odometry"
 sessionReadyEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/ready/{4}"
+sessionSolveEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/solve"
 variableEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/variables/{4}"
 factorsEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/factors"
 factorEndpoint = "$factorsEndpoint/{4}"
@@ -330,6 +331,39 @@ end
 
 """
 $(SIGNATURES)
+Manually request that the session is solved in entirety (update whole session).
+"""
+function requestSessionSolve(robotId::String, sessionId::String)::Nothing
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    url = "$(config.apiEndpoint)/$(format(sessionSolveEndpoint, config.userId, robotId, sessionId))"
+    response = @mock _sendRestRequest(config, HTTP.put, url, data="")
+    if(response.status != 200)
+        error("Error manually requesting a session solve, received $(response.status) with body '$(String(response.body))'.")
+    end
+    return nothing
+end
+
+"""
+$(SIGNATURES)
+Request that the session is solved in entirety (update whole session).
+"""
+function requestSessionSolve()::Nothing
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return requestSessionSolve(config.robotId, config.sessionId)
+end
+
+"""
+$(SIGNATURES)
 Create a variable in Synchrony.
 Return: Returns the ID+label of the created variable.
 """
@@ -361,6 +395,15 @@ function addVariable(variableRequest::VariableRequest)::NodeResponse
     end
 
     return addVariable(config.robotId, config.sessionId,variableRequest)
+end
+
+"""
+$(SIGNATURES)
+Create a variable in Synchrony.
+Return: Returns the ID+label of the created variable.
+"""
+function addVariable(label::String, varType::String, additionalLabels::Vector{String}=Vector{String}())::NodeResponse
+    return addVariable(VariableRequest(label, varType, additionalLabels))
 end
 
 """
@@ -466,6 +509,24 @@ function addOdometryMeasurement(addOdoRequest::AddOdometryRequest)::AddOdometryR
     end
 
     return addOdometryMeasurement(config.robotId, config.sessionId, addOdoRequest)
+end
+
+
+"""
+$(SIGNATURES)
+Create a session in Synchrony and associate it with the given robot+user.
+Return: Returns the added odometry information.
+"""
+function addOdometryMeasurement(odoDelta::Vector{Float64}, pOdo::Matrix{Float64})::AddOdometryResponse
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return addOdometryMeasurement(config.robotId, config.sessionId, AddOdometryRequest(odoDelta, pOdo))
 end
 
 """

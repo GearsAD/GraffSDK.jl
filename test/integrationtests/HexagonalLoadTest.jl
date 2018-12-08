@@ -3,6 +3,7 @@
 # This tutorial follows from the ContinuousScalar example from IncrementalInference
 using SynchronySDK
 using ProgressMeter
+using UUIDs
 
 # 1. Import the initialization code.
 cd(joinpath(Pkg.dir("SynchronySDK"),"examples"))
@@ -80,7 +81,7 @@ function makeSessionDataWooHoo(synchronyConfig::SynchronyConfig, robotId::String
 end
 
 for i = 1:10
-    sess = "LoadTest"*string(split(string(Base.Random.uuid4()), '-')...)
+    sess = "LoadTest"*string(split(string(uuid4()), '-')...)
     println("Adding session: $(sess)...")
     makeSessionDataWooHoo(synchronyConfig, robotId, sess)
 end

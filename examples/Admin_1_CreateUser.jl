@@ -1,6 +1,7 @@
 using Base
 using JSON, Unmarshal
 using SynchronySDK
+using UUIDs
 
 # 1. Get a Synchrony configuration
 # Assume that you're running in local directory
@@ -16,7 +17,7 @@ synchronyConfig = Unmarshal.unmarshal(SynchronyConfig, configData)
 # and associate it with data sessions
 # Note that we'll create this for you normally, but providing it here to demonstrate
 # how a user is associated with an organization.
-newUser = UserRequest(synchronyConfig.userId, "NewUser", "email@email.com", "N/A", "Student", "Student", string(Base.Random.uuid4()))
+newUser = UserRequest(synchronyConfig.userId, "NewUser", "email@email.com", "N/A", "Student", "Student", string(uuid4()))
 retUser = addUser(synchronyConfig, newUser)
 @show retUser
 # Now we can get it as well if we want
