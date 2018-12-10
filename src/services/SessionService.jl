@@ -408,6 +408,15 @@ end
 
 """
 $(SIGNATURES)
+Create a variable in Synchrony.
+Return: Returns the ID+label of the created variable.
+"""
+function addVariable(label::Symbol, varType::Type, additionalLabels::Vector{String}=Vector{String}())::NodeResponse
+    return addVariable(VariableRequest(String(label), string(varType), additionalLabels))
+end
+
+"""
+$(SIGNATURES)
 Create a factor in Synchrony.
 Return: Returns the ID+label of the created factor.
 """
@@ -439,6 +448,35 @@ function addFactor(factorRequest::FactorRequest)::NodeResponse
     end
 
     return addFactor(config.robotId, config.sessionId, factorRequest)
+end
+
+"""
+$(SIGNATURES)
+Create a factor in Graff as you do in RoME.
+Return: Returns the ID+label of the created factor.
+"""
+function addFactor(variables::Vector{Symbol}, romeFactor)::NodeResponse
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    try
+        # Try pack quickly here.
+        fctType = typeof(romeFactor).name # Simply 'prior', as example
+        fctPackedType = getfield(Main, Symbol("Packed$(fctType)") )#eval(Meta.parse("Packed$(fctType)"))
+        @info "Trying to encode factor $fctType into PackedType $fctPackedType..."
+        fctRequest = FactorRequest(String.(variables), string(fctType), convert(fctPackedType, romeFactor))
+        @info "Successfully encoded - sending to Graff..."
+        return addFactor(config.robotId, config.sessionId, fctRequest)
+    catch ex
+        @info "Unable to pack and send factor - did you include RoME and/or Caesar? Please check your factor type is valid and has a PackedType."
+        showerror(stderr, ex, catch_backtrace())
+        error(ex)
+    end
 end
 
 """
