@@ -74,7 +74,7 @@ include("./entities/Data.jl")
 include("./services/DataHelpers.jl")
 include("./services/SessionService.jl")
 include("./services/StatusService.jl")
-include("./services/VisualizationService.jl")
+# include("./services/VisualizationService.jl")
 
 include("./entities/Cyphon.jl")
 
@@ -117,14 +117,15 @@ export loadGraffConfig, setGraffConfig, getGraffConfig
 export getStatus, printStatus
 export UserRequest, UserResponse, KafkaConfig, UserConfig, addUser, getUser, updateUser, deleteUser, getUserConfig
 export RobotRequest, RobotResponse, RobotsResponse, getRobots, isRobotExisting, getRobot, addRobot, updateRobot, deleteRobot, getRobotConfig, updateRobotConfig
-export SessionsResponse, SessionResponse, SessionDetailsRequest, SessionDetailsResponse, addSession, getSessions, isSessionExisting, getSession, deleteSession, putReady, requestSessionSolve
+export SessionsResponse, SessionResponse, SessionDetailsRequest, SessionDetailsResponse, addSession, getSessions, isSessionExisting, getSession, deleteSession, putReady, requestSessionSolve, getSessionLandmarks
 export BigDataElementRequest, BigDataEntryResponse, BigDataElementResponse
 export getDataEntries, getDataElement, getRawDataElement, addDataElement, updateDataElement, addOrUpdateDataElement, deleteDataElement
+export exportSessionJld
 export encodeJsonData, encodeBinaryData, readFileIntoDataRequest, isSafeToJsonSerialize
 export NodeResponse, NodesResponse, BigDataElementResponse, NodeDetailsResponse, getNodes, getNode
 export AddOdometryRequest, AddOdometryResponse, NodeResponseInfo, addOdometryMeasurement
 export VariableRequest, VariableResponse, BearingRangeRequest, BearingRangeResponse, DistributionRequest, FactorBody, FactorRequest, addVariable, addBearingRangeFactor, addFactor
-export VisualizationRequest, visualizeSession
+# export VisualizationRequest, visualizeSession
 # For testing
 export _unmarshallWithLinks
 export nodeDetail2ExVertex

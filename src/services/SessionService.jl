@@ -9,6 +9,7 @@ nodeLabelledEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/nodes/labelled/
 odoEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/odometry"
 sessionReadyEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/ready/{4}"
 sessionSolveEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/solve"
+sessionExportJldEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/export/jld"
 variableEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/variables/{4}"
 factorsEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/factors"
 factorEndpoint = "$factorsEndpoint/{4}"
@@ -254,6 +255,14 @@ function getNodes()::NodesResponse
     return getNodes(config.robotId, config.sessionId)
 end
 
+"""
+$(SIGNATURES)
+Returns a summary list of all landmarks for a given robot and session.
+"""
+function getSessionLandmarks(robotId::String, sessionId::String)::Vector{NodeResponse}
+    landmarkList = filter(n -> occursin(r"[l][0-9]+", n.label), getNodes().nodes)
+    return landmarkList
+end
 
 """
 $(SIGNATURES)
@@ -834,4 +843,47 @@ function deleteDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, 
     end
 
     return deleteDataElement(config.robotId, config.sessionId, node, dataId)
+end
+
+"""
+$(SIGNATURES)
+Export a session to a JLD file.
+Return: Nothing if succeed, error if failed.
+"""
+function exportSessionJld(robotId::String, sessionId::String, filename::String)::Nothing
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    url = "$(config.apiEndpoint)/$(format(sessionExportJldEndpoint, config.userId, robotId, sessionId))"
+    response = @mock _sendRestRequest(config, HTTP.get, url)
+    if(response.status != 200)
+        error("Error exporting session, received $(response.status) with body '$(String(response.body))'.")
+    end
+    out =  open(filename,"w")
+    write(out,response.body)
+    close(out)
+
+    return nothing
+end
+
+"""
+$(SIGNATURES)
+Export a session to a JLD file.
+Return: Nothing if succeed, error if failed.
+"""
+function exportSessionJld(filename::String)::Nothing
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return exportSessionJld(config.robotId, config.sessionId, filename)
 end
