@@ -3,7 +3,7 @@ module DataHelpers
 using JSON
 using GraffSDK
 using DocStringExtensions
-
+using Base64
 
 
 """
@@ -11,11 +11,11 @@ $(SIGNATURES)
 Encode data and return the data request.
 """
 function encodeJsonData(id::String, description::String, data::Any)::BigDataElementRequest
-    return BigDataElementRequest(id, "Mongo", description, JSON.json(data), "application/json")
+    return BigDataElementRequest(id, "Mongo", description, JSON.json(data), "application/json");
 end
 
 function encodeBinaryData(id::String, description::String, data::Vector{UInt8}; mimeType="application/octet-stream")
-    return BigDataElementRequest(id, "Mongo", description, base64encode(data), mimeType)
+    return BigDataElementRequest(id, "Mongo", description, base64encode(data), mimeType);
 end
 
 """

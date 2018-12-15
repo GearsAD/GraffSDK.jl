@@ -9,6 +9,7 @@ nodeLabelledEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/nodes/labelled/
 odoEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/odometry"
 sessionReadyEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/ready/{4}"
 sessionSolveEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/solve"
+sessionQueueLengthEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/queue/status"
 sessionExportJldEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/export/jld"
 variableEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/variables/{4}"
 factorsEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/factors"
@@ -369,6 +370,40 @@ function requestSessionSolve()::Nothing
     end
 
     return requestSessionSolve(config.robotId, config.sessionId)
+end
+
+"""
+$(SIGNATURES)
+Get the asynchonous session queue length.
+"""
+function getSessionQueueLength(robotId::String, sessionId::String)::Int
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    url = "$(config.apiEndpoint)/$(format(sessionQueueLengthEndpoint, config.userId, robotId, sessionId))"
+    response = @mock _sendRestRequest(config, HTTP.get, url)
+    if(response.status != 200)
+        error("Error manually requesting a session solve, received $(response.status) with body '$(String(response.body))'.")
+    end
+    body = JSON.parse(String(response.body))
+    return body["length"]
+end
+
+"""
+$(SIGNATURES)
+Get the asynchonous session queue length.
+"""
+function getSessionQueueLength()::Int
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return getSessionQueueLength(config.robotId, config.sessionId)
 end
 
 """
