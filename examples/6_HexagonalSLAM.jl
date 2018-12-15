@@ -12,14 +12,13 @@ cd(joinpath(dirname(pathof(GraffSDK)), "..", "examples"))
 # 1a. Create a Configuration
 config = loadGraffConfig("synchronyConfigLocal.json");
 #Create a hexagonal sessions
-# config.sessionId = "HexDemoSample1_"*replace(string(uuid4()), "-" => "")
-config.sessionId = "HexDemoSample1_a0ef814de22d4b2b86b3dfccb83cc135"
+config.sessionId = "HexDemoSample1_"*replace(string(uuid4()), "-" => "")
 println(getGraffConfig())
 
 # 1b. Check the credentials and the service status
 printStatus()
 # 1c. Check the session queue length
-@info "Session backlog (queue length) = $(getSessionQueueLength())"
+@info "Session backlog (queue length) = $(getSessionBacklog())"
 
 # 2. Confirm that the robot already exists, create if it doesn't.
 println(" - Creating or retrieving robot '$(config.robotId)'...")
@@ -64,7 +63,11 @@ println(" - Adding hexagonal driving pattern to session...")
 end
 
 # # 5. Now retrieve the dataset
-# println(" - Retrieving all data for session $sessionId...")
+# Let's wait for all nodes to be processed
+while getSessionBacklog() > 0
+    @info "Session currently contains $(getSessionBacklog()) entries, waiting until complete..."
+    sleep(2)
+end
 @time nodes = getNodes()
 
 # By NeoID
@@ -74,7 +77,6 @@ node = getNode( nodes.nodes[1].label)
 
 # 6. Now lets add a couple landmarks
 # Ref: https://github.com/dehann/RoME.jl/blob/master/examples/Slam2dExample.jl#L35
-# TODO: FIX tonight here
 response = addVariable("l1", "Point2", ["LANDMARK"])
 newBearingRangeFactor = BearingRangeRequest("x0", "l1",
                           DistributionRequest("Normal", Float64[0; 0.1]),

@@ -376,7 +376,7 @@ end
 $(SIGNATURES)
 Get the asynchonous session queue length.
 """
-function getSessionQueueLength(robotId::String, sessionId::String)::Int
+function getSessionBacklog(robotId::String, sessionId::String)::Int
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -394,7 +394,7 @@ end
 $(SIGNATURES)
 Get the asynchonous session queue length.
 """
-function getSessionQueueLength()::Int
+function getSessionBacklog()::Int
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -403,7 +403,7 @@ function getSessionQueueLength()::Int
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return getSessionQueueLength(config.robotId, config.sessionId)
+    return getSessionBacklog(config.robotId, config.sessionId)
 end
 
 """
@@ -411,7 +411,7 @@ $(SIGNATURES)
 Create a variable in Synchrony.
 Return: Returns the ID+label of the created variable.
 """
-function addVariable(robotId::String, sessionId::String, variableRequest::VariableRequest)::NodeResponse
+function addVariable(robotId::String, sessionId::String, variableRequest::VariableRequest)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -421,7 +421,8 @@ function addVariable(robotId::String, sessionId::String, variableRequest::Variab
     if(response.status != 200)
         error("Error creating variable, received $(response.status) with body '$(String(response.body))'.")
     end
-    return _unmarshallWithLinks(String(response.body), NodeResponse)
+    return nothing
+    # return _unmarshallWithLinks(String(response.body), NodeResponse)
 end
 
 """
@@ -429,7 +430,7 @@ $(SIGNATURES)
 Create a variable in Synchrony.
 Return: Returns the ID+label of the created variable.
 """
-function addVariable(variableRequest::VariableRequest)::NodeResponse
+function addVariable(variableRequest::VariableRequest)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -446,7 +447,7 @@ $(SIGNATURES)
 Create a variable in Synchrony.
 Return: Returns the ID+label of the created variable.
 """
-function addVariable(label::String, varType::String, additionalLabels::Vector{String}=Vector{String}())::NodeResponse
+function addVariable(label::String, varType::String, additionalLabels::Vector{String}=Vector{String}())::Nothing
     return addVariable(VariableRequest(label, varType, additionalLabels))
 end
 
@@ -455,7 +456,7 @@ $(SIGNATURES)
 Create a variable in Synchrony.
 Return: Returns the ID+label of the created variable.
 """
-function addVariable(label::Symbol, varType::Type, additionalLabels::Vector{String}=Vector{String}())::NodeResponse
+function addVariable(label::Symbol, varType::Type, additionalLabels::Vector{String}=Vector{String}())::Nothing
     return addVariable(VariableRequest(String(label), string(varType), additionalLabels))
 end
 
@@ -464,7 +465,7 @@ $(SIGNATURES)
 Create a factor in Synchrony.
 Return: Returns the ID+label of the created factor.
 """
-function addFactor(robotId::String, sessionId::String, factorRequest::FactorRequest)::NodeResponse
+function addFactor(robotId::String, sessionId::String, factorRequest::FactorRequest)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -474,7 +475,8 @@ function addFactor(robotId::String, sessionId::String, factorRequest::FactorRequ
     if(response.status != 200)
         error("Error creating factor, received $(response.status) with body '$(String(response.body))'.")
     end
-    return _unmarshallWithLinks(String(response.body), NodeResponse)
+    return nothing
+    # return _unmarshallWithLinks(String(response.body), NodeResponse)
 end
 
 """
@@ -482,7 +484,7 @@ $(SIGNATURES)
 Create a factor in Synchrony.
 Return: Returns the ID+label of the created factor.
 """
-function addFactor(factorRequest::FactorRequest)::NodeResponse
+function addFactor(factorRequest::FactorRequest)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -499,7 +501,7 @@ $(SIGNATURES)
 Create a factor in Graff as you do in RoME.
 Return: Returns the ID+label of the created factor.
 """
-function addFactor(variables::Vector{Symbol}, romeFactor)::NodeResponse
+function addFactor(variables::Vector{Symbol}, romeFactor)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -528,7 +530,7 @@ $(SIGNATURES)
 Create a variable in Synchrony and associate it with the given robot+user.
 Return: Returns ID+label of the created factor.
 """
-function addBearingRangeFactor(robotId::String, sessionId::String, bearingRangeRequest::BearingRangeRequest)::NodeResponse
+function addBearingRangeFactor(robotId::String, sessionId::String, bearingRangeRequest::BearingRangeRequest)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -538,7 +540,8 @@ function addBearingRangeFactor(robotId::String, sessionId::String, bearingRangeR
     if(response.status != 200)
         error("Error creating bearing range factor, received $(response.status) with body '$(String(response.body))'.")
     end
-    return _unmarshallWithLinks(String(response.body), NodeResponse)
+    return nothing
+    # return _unmarshallWithLinks(String(response.body), NodeResponse)
 end
 
 """
@@ -546,7 +549,7 @@ $(SIGNATURES)
 Create a variable in Synchrony and associate it with the given robot+user.
 Return: Returns ID+label of the created factor.
 """
-function addBearingRangeFactor(bearingRangeRequest::BearingRangeRequest)::NodeResponse
+function addBearingRangeFactor(bearingRangeRequest::BearingRangeRequest)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -563,7 +566,7 @@ $(SIGNATURES)
 Create a session in Synchrony and associate it with the given robot+user.
 Return: Returns the added odometry information.
 """
-function addOdometryMeasurement(robotId::String, sessionId::String, addOdoRequest::AddOdometryRequest)::AddOdometryResponse
+function addOdometryMeasurement(robotId::String, sessionId::String, addOdoRequest::AddOdometryRequest)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -573,7 +576,7 @@ function addOdometryMeasurement(robotId::String, sessionId::String, addOdoReques
     if(response.status != 200)
         error("Error creating odometry, received $(response.status) with body '$(String(response.body))'.")
     end
-    return Unmarshal.unmarshal(AddOdometryResponse, JSON.parse(String(response.body)))
+    return nothing
 end
 
 """
@@ -581,7 +584,7 @@ $(SIGNATURES)
 Create a session in Synchrony and associate it with the given robot+user.
 Return: Returns the added odometry information.
 """
-function addOdometryMeasurement(addOdoRequest::AddOdometryRequest)::AddOdometryResponse
+function addOdometryMeasurement(addOdoRequest::AddOdometryRequest)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -599,7 +602,7 @@ $(SIGNATURES)
 Create a session in Synchrony and associate it with the given robot+user.
 Return: Returns the added odometry information.
 """
-function addOdometryMeasurement(odoDelta::Vector{Float64}, pOdo::Matrix{Float64})::AddOdometryResponse
+function addOdometryMeasurement(odoDelta::Vector{Float64}, pOdo::Matrix{Float64})::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
