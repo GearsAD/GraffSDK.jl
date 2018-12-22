@@ -22,9 +22,9 @@ end
 $(SIGNATURES)
 Read an image from a file and encode it as a Synchrony data element.
 """
-function readFileIntoDataRequest(file::String, id::String, description::String, mimeType)
+function readFileIntoDataRequest(file::String, id::String, description::String, mimeType)::BigDataElementRequest
     try
-        fid = open(file,"r")
+        fid = open(file,"r");
         imgBytes = read(fid);
         close(fid);
         return BigDataElementRequest(id, "Mongo", description, base64encode(imgBytes), mimeType);

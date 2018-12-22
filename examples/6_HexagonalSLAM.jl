@@ -13,7 +13,8 @@ cd(joinpath(dirname(pathof(GraffSDK)), "..", "examples"))
 # config = loadGraffConfig("graffConfigVirginia.json");
 config = loadGraffConfig("synchronyConfigLocal.json");
 #Create a hexagonal sessions
-config.sessionId = "HexDemoSample1_"*replace(string(uuid4()), "-" => "")
+config.sessionId = "HexDemoSample1_aa610bdd89be42168973088a1c1b8f33"
+# config.sessionId = "HexDemoSample1_"*replace(string(uuid4()), "-" => "")
 println(getGraffConfig())
 
 # 1b. Check the credentials and the service status
@@ -51,7 +52,7 @@ end
 println(session)
 
 # 4. Drive around in a hexagon
-# imgRequest = DataHelpers.readFileIntoDataRequest("pexels-photo-1004665.jpeg", "TestImage", "Pretty neat public domain image", "image/jpeg");
+imgRequest = DataHelpers.readFileIntoDataRequest("pexels-photo-1004665.jpeg", "TestImage", "Pretty neat public domain image", "image/jpeg");
 println(" - Adding hexagonal driving pattern to session...")
 @showprogress for i in 1:6
     deltaMeasurement = [10.0;0;pi/3]
@@ -117,6 +118,8 @@ while session.lastSolvedTimestamp != sessionLatest.lastSolvedTimestamp
     sessionLatest = getSession()
 end
 
-# 9. Great, solver has updated it! We can render this.
-# Using the bigdata key 'TestImage' as the camera image
-visualizeSession("TestImage")
+# Visualization is now done with Arena
+# TODO: Provide arena example.
+# # 9. Great, solver has updated it! We can render this.
+# # Using the bigdata key 'TestImage' as the camera image
+# visualizeSession("TestImage")

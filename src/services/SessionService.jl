@@ -970,16 +970,8 @@ function addOrUpdateDataElement(robotId::String, sessionId::String, node::Union{
     end
     # Get the node ID.
     nodeId = typeof(node) != Int ? node.id : node;
-
-    dataEntries = getDataEntries(robotId, sessionId, nodeId)
-    if count(entry -> entry.id == dataElement.id, dataEntries) == 0
-        println("Existence test for ID '$(dataElement.id)' failed - Adding it!")
-        return addDataElement(robotId, sessionId, nodeId, dataElement)
-    else
-        println("Existence test for ID '$(dataElement.id)' passed - Updating it!")
-        updateDataElement(robotId, sessionId, nodeId, dataElement)
-    end
-    return nothing
+    # Now both just work for add or update.
+    return addDataElement(robotId, sessionId, nodeId, dataElement)
 end
 
 function addOrUpdateDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, dataElement::Union{BigDataElementRequest, BigDataElementResponse})::Nothing
