@@ -10,6 +10,7 @@ odoEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/odometry"
 sessionReadyEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/ready/{4}"
 sessionSolveEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/solve"
 sessionQueueLengthEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/queue/status"
+sessionDeadQueueLengthEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/queue/dead"
 sessionExportJldEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/export/jld"
 variableEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/variables/{4}"
 factorsEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/factors"
@@ -258,6 +259,16 @@ end
 
 """
 $(SIGNATURES)
+Gets all nodes for a given session.
+Return: A vector of nodes for a given robot.
+Alias for convenience.
+"""
+function ls()::NodesResponse
+    return getNodes()
+end
+
+"""
+$(SIGNATURES)
 Returns a summary list of all landmarks for a given robot and session.
 """
 function getSessionLandmarks(robotId::String, sessionId::String)::Vector{NodeResponse}
@@ -384,7 +395,7 @@ function getSessionBacklog(robotId::String, sessionId::String)::Int
     url = "$(config.apiEndpoint)/$(format(sessionQueueLengthEndpoint, config.userId, robotId, sessionId))"
     response = @mock _sendRestRequest(config, HTTP.get, url)
     if(response.status != 200)
-        error("Error manually requesting a session solve, received $(response.status) with body '$(String(response.body))'.")
+        error("Error getting session queue backlog, received $(response.status) with body '$(String(response.body))'.")
     end
     body = JSON.parse(String(response.body))
     return body["length"]
@@ -404,6 +415,140 @@ function getSessionBacklog()::Int
     end
 
     return getSessionBacklog(config.robotId, config.sessionId)
+end
+
+"""
+$(SIGNATURES)
+Get the asynchonous session dead message queue length.
+"""
+function getSessionDeadQueueLength(robotId::String, sessionId::String)::Int
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    url = "$(config.apiEndpoint)/$(format(sessionDeadQueueLengthEndpoint, config.userId, robotId, sessionId))/status"
+    response = @mock _sendRestRequest(config, HTTP.get, url)
+    if(response.status != 200)
+        error("Error getting length of dead message queue, received $(response.status) with body '$(String(response.body))'.")
+    end
+    body = JSON.parse(String(response.body))
+    return body["length"]
+end
+
+"""
+$(SIGNATURES)
+Get the asynchonous session dead message queue length.
+"""
+function getSessionDeadQueueLength()::Int
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return getSessionDeadQueueLength(config.robotId, config.sessionId)
+end
+
+"""
+$(SIGNATURES)
+Get the messages in the asynchonous session dead message queue.
+"""
+function getSessionDeadQueueMessages(robotId::String, sessionId::String)::Any
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    url = "$(config.apiEndpoint)/$(format(sessionDeadQueueLengthEndpoint, config.userId, robotId, sessionId))"
+    response = @mock _sendRestRequest(config, HTTP.get, url)
+    if(response.status != 200)
+        error("Error getting all dead queue messages, received $(response.status) with body '$(String(response.body))'.")
+    end
+    @show body = JSON.parse(String(response.body))
+    return body
+end
+
+"""
+$(SIGNATURES)
+Get the messages in the asynchonous session dead message queue.
+"""
+function getSessionDeadQueueMessages()::Any
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return getSessionDeadQueueMessages(config.robotId, config.sessionId)
+end
+
+"""
+$(SIGNATURES)
+Get the messages in the asynchonous session dead message queue.
+"""
+function reprocessDeadQueueMessages(robotId::String, sessionId::String)::Nothing
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    url = "$(config.apiEndpoint)/$(format(sessionDeadQueueLengthEndpoint, config.userId, robotId, sessionId))"
+    response = @mock _sendRestRequest(config, HTTP.put, url)
+    if(response.status != 200)
+        error("Error requesting server reprocess dead queue messages, received $(response.status) with body '$(String(response.body))'.")
+    end
+    return nothing
+end
+
+"""
+$(SIGNATURES)
+Get the messages in the asynchonous session dead message queue.
+"""
+function reprocessDeadQueueMessages()::Nothing
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return reprocessDeadQueueMessages(config.robotId, config.sessionId)
+end
+
+"""
+$(SIGNATURES)
+Deletes the messages in the asynchonous session dead message queue.
+"""
+function deleteDeadQueueMessages(robotId::String, sessionId::String)::Nothing
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    url = "$(config.apiEndpoint)/$(format(sessionDeadQueueLengthEndpoint, config.userId, robotId, sessionId))"
+    response = @mock _sendRestRequest(config, HTTP.delete, url)
+    if(response.status != 200)
+        error("Error manually deleting dead message queue, received $(response.status) with body '$(String(response.body))'.")
+    end
+    return nothing
+end
+
+"""
+$(SIGNATURES)
+Deletes the messages in the asynchonous session dead message queue.
+"""
+function deleteDeadQueueMessages()::Nothing
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return deleteDeadQueueMessages(config.robotId, config.sessionId)
 end
 
 """

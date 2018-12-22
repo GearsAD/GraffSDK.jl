@@ -10,6 +10,7 @@ using UUIDs
 cd(joinpath(dirname(pathof(GraffSDK)), "..", "examples"))
 
 # 1a. Create a Configuration
+# config = loadGraffConfig("graffConfigVirginia.json");
 config = loadGraffConfig("synchronyConfigLocal.json");
 #Create a hexagonal sessions
 config.sessionId = "HexDemoSample1_"*replace(string(uuid4()), "-" => "")
@@ -62,20 +63,7 @@ println(" - Adding hexagonal driving pattern to session...")
     # addOrUpdateDataElement(addOdoResponse.variable, imgRequest)
 end
 
-# # 5. Now retrieve the dataset
-# Let's wait for all nodes to be processed
-while getSessionBacklog() > 0
-    @info "Session currently contains $(getSessionBacklog()) entries, waiting until complete..."
-    sleep(2)
-end
-@time nodes = getNodes()
-
-# By NeoID
-node = getNode( nodes.nodes[1].id)
-# By Graff label
-node = getNode( nodes.nodes[1].label)
-
-# 6. Now lets add a couple landmarks
+# 5. Now lets add a couple landmarks
 # Ref: https://github.com/dehann/RoME.jl/blob/master/examples/Slam2dExample.jl#L35
 response = addVariable("l1", "Point2", ["LANDMARK"])
 newBearingRangeFactor = BearingRangeRequest("x0", "l1",
@@ -87,6 +75,32 @@ newBearingRangeFactor2 = BearingRangeRequest("x6", "l1",
                            DistributionRequest("Normal", Float64[20; 1.0]))
 addBearingRangeFactor(newBearingRangeFactor2)
 
+# # 5. Now retrieve the dataset
+# Let's wait for all nodes to be processed
+while getSessionBacklog() > 0
+    @info "...Session backlog currently has $(getSessionBacklog()) entries, waiting until complete..."
+    sleep(2)
+end
+@info "Okay processing the last node! ...Yeah so we're going to focus on making that faster in the next release (please go write an issue in GraffSDK to spur us along!)"
+
+# Lets see that everything processed successfully
+@info "Session dead queue length = $(getSessionDeadQueueLength())"
+if getSessionDeadQueueLength() > 0
+    @error "This shouldn't happen, please examine the failed messages below to see what went wrong:"
+    deadMsgs = getSessionDeadQueueMessages()
+    map(d -> println(d.error), deadMsgs)
+end
+# You can ask to reprocess them, or delete them with these commands:
+# reprocessDeadQueueMessages()
+# deleteDeadQueueMessages()
+
+@time nodes = ls()
+
+# # By NeoID
+# node = getNode( nodes.nodes[1].id)
+# # By Graff label
+# node = getNode( nodes.nodes[1].label)
+
 # 7. Now let's tell the solver to pick up on all the latest changes.
 # TODO: Allow for putReady to take in a list.
 putReady(true)
@@ -97,7 +111,6 @@ requestSessionSolve()
 session = getSession()
 sessionLatest = getSession()
 # Lets request a manual, complete session solve - shouldn't be necessary but we want to demonstrate that we can.
-requestSessionSolve()
 while session.lastSolvedTimestamp != sessionLatest.lastSolvedTimestamp
     println("Comparing latest session solver timestamp $(sessionLatest.lastSolvedTimestamp) with original $(session.lastSolvedTimestamp) - still the same so sleeping for 2 seconds")
     sleep(2)
