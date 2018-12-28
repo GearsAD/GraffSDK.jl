@@ -811,7 +811,7 @@ $(SIGNATURES)
 Get data elment associated with a node.
 Return: Full data element associated with the specified node.
 """
-function getDataElement(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::String)::BigDataElementResponse
+function getData(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::String)::BigDataElementResponse
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -832,7 +832,7 @@ $(SIGNATURES)
 Get data elment associated with a node.
 Return: Full data element associated with the specified node.
 """
-function getDataElement( node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::String)::BigDataElementResponse
+function getData( node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::String)::BigDataElementResponse
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -841,7 +841,7 @@ function getDataElement( node::Union{Int, NodeResponse, NodeDetailsResponse}, bi
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return getDataElement(config.robotId, config.sessionId, node, bigDataKey)
+    return getData(config.robotId, config.sessionId, node, bigDataKey)
 end
 
 """
@@ -849,7 +849,7 @@ $(SIGNATURES)
 Get data elment associated with a node.
 Return: Full data element associated with the specified node.
 """
-function getRawDataElement(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::String)::String
+function getRawData(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::String)::String
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -870,7 +870,7 @@ $(SIGNATURES)
 Get data elment associated with a node.
 Return: Full data element associated with the specified node.
 """
-function getRawDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::String)::String
+function getRawData(node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::String)::String
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -879,7 +879,7 @@ function getRawDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, 
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return getRawDataElement(config.robotId, config.sessionId, node, bigDataKey)
+    return getRawData(config.robotId, config.sessionId, node, bigDataKey)
 end
 
 """
@@ -887,13 +887,14 @@ $(SIGNATURES)
 Add a data element associated with a node.
 Return: Nothing if succeed, error if failed.
 """
-function addDataElement(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataElement::BigDataElementRequest)::Nothing
+function setData(robotId::String, sessionId::String, node::Union{Int, String, Symbol, NodeResponse, NodeDetailsResponse}, bigDataElement::BigDataElementRequest)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
     end
     # Get the node ID.
-    nodeId = typeof(node) != Int ? node.id : node;
+    nodeId = typeof(node) == NodeResponse || typeof(node) == NodeDetailsResponse ? node.id : node;
+    nodeId = typeof(nodeId) == Symbol ? String(nodeId) : nodeId;
 
     url = "$(config.apiEndpoint)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataElement.id))"
     response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(bigDataElement))
@@ -905,10 +906,10 @@ end
 
 """
 $(SIGNATURES)
-Add a data element associated with a node.
+Set a data element associated with a node.
 Return: Nothing if succeed, error if failed.
 """
-function addDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataElement::BigDataElementRequest)::Nothing
+function setData(node::Union{Int, String, Symbol, NodeResponse, NodeDetailsResponse}, bigDataElement::BigDataElementRequest)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -917,69 +918,7 @@ function addDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, big
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return addDataElement(config.robotId, config.sessionId, node, bigDataElement)
-end
-
-"""
-$(SIGNATURES)
-Update a data element associated with a node.
-Return: Nothing if succeed, error if failed.
-"""
-function updateDataElement(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataElement::Union{BigDataElementRequest, BigDataElementResponse})::Nothing
-    config = getGraffConfig()
-    if config == nothing
-        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
-    end
-    # Get the node ID.
-    nodeId = typeof(node) != Int ? node.id : node;
-
-    url = "$(config.apiEndpoint)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataElement.id))"
-    response = @mock _sendRestRequest(config, HTTP.put, url, data=JSON.json(bigDataElement))
-    if(response.status != 200)
-        error("Error updating data element '$(bigDataElement.id)', received $(response.status) with body '$(String(response.body))'.")
-    end
-    return nothing
-end
-
-"""
-$(SIGNATURES)
-Update a data element associated with a node.
-Return: Nothing if succeed, error if failed.
-"""
-function updateDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataElement::Union{BigDataElementRequest, BigDataElementResponse})::Nothing
-    config = getGraffConfig()
-    if config == nothing
-        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
-    end
-    if config.robotId == "" || config.sessionId == ""
-        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
-    end
-
-    return updateDataElement(config.robotId, config.sessionId, node, bigDataElement)
-end
-
-"""
-$(SIGNATURES)
-Add or update a data element associated with a node. Will check if the key exists, if so it updates, otherwise it adds.
-Return: Nothing if succeed, error if failed.
-"""
-function addOrUpdateDataElement(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, dataElement::Union{BigDataElementRequest, BigDataElementResponse})::Nothing
-    config = getGraffConfig()
-    if config == nothing
-        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
-    end
-    # Get the node ID.
-    nodeId = typeof(node) != Int ? node.id : node;
-    # Now both just work for add or update.
-    return addDataElement(robotId, sessionId, nodeId, dataElement)
-end
-
-function addOrUpdateDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, dataElement::Union{BigDataElementRequest, BigDataElementResponse})::Nothing
-    config = getGraffConfig()
-    if config == nothing
-        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
-    end
-    return addOrUpdateDataElement(config.robotId, config.sessionId, node, dataElement)
+    return setData(config.robotId, config.sessionId, node, bigDataElement)
 end
 
 """
@@ -987,13 +926,14 @@ $(SIGNATURES)
 Delete a data element associated with a node.
 Return: Nothing if succeed, error if failed.
 """
-function deleteDataElement(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, dataId::String)::Nothing
+function deleteData(robotId::String, sessionId::String, node::Union{Int, String, Symbol, NodeResponse, NodeDetailsResponse}, dataId::String)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
     end
     # Get the node ID.
-    nodeId = typeof(node) != Int ? node.id : node;
+    nodeId = typeof(node) == NodeResponse || typeof(node) == NodeDetailsResponse ? node.id : node;
+    nodeId = typeof(nodeId) == Symbol ? String(nodeId) : nodeId;
 
     url = "$(config.apiEndpoint)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, dataId))"
     response = @mock _sendRestRequest(config, HTTP.delete, url)
@@ -1008,7 +948,7 @@ $(SIGNATURES)
 Delete a data element associated with a node.
 Return: Nothing if succeed, error if failed.
 """
-function deleteDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, dataId::String)::Nothing
+function deleteData(node::Union{Int, NodeResponse, NodeDetailsResponse}, dataId::String)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")

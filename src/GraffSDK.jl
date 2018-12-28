@@ -75,6 +75,9 @@ include("./entities/Data.jl")
 include("./services/DataHelpers.jl")
 include("./services/SessionService.jl")
 include("./services/StatusService.jl")
+
+include("./entities/User.jl")
+include("./services/UserService.jl")
 # include("./services/VisualizationService.jl")
 
 include("./entities/Cyphon.jl")
@@ -121,7 +124,7 @@ export RobotRequest, RobotResponse, RobotsResponse, getRobots, isRobotExisting, 
 export SessionsResponse, SessionResponse, SessionDetailsRequest, SessionDetailsResponse, addSession, getSessions, isSessionExisting, getSession, deleteSession, putReady, requestSessionSolve, getSessionLandmarks
 export getSessionBacklog, getSessionDeadQueueLength, getSessionDeadQueueMessages, reprocessDeadQueueMessages, deleteDeadQueueMessages
 export BigDataElementRequest, BigDataEntryResponse, BigDataElementResponse
-export getDataEntries, getDataElement, getRawDataElement, addDataElement, updateDataElement, addOrUpdateDataElement, deleteDataElement
+export getDataEntries, getData, getRawData, setData, deleteData
 export exportSessionJld
 export encodeJsonData, encodeBinaryData, readFileIntoDataRequest, isSafeToJsonSerialize
 export NodeResponse, NodesResponse, BigDataElementResponse, NodeDetailsResponse, getNodes, ls, getNode
