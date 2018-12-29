@@ -6,4 +6,5 @@ Mocking.enable()
 using Test
 using HTTP
 
-include("EndToEnd.jl")
+# Integration test!
+# include("EndToEnd.jl")

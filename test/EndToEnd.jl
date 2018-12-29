@@ -45,7 +45,7 @@ end
     session = addSession(newSessionRequest)
     @test session != nothing
     @test getSession() != nothing
-    @test length(ls().nodes) == 1
+    @test length(GraffSDK.ls().nodes) == 1
     # Update session
 end
 
@@ -73,15 +73,15 @@ end
         error("Nope, some messages ended up in dead queue... check it:")
         @info getSessionDeadQueueMessages()
     end
-    nodes = ls()
+    nodes = GraffSDK.ls()
     @test length(nodes.nodes) == 3
 
     # Put ready
-    @test putReady(true)
+    putReady(true)
 end
 
 @testset "Listing and Getting Variables" begin
-    nodes = ls()
+    nodes = GraffSDK.ls()
     @test length(nodes.nodes) == 3
     @test map(n -> n.label, nodes.nodes) == ["l1", "x0", "x1"]
     @test getNode("l1").label == "l1"
@@ -100,9 +100,9 @@ end
     @test length(getDataEntries(getNode("x0"))) == 1
     setData(getNode("x0"), "testId2", data)
     @test length(getDataEntries(getNode("x0"))) == 2
-    setData(getNode("x0"), "testId", data)
+    setData(getNode("x0"), "testId", dataUpdate)
     @test length(getDataEntries(getNode("x0"))) == 2
-    @test getData(getNode("x0"), "testId").data == dataUpdate
+    @test GraffSDK.getData(getNode("x0"), "testId").data == dataUpdate
     @test getRawData(getNode("x0"), "testId") == dataUpdate
     deleteData(getNode("x0"), "testId2")
     @test length(getDataEntries(getNode("x0"))) == 1

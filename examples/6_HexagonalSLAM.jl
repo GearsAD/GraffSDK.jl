@@ -107,7 +107,7 @@ end
 # 7. Now let's tell the solver to pick up on all the latest changes.
 # TODO: Allow for putReady to take in a list.
 putReady(true)
-# Manually request session solve.
+# Manually request session solve if you would like to make sure all is good.
 requestSessionSolve()
 
 # 8. Let's check on the solver updates.

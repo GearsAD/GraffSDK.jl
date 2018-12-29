@@ -50,9 +50,10 @@ end
 
 """
 $(SIGNATURES)
-Returns a summary list of all landmarks for a given robot and session.
+BETA method - better if run on the server.
+Gets the estimates (if available) for a session or a filtered list if one is provided.
 """
-function getLandmarks(; nodes::Union{Vector{Union{String, Symbol}}, Vector{NodeResponse}, Nothing}=nothing)::Dict{String, Union{Array{Any}, Nothing}}
+function getEstimates(; nodes::Union{Vector{Union{String, Symbol}}, Vector{NodeResponse}, Nothing}=nothing)::Dict{String, Union{Array{Any}, Nothing}}
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")

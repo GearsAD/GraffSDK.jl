@@ -775,7 +775,7 @@ function getDataEntries(robotId::String, sessionId::String, node::Union{Int, Nod
             push!(datas, _unmarshallWithLinks(JSON.json(bd), BigDataEntryResponse))
         end
 
-        sort(datas; by=(d -> n.id))
+        sort(datas; by=(d -> d.id))
 
         return datas
     end
@@ -824,7 +824,7 @@ $(SIGNATURES)
 Get data elment associated with a node.
 Return: Full data element associated with the specified node.
 """
-function getData( node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::String)::BigDataElementResponse
+function getData(node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::String)::BigDataElementResponse
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -967,7 +967,7 @@ function deleteData(node::Union{Int, NodeResponse, NodeDetailsResponse}, dataId:
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return deleteDataElement(config.robotId, config.sessionId, node, dataId)
+    return deleteData(config.robotId, config.sessionId, node, dataId)
 end
 
 """
