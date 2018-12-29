@@ -10,10 +10,8 @@ using UUIDs
 cd(joinpath(dirname(pathof(GraffSDK)), "..", "examples"))
 
 # 1a. Create a Configuration
-config = loadGraffConfig("graffConfigVirginia.json");
-# config = loadGraffConfig("synchronyConfigLocal.json");
+config = loadGraffConfig();
 #Create a hexagonal sessions
-# config.sessionId = "HexDemoSample1_aa610bdd89be42168973088a1c1b8f33"
 config.sessionId = "HexDemoSample1_"*replace(string(uuid4()), "-" => "")
 println(getGraffConfig())
 
@@ -59,7 +57,7 @@ println(" - Adding hexagonal driving pattern to session...")
     pOdo = Float64[0.1 0 0; 0 0.1 0; 0 0 0.1]
     println(" - Measurement $i: Adding new odometry measurement '$deltaMeasurement'...")
     @time addOdometryMeasurement(deltaMeasurement, pOdo)
-    println("  - Adding image data to the pose...")
+    println("  - Adding a simple (largish) image data to the pose...")
     # Adding image data
     setData("x$i", imgRequest)
 end
@@ -75,8 +73,12 @@ newBearingRangeFactor2 = BearingRangeRequest("x6", "l1",
                            DistributionRequest("Normal", Float64[0; 0.1]),
                            DistributionRequest("Normal", Float64[20; 1.0]))
 addBearingRangeFactor(newBearingRangeFactor2)
+# Landmarks generally require more work once they're created, e.g. creating factors,
+# so they are not set to ready by default. Once you've completed all the factor links and want to solve,
+# call putReady to tell the solver it can use the new nodes. This is added to the end of the processing queue.
+putReady(true)
 
-# # 5. Now retrieve the dataset
+# 5. Checking solver status, getting data
 # Let's wait for all nodes to be processed
 while getSessionBacklog() > 0
     @info "...Session backlog currently has $(getSessionBacklog()) entries, waiting until complete..."
@@ -97,31 +99,28 @@ end
 # reprocessDeadQueueMessages()
 # deleteDeadQueueMessages()
 
+# Now get a list of all the variables in the graph
 @time nodes = GraffSDK.ls()
 
+# Get the estimates to see how far along it is (this just retrieves node.properties["MAP_est"])
+# but simplifies getting info
+getEstimates()
+# You can also give it a list, e.g. just the landmarks
+getEstimates(nodes=getLandmarks())
+
+# Other things you can do: Get the full node detail with getNode:
 # # By NeoID
 # node = getNode( nodes.nodes[1].id)
 # # By Graff label
 # node = getNode( nodes.nodes[1].label)
 
-# 7. Now let's tell the solver to pick up on all the latest changes.
-# TODO: Allow for putReady to take in a list.
-putReady(true)
-# Manually request session solve if you would like to make sure all is good.
-requestSessionSolve()
-
-# 8. Let's check on the solver updates.
-session = getSession()
+# Or checking on solver status:
 sessionLatest = getSession()
-# Lets request a manual, complete session solve - shouldn't be necessary but we want to demonstrate that we can.
-while session.lastSolvedTimestamp != sessionLatest.lastSolvedTimestamp
-    println("Comparing latest session solver timestamp $(sessionLatest.lastSolvedTimestamp) with original $(session.lastSolvedTimestamp) - still the same so sleeping for 2 seconds")
+@info "Graff last solved: $(sessionLatest.lastSolvedTimestamp)"
+# Manually request a full session solve if you would like to make sure all is good.
+requestSessionSolve()
+while sessionLatest.lastSolvedTimestamp == getSession().lastSolvedTimestamp
+    @info "Waiting on updated full graph solve..."
     sleep(2)
-    sessionLatest = getSession()
 end
-
-# Visualization is now done with Arena
-# TODO: Provide arena example.
-# # 9. Great, solver has updated it! We can render this.
-# # Using the bigdata key 'TestImage' as the camera image
-# visualizeSession("TestImage")
+@info "Graff last solved: $(getSession().lastSolvedTimestamp)"
