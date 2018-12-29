@@ -75,6 +75,9 @@ end
     end
     nodes = ls()
     @test length(nodes.nodes) == 3
+
+    # Put ready
+    @test putReady(true)
 end
 
 @testset "Listing and Getting Variables" begin
@@ -90,14 +93,41 @@ end
 end
 
 @testset "Data Setting/Getting" begin
+    @test length(getDataEntries(getNode("x0"))) == 0
+    data = "TEST DATA.............................................................."
+    dataUpdate = "UPDATED"
+    setData(getNode("x0"), "testId", data)
+    @test length(getDataEntries(getNode("x0"))) == 1
+    setData(getNode("x0"), "testId2", data)
+    @test length(getDataEntries(getNode("x0"))) == 2
+    setData(getNode("x0"), "testId", data)
+    @test length(getDataEntries(getNode("x0"))) == 2
+    @test getData(getNode("x0"), "testId").data == dataUpdate
+    @test getRawData(getNode("x0"), "testId") == dataUpdate
+    deleteData(getNode("x0"), "testId2")
+    @test length(getDataEntries(getNode("x0"))) == 1
 end
 
-@testset "ZMQ Variable and Factor Creation" begin
+@testset "Import/Export" begin
+    file = "testFile.jld2"
+    if isfile(file)
+        rm(file)
+    end
+    exportSessionJld(file)
+    @test isfile(file)
 
-@testset "Graff Editing" begin
+    # TODO: Import
 end
 
 @testset "Negative Test Cases" begin
+end
+
+# New stuff!
+
+@testset "ZMQ Variable and Factor Creation" begin
+end
+
+@testset "Graff Editing" begin
 end
 
 end

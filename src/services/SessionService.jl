@@ -923,6 +923,24 @@ end
 
 """
 $(SIGNATURES)
+Set a data element associated with a node.
+Return: Nothing if succeed, error if failed.
+"""
+function setData(node::Union{Int, String, Symbol, NodeResponse, NodeDetailsResponse}, elemId::String, data::String; sourceName::String="mongo", description::String="", mimeType::String="application/octet-stream")::Nothing
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    de = BigDataElementRequest(elemId, sourceName, description, data, mimeType)
+    return setData(config.robotId, config.sessionId, node, de)
+end
+
+"""
+$(SIGNATURES)
 Delete a data element associated with a node.
 Return: Nothing if succeed, error if failed.
 """

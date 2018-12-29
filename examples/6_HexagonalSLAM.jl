@@ -10,11 +10,11 @@ using UUIDs
 cd(joinpath(dirname(pathof(GraffSDK)), "..", "examples"))
 
 # 1a. Create a Configuration
-# config = loadGraffConfig("graffConfigVirginia.json");
-config = loadGraffConfig("synchronyConfigLocal.json");
+config = loadGraffConfig("graffConfigVirginia.json");
+# config = loadGraffConfig("synchronyConfigLocal.json");
 #Create a hexagonal sessions
-config.sessionId = "HexDemoSample1_aa610bdd89be42168973088a1c1b8f33"
-# config.sessionId = "HexDemoSample1_"*replace(string(uuid4()), "-" => "")
+# config.sessionId = "HexDemoSample1_aa610bdd89be42168973088a1c1b8f33"
+config.sessionId = "HexDemoSample1_"*replace(string(uuid4()), "-" => "")
 println(getGraffConfig())
 
 # 1b. Check the credentials and the service status
@@ -58,10 +58,10 @@ println(" - Adding hexagonal driving pattern to session...")
     deltaMeasurement = [10.0;0;pi/3]
     pOdo = Float64[0.1 0 0; 0 0.1 0; 0 0 0.1]
     println(" - Measurement $i: Adding new odometry measurement '$deltaMeasurement'...")
-    @time addOdoResponse = addOdometryMeasurement(deltaMeasurement, pOdo)
+    @time addOdometryMeasurement(deltaMeasurement, pOdo)
     println("  - Adding image data to the pose...")
     # Adding image data
-    # addOrUpdateDataElement(addOdoResponse.variable, imgRequest)
+    setData("x$i", imgRequest)
 end
 
 # 5. Now lets add a couple landmarks
@@ -89,7 +89,7 @@ end
 if getSessionDeadQueueLength() > 0
     @error "This shouldn't happen, please examine the failed messages below to see what went wrong:"
     deadMsgs = getSessionDeadQueueMessages()
-    map(d -> println(d.error), deadMsgs)
+    map(d -> println(d["error"]), deadMsgs)
 end
 # You can ask to reprocess them, or delete them with these commands:
 # reprocessDeadQueueMessages()
