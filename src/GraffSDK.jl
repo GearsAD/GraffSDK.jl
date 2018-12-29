@@ -128,7 +128,7 @@ export getSessionBacklog, getSessionDeadQueueLength, getSessionDeadQueueMessages
 export BigDataElementRequest, BigDataEntryResponse, BigDataElementResponse
 export getDataEntries, getData, getRawData, setData, deleteData
 export exportSessionJld
-export getLandmarks, getEstimatess
+export getLandmarks, getEstimates
 export encodeJsonData, encodeBinaryData, readFileIntoDataRequest, isSafeToJsonSerialize
 export NodeResponse, NodesResponse, BigDataElementResponse, NodeDetailsResponse, getNodes, ls, getNode
 export AddOdometryRequest, AddOdometryResponse, NodeResponseInfo, addOdometryMeasurement

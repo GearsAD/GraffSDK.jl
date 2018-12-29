@@ -20,7 +20,7 @@ function getLandmarks()::Vector{NodeResponse}
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return getSessionLandmarks(config.robotId, config.sessionId)
+    return getLandmarks(config.robotId, config.sessionId)
 end
 
 """
