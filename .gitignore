@@ -3,7 +3,13 @@
 *.jl.mem
 deps/deps.jl
 examples/synchronyConfig*.json
+examples/graffConfig*.json
 docs/build
 deps
 
 src/test.jl
+*.jld
+*.jld2
+
+test/sandbox.jl
+test/testpayload.json

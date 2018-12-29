@@ -190,7 +190,7 @@ $(SIGNATURES)
 Update a robot configuration.
 Return: The updated robot configuration from the service.
 """
-function updateRobotConfig(robotId::String, robotConfig::Dict{String, String})::Dict{Any, Any}
+function updateRobotConfig(robotId::String, robotConfig::Dict{Any, Any})::Dict{Any, Any}
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -208,7 +208,7 @@ $(SIGNATURES)
 Update a robot configuration.
 Return: The updated robot configuration from the service.
 """
-function updateRobotConfig(robotConfig::Dict{String, String})::Dict{Any, Any}
+function updateRobotConfig(robotConfig::Dict{Any, Any})::Dict{Any, Any}
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")

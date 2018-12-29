@@ -26,11 +26,11 @@ end
 function show(io::IO, r::RobotResponse)
     println(io, "GraffSDK Robot:")
     println(io, " - ID: $(r.id)")
-    println(io, " - Name: $(r.name)")
-    println(io, " - Description: $(r.description)")
-    println(io, " - Status: $(r.status)")
-    println(io, " - Created: $(r.createdTimestamp)")
-    println(io, " - Last Updated: $(r.lastUpdatedTimestamp)")
+    println(io, "   - Name: $(r.name)")
+    println(io, "   - Description: $(r.description)")
+    println(io, "   - Status: $(r.status)")
+    println(io, "   - Created: $(r.createdTimestamp)")
+    println(io, "   - Last Updated: $(r.lastUpdatedTimestamp)")
 end
 
 """

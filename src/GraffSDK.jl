@@ -7,6 +7,7 @@ using DocStringExtensions
 using ProgressMeter
 using Formatting
 using Dates
+using Nullables
 
 import Base.show
 
@@ -31,15 +32,29 @@ end
 
 """
     $(SIGNATURES)
-Load a config file from a file name, internally calls setGraffConfig, and returns the config data.
+Load a config, internally calls setGraffConfig, and returns the config data.
+1. If 'GRAFFCONFIG' is set as environment variable, use that as the config
+2. Otherwise if no filename specified, use '~/.graffsdk.json'
+3. Otherwise if filename specified, use that
 """
-function loadGraffConfig(filename::String)::SynchronyConfig
-    if !isfile(filename)
-        error("Cannot locate the configuration file '$filename'. Please check that it exists.")
+function loadGraffConfig(filename::String="")::SynchronyConfig
+    configData = ""
+    if haskey(ENV, "graffconfig")
+        configData = ENV["graffconfig"]
+    else
+        if filename == ""
+            !haskey(ENV, "HOME") && error("Can't find a 'HOME' environment variable, please specify one before it can be used to locate the default configuration file")
+            @info "Using default Graff config location (~/.graffsdk.json) because no Graff config file specified  and environment variable 'graffconfig' not set."
+            filename = ENV["HOME"]*"/.graffsdk.json"
+        end
+        if !isfile(filename)
+            error("Cannot locate the configuration file '$filename'. Please check that it exists.")
+        end
+        configFile = open(filename)
+        configData = read(configFile, String)
+        close(configFile)
     end
-    configFile = open(filename)
-    configData = JSON.parse(read(configFile, String))
-    close(configFile)
+    configData = JSON.parse(configData)
     config = Unmarshal.unmarshal(SynchronyConfig, configData)
     setGraffConfig(config)
     return config
@@ -74,9 +89,14 @@ include("./entities/Data.jl")
 include("./services/DataHelpers.jl")
 include("./services/SessionService.jl")
 include("./services/StatusService.jl")
+
+include("./entities/User.jl")
+include("./services/UserService.jl")
 # include("./services/VisualizationService.jl")
 
 include("./entities/Cyphon.jl")
+
+include("./services/HelperFunctionService.jl")
 
 # Exported functions
 function nodeDetail2ExVertex(nodeDetails::GraffSDK.NodeDetailsResponse)::Graphs.ExVertex
@@ -117,12 +137,14 @@ export loadGraffConfig, setGraffConfig, getGraffConfig
 export getStatus, printStatus
 export UserRequest, UserResponse, KafkaConfig, UserConfig, addUser, getUser, updateUser, deleteUser, getUserConfig
 export RobotRequest, RobotResponse, RobotsResponse, getRobots, isRobotExisting, getRobot, addRobot, updateRobot, deleteRobot, getRobotConfig, updateRobotConfig
-export SessionsResponse, SessionResponse, SessionDetailsRequest, SessionDetailsResponse, addSession, getSessions, isSessionExisting, getSession, deleteSession, putReady, requestSessionSolve, getSessionLandmarks
+export SessionsResponse, SessionResponse, SessionDetailsRequest, SessionDetailsResponse, addSession, getSessions, isSessionExisting, getSession, deleteSession, putReady, requestSessionSolve
+export getSessionBacklog, getSessionDeadQueueLength, getSessionDeadQueueMessages, reprocessDeadQueueMessages, deleteDeadQueueMessages
 export BigDataElementRequest, BigDataEntryResponse, BigDataElementResponse
-export getDataEntries, getDataElement, getRawDataElement, addDataElement, updateDataElement, addOrUpdateDataElement, deleteDataElement
+export getDataEntries, getData, getRawData, setData, deleteData
 export exportSessionJld
+export getLandmarks, getEstimates
 export encodeJsonData, encodeBinaryData, readFileIntoDataRequest, isSafeToJsonSerialize
-export NodeResponse, NodesResponse, BigDataElementResponse, NodeDetailsResponse, getNodes, getNode
+export NodeResponse, NodesResponse, BigDataElementResponse, NodeDetailsResponse, getNodes, ls, getNode
 export AddOdometryRequest, AddOdometryResponse, NodeResponseInfo, addOdometryMeasurement
 export VariableRequest, VariableResponse, BearingRangeRequest, BearingRangeResponse, DistributionRequest, FactorBody, FactorRequest, addVariable, addBearingRangeFactor, addFactor
 # export VisualizationRequest, visualizeSession

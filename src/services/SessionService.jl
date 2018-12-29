@@ -9,6 +9,8 @@ nodeLabelledEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/nodes/labelled/
 odoEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/odometry"
 sessionReadyEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/ready/{4}"
 sessionSolveEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/solve"
+sessionQueueLengthEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/queue/status"
+sessionDeadQueueLengthEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/queue/dead"
 sessionExportJldEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/export/jld"
 variableEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/variables/{4}"
 factorsEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/factors"
@@ -257,11 +259,12 @@ end
 
 """
 $(SIGNATURES)
-Returns a summary list of all landmarks for a given robot and session.
+Gets all nodes for a given session.
+Return: A vector of nodes for a given robot.
+Alias for convenience.
 """
-function getSessionLandmarks(robotId::String, sessionId::String)::Vector{NodeResponse}
-    landmarkList = filter(n -> occursin(r"[l][0-9]+", n.label), getNodes().nodes)
-    return landmarkList
+function ls()::NodesResponse
+    return getNodes()
 end
 
 """
@@ -269,13 +272,14 @@ $(SIGNATURES)
 Gets a node's details by either its ID or name.
 Return: A node's details.
 """
-function getNode(robotId::String, sessionId::String, nodeIdOrLabel::Union{Int, String})::NodeDetailsResponse
+function getNode(robotId::String, sessionId::String, nodeIdOrLabel::Union{Int, String, Symbol})::NodeDetailsResponse
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
     end
     url = "$(config.apiEndpoint)/$(format(nodeEndpoint, config.userId, robotId, sessionId, nodeIdOrLabel))"
-    if(typeof(nodeIdOrLabel) == String)
+    if(typeof(nodeIdOrLabel) in [String, Symbol])
+        nodeIdOrLabel = String(nodeIdOrLabel)
         url = "$(config.apiEndpoint)/$(format(nodeLabelledEndpoint, config.userId, robotId, sessionId, nodeIdOrLabel))"
     end
     response = @mock _sendRestRequest(config, HTTP.get, url)
@@ -293,7 +297,7 @@ $(SIGNATURES)
 Gets a node's details by either its ID or name.
 Return: A node's details.
 """
-function getNode(nodeIdOrLabel::Union{Int, String})::NodeDetailsResponse
+function getNode(nodeIdOrLabel::Union{Int, String, Symbol})::NodeDetailsResponse
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -373,10 +377,178 @@ end
 
 """
 $(SIGNATURES)
+Get the asynchonous session queue length.
+"""
+function getSessionBacklog(robotId::String, sessionId::String)::Int
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    url = "$(config.apiEndpoint)/$(format(sessionQueueLengthEndpoint, config.userId, robotId, sessionId))"
+    response = @mock _sendRestRequest(config, HTTP.get, url)
+    if(response.status != 200)
+        error("Error getting session queue backlog, received $(response.status) with body '$(String(response.body))'.")
+    end
+    body = JSON.parse(String(response.body))
+    return body["length"]
+end
+
+"""
+$(SIGNATURES)
+Get the asynchonous session queue length.
+"""
+function getSessionBacklog()::Int
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return getSessionBacklog(config.robotId, config.sessionId)
+end
+
+"""
+$(SIGNATURES)
+Get the asynchonous session dead message queue length.
+"""
+function getSessionDeadQueueLength(robotId::String, sessionId::String)::Int
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    url = "$(config.apiEndpoint)/$(format(sessionDeadQueueLengthEndpoint, config.userId, robotId, sessionId))/status"
+    response = @mock _sendRestRequest(config, HTTP.get, url)
+    if(response.status != 200)
+        error("Error getting length of dead message queue, received $(response.status) with body '$(String(response.body))'.")
+    end
+    body = JSON.parse(String(response.body))
+    return body["length"]
+end
+
+"""
+$(SIGNATURES)
+Get the asynchonous session dead message queue length.
+"""
+function getSessionDeadQueueLength()::Int
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return getSessionDeadQueueLength(config.robotId, config.sessionId)
+end
+
+"""
+$(SIGNATURES)
+Get the messages in the asynchonous session dead message queue.
+"""
+function getSessionDeadQueueMessages(robotId::String, sessionId::String)::Any
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    url = "$(config.apiEndpoint)/$(format(sessionDeadQueueLengthEndpoint, config.userId, robotId, sessionId))"
+    response = @mock _sendRestRequest(config, HTTP.get, url)
+    if(response.status != 200)
+        error("Error getting all dead queue messages, received $(response.status) with body '$(String(response.body))'.")
+    end
+    @show body = JSON.parse(String(response.body))
+    return body
+end
+
+"""
+$(SIGNATURES)
+Get the messages in the asynchonous session dead message queue.
+"""
+function getSessionDeadQueueMessages()::Any
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return getSessionDeadQueueMessages(config.robotId, config.sessionId)
+end
+
+"""
+$(SIGNATURES)
+Get the messages in the asynchonous session dead message queue.
+"""
+function reprocessDeadQueueMessages(robotId::String, sessionId::String)::Nothing
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    url = "$(config.apiEndpoint)/$(format(sessionDeadQueueLengthEndpoint, config.userId, robotId, sessionId))"
+    response = @mock _sendRestRequest(config, HTTP.put, url)
+    if(response.status != 200)
+        error("Error requesting server reprocess dead queue messages, received $(response.status) with body '$(String(response.body))'.")
+    end
+    return nothing
+end
+
+"""
+$(SIGNATURES)
+Get the messages in the asynchonous session dead message queue.
+"""
+function reprocessDeadQueueMessages()::Nothing
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return reprocessDeadQueueMessages(config.robotId, config.sessionId)
+end
+
+"""
+$(SIGNATURES)
+Deletes the messages in the asynchonous session dead message queue.
+"""
+function deleteDeadQueueMessages(robotId::String, sessionId::String)::Nothing
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    url = "$(config.apiEndpoint)/$(format(sessionDeadQueueLengthEndpoint, config.userId, robotId, sessionId))"
+    response = @mock _sendRestRequest(config, HTTP.delete, url)
+    if(response.status != 200)
+        error("Error manually deleting dead message queue, received $(response.status) with body '$(String(response.body))'.")
+    end
+    return nothing
+end
+
+"""
+$(SIGNATURES)
+Deletes the messages in the asynchonous session dead message queue.
+"""
+function deleteDeadQueueMessages()::Nothing
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return deleteDeadQueueMessages(config.robotId, config.sessionId)
+end
+
+"""
+$(SIGNATURES)
 Create a variable in Synchrony.
 Return: Returns the ID+label of the created variable.
 """
-function addVariable(robotId::String, sessionId::String, variableRequest::VariableRequest)::NodeResponse
+function addVariable(robotId::String, sessionId::String, variableRequest::VariableRequest)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -386,7 +558,8 @@ function addVariable(robotId::String, sessionId::String, variableRequest::Variab
     if(response.status != 200)
         error("Error creating variable, received $(response.status) with body '$(String(response.body))'.")
     end
-    return _unmarshallWithLinks(String(response.body), NodeResponse)
+    return nothing
+    # return _unmarshallWithLinks(String(response.body), NodeResponse)
 end
 
 """
@@ -394,7 +567,7 @@ $(SIGNATURES)
 Create a variable in Synchrony.
 Return: Returns the ID+label of the created variable.
 """
-function addVariable(variableRequest::VariableRequest)::NodeResponse
+function addVariable(variableRequest::VariableRequest)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -411,7 +584,7 @@ $(SIGNATURES)
 Create a variable in Synchrony.
 Return: Returns the ID+label of the created variable.
 """
-function addVariable(label::String, varType::String, additionalLabels::Vector{String}=Vector{String}())::NodeResponse
+function addVariable(label::String, varType::String, additionalLabels::Vector{String}=Vector{String}())::Nothing
     return addVariable(VariableRequest(label, varType, additionalLabels))
 end
 
@@ -420,7 +593,7 @@ $(SIGNATURES)
 Create a variable in Synchrony.
 Return: Returns the ID+label of the created variable.
 """
-function addVariable(label::Symbol, varType::Type, additionalLabels::Vector{String}=Vector{String}())::NodeResponse
+function addVariable(label::Symbol, varType::Type, additionalLabels::Vector{String}=Vector{String}())::Nothing
     return addVariable(VariableRequest(String(label), string(varType), additionalLabels))
 end
 
@@ -429,7 +602,7 @@ $(SIGNATURES)
 Create a factor in Synchrony.
 Return: Returns the ID+label of the created factor.
 """
-function addFactor(robotId::String, sessionId::String, factorRequest::FactorRequest)::NodeResponse
+function addFactor(robotId::String, sessionId::String, factorRequest::FactorRequest)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -439,7 +612,8 @@ function addFactor(robotId::String, sessionId::String, factorRequest::FactorRequ
     if(response.status != 200)
         error("Error creating factor, received $(response.status) with body '$(String(response.body))'.")
     end
-    return _unmarshallWithLinks(String(response.body), NodeResponse)
+    return nothing
+    # return _unmarshallWithLinks(String(response.body), NodeResponse)
 end
 
 """
@@ -447,7 +621,7 @@ $(SIGNATURES)
 Create a factor in Synchrony.
 Return: Returns the ID+label of the created factor.
 """
-function addFactor(factorRequest::FactorRequest)::NodeResponse
+function addFactor(factorRequest::FactorRequest)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -464,7 +638,7 @@ $(SIGNATURES)
 Create a factor in Graff as you do in RoME.
 Return: Returns the ID+label of the created factor.
 """
-function addFactor(variables::Vector{Symbol}, romeFactor)::NodeResponse
+function addFactor(variables::Vector{Symbol}, romeFactor)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -493,7 +667,7 @@ $(SIGNATURES)
 Create a variable in Synchrony and associate it with the given robot+user.
 Return: Returns ID+label of the created factor.
 """
-function addBearingRangeFactor(robotId::String, sessionId::String, bearingRangeRequest::BearingRangeRequest)::NodeResponse
+function addBearingRangeFactor(robotId::String, sessionId::String, bearingRangeRequest::BearingRangeRequest)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -503,7 +677,8 @@ function addBearingRangeFactor(robotId::String, sessionId::String, bearingRangeR
     if(response.status != 200)
         error("Error creating bearing range factor, received $(response.status) with body '$(String(response.body))'.")
     end
-    return _unmarshallWithLinks(String(response.body), NodeResponse)
+    return nothing
+    # return _unmarshallWithLinks(String(response.body), NodeResponse)
 end
 
 """
@@ -511,7 +686,7 @@ $(SIGNATURES)
 Create a variable in Synchrony and associate it with the given robot+user.
 Return: Returns ID+label of the created factor.
 """
-function addBearingRangeFactor(bearingRangeRequest::BearingRangeRequest)::NodeResponse
+function addBearingRangeFactor(bearingRangeRequest::BearingRangeRequest)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -528,7 +703,7 @@ $(SIGNATURES)
 Create a session in Synchrony and associate it with the given robot+user.
 Return: Returns the added odometry information.
 """
-function addOdometryMeasurement(robotId::String, sessionId::String, addOdoRequest::AddOdometryRequest)::AddOdometryResponse
+function addOdometryMeasurement(robotId::String, sessionId::String, addOdoRequest::AddOdometryRequest)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -538,7 +713,7 @@ function addOdometryMeasurement(robotId::String, sessionId::String, addOdoReques
     if(response.status != 200)
         error("Error creating odometry, received $(response.status) with body '$(String(response.body))'.")
     end
-    return Unmarshal.unmarshal(AddOdometryResponse, JSON.parse(String(response.body)))
+    return nothing
 end
 
 """
@@ -546,7 +721,7 @@ $(SIGNATURES)
 Create a session in Synchrony and associate it with the given robot+user.
 Return: Returns the added odometry information.
 """
-function addOdometryMeasurement(addOdoRequest::AddOdometryRequest)::AddOdometryResponse
+function addOdometryMeasurement(addOdoRequest::AddOdometryRequest)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -564,7 +739,7 @@ $(SIGNATURES)
 Create a session in Synchrony and associate it with the given robot+user.
 Return: Returns the added odometry information.
 """
-function addOdometryMeasurement(odoDelta::Vector{Float64}, pOdo::Matrix{Float64})::AddOdometryResponse
+function addOdometryMeasurement(odoDelta::Vector{Float64}, pOdo::Matrix{Float64})::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -600,7 +775,7 @@ function getDataEntries(robotId::String, sessionId::String, node::Union{Int, Nod
             push!(datas, _unmarshallWithLinks(JSON.json(bd), BigDataEntryResponse))
         end
 
-        sort(datas; by=(d -> n.id))
+        sort(datas; by=(d -> d.id))
 
         return datas
     end
@@ -628,7 +803,7 @@ $(SIGNATURES)
 Get data elment associated with a node.
 Return: Full data element associated with the specified node.
 """
-function getDataElement(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::String)::BigDataElementResponse
+function getData(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::String)::BigDataElementResponse
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -649,7 +824,7 @@ $(SIGNATURES)
 Get data elment associated with a node.
 Return: Full data element associated with the specified node.
 """
-function getDataElement( node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::String)::BigDataElementResponse
+function getData(node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::String)::BigDataElementResponse
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -658,7 +833,7 @@ function getDataElement( node::Union{Int, NodeResponse, NodeDetailsResponse}, bi
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return getDataElement(config.robotId, config.sessionId, node, bigDataKey)
+    return getData(config.robotId, config.sessionId, node, bigDataKey)
 end
 
 """
@@ -666,7 +841,7 @@ $(SIGNATURES)
 Get data elment associated with a node.
 Return: Full data element associated with the specified node.
 """
-function getRawDataElement(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::String)::String
+function getRawData(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::String)::String
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -687,7 +862,7 @@ $(SIGNATURES)
 Get data elment associated with a node.
 Return: Full data element associated with the specified node.
 """
-function getRawDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::String)::String
+function getRawData(node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::String)::String
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -696,7 +871,7 @@ function getRawDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, 
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return getRawDataElement(config.robotId, config.sessionId, node, bigDataKey)
+    return getRawData(config.robotId, config.sessionId, node, bigDataKey)
 end
 
 """
@@ -704,13 +879,14 @@ $(SIGNATURES)
 Add a data element associated with a node.
 Return: Nothing if succeed, error if failed.
 """
-function addDataElement(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataElement::BigDataElementRequest)::Nothing
+function setData(robotId::String, sessionId::String, node::Union{Int, String, Symbol, NodeResponse, NodeDetailsResponse}, bigDataElement::BigDataElementRequest)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
     end
     # Get the node ID.
-    nodeId = typeof(node) != Int ? node.id : node;
+    nodeId = typeof(node) == NodeResponse || typeof(node) == NodeDetailsResponse ? node.id : node;
+    nodeId = typeof(nodeId) == Symbol ? String(nodeId) : nodeId;
 
     url = "$(config.apiEndpoint)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataElement.id))"
     response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(bigDataElement))
@@ -722,10 +898,10 @@ end
 
 """
 $(SIGNATURES)
-Add a data element associated with a node.
+Set a data element associated with a node.
 Return: Nothing if succeed, error if failed.
 """
-function addDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataElement::BigDataElementRequest)::Nothing
+function setData(node::Union{Int, String, Symbol, NodeResponse, NodeDetailsResponse}, bigDataElement::BigDataElementRequest)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -734,36 +910,15 @@ function addDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, big
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return addDataElement(config.robotId, config.sessionId, node, bigDataElement)
+    return setData(config.robotId, config.sessionId, node, bigDataElement)
 end
 
 """
 $(SIGNATURES)
-Update a data element associated with a node.
+Set a data element associated with a node.
 Return: Nothing if succeed, error if failed.
 """
-function updateDataElement(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataElement::Union{BigDataElementRequest, BigDataElementResponse})::Nothing
-    config = getGraffConfig()
-    if config == nothing
-        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
-    end
-    # Get the node ID.
-    nodeId = typeof(node) != Int ? node.id : node;
-
-    url = "$(config.apiEndpoint)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataElement.id))"
-    response = @mock _sendRestRequest(config, HTTP.put, url, data=JSON.json(bigDataElement))
-    if(response.status != 200)
-        error("Error updating data element '$(bigDataElement.id)', received $(response.status) with body '$(String(response.body))'.")
-    end
-    return nothing
-end
-
-"""
-$(SIGNATURES)
-Update a data element associated with a node.
-Return: Nothing if succeed, error if failed.
-"""
-function updateDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataElement::Union{BigDataElementRequest, BigDataElementResponse})::Nothing
+function setData(node::Union{Int, String, Symbol, NodeResponse, NodeDetailsResponse}, elemId::String, data::String; sourceName::String="mongo", description::String="", mimeType::String="application/octet-stream")::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -772,39 +927,8 @@ function updateDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, 
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return updateDataElement(config.robotId, config.sessionId, node, bigDataElement)
-end
-
-"""
-$(SIGNATURES)
-Add or update a data element associated with a node. Will check if the key exists, if so it updates, otherwise it adds.
-Return: Nothing if succeed, error if failed.
-"""
-function addOrUpdateDataElement(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, dataElement::Union{BigDataElementRequest, BigDataElementResponse})::Nothing
-    config = getGraffConfig()
-    if config == nothing
-        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
-    end
-    # Get the node ID.
-    nodeId = typeof(node) != Int ? node.id : node;
-
-    dataEntries = getDataEntries(robotId, sessionId, nodeId)
-    if count(entry -> entry.id == dataElement.id, dataEntries) == 0
-        println("Existence test for ID '$(dataElement.id)' failed - Adding it!")
-        return addDataElement(robotId, sessionId, nodeId, dataElement)
-    else
-        println("Existence test for ID '$(dataElement.id)' passed - Updating it!")
-        updateDataElement(robotId, sessionId, nodeId, dataElement)
-    end
-    return nothing
-end
-
-function addOrUpdateDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, dataElement::Union{BigDataElementRequest, BigDataElementResponse})::Nothing
-    config = getGraffConfig()
-    if config == nothing
-        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
-    end
-    return addOrUpdateDataElement(config.robotId, config.sessionId, node, dataElement)
+    de = BigDataElementRequest(elemId, sourceName, description, data, mimeType)
+    return setData(config.robotId, config.sessionId, node, de)
 end
 
 """
@@ -812,13 +936,14 @@ $(SIGNATURES)
 Delete a data element associated with a node.
 Return: Nothing if succeed, error if failed.
 """
-function deleteDataElement(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, dataId::String)::Nothing
+function deleteData(robotId::String, sessionId::String, node::Union{Int, String, Symbol, NodeResponse, NodeDetailsResponse}, dataId::String)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
     end
     # Get the node ID.
-    nodeId = typeof(node) != Int ? node.id : node;
+    nodeId = typeof(node) == NodeResponse || typeof(node) == NodeDetailsResponse ? node.id : node;
+    nodeId = typeof(nodeId) == Symbol ? String(nodeId) : nodeId;
 
     url = "$(config.apiEndpoint)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, dataId))"
     response = @mock _sendRestRequest(config, HTTP.delete, url)
@@ -833,7 +958,7 @@ $(SIGNATURES)
 Delete a data element associated with a node.
 Return: Nothing if succeed, error if failed.
 """
-function deleteDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, dataId::String)::Nothing
+function deleteData(node::Union{Int, NodeResponse, NodeDetailsResponse}, dataId::String)::Nothing
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -842,7 +967,7 @@ function deleteDataElement(node::Union{Int, NodeResponse, NodeDetailsResponse}, 
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return deleteDataElement(config.robotId, config.sessionId, node, dataId)
+    return deleteData(config.robotId, config.sessionId, node, dataId)
 end
 
 """
