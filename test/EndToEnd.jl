@@ -6,10 +6,8 @@ using Caesar
 @testset "End-To-End Tests" begin
 
 @testset "Configuration" begin
-    # 1. Import the initialization code.
-    cd(joinpath(dirname(pathof(GraffSDK)), "..", "examples"))
-    # 1a. Create a Configuration
-    global config = loadGraffConfig("graffConfigVirginia.json");
+    # 1a. Create a Configuration using default file
+    global config = loadGraffConfig();
     # global config = loadGraffConfig("synchronyConfigLocal.json");
     @test getGraffConfig() == config
     global config = getGraffConfig()
