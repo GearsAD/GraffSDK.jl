@@ -10,3 +10,6 @@ deps
 src/test.jl
 *.jld
 *.jld2
+
+test/sandbox.jl
+test/testpayload.json

@@ -108,6 +108,11 @@ end
     @test length(getDataEntries(getNode("x0"))) == 1
 end
 
+@testset "Helper Functions" begin
+    @test length(getEstimates()) == 3
+    @test length(getLandmarks()) == 1
+end
+
 @testset "Import/Export" begin
     file = "testFile.jld2"
     if isfile(file)

@@ -269,25 +269,17 @@ end
 
 """
 $(SIGNATURES)
-Returns a summary list of all landmarks for a given robot and session.
-"""
-function getSessionLandmarks(robotId::String, sessionId::String)::Vector{NodeResponse}
-    landmarkList = filter(n -> occursin(r"[l][0-9]+", n.label), getNodes().nodes)
-    return landmarkList
-end
-
-"""
-$(SIGNATURES)
 Gets a node's details by either its ID or name.
 Return: A node's details.
 """
-function getNode(robotId::String, sessionId::String, nodeIdOrLabel::Union{Int, String})::NodeDetailsResponse
+function getNode(robotId::String, sessionId::String, nodeIdOrLabel::Union{Int, String, Symbol})::NodeDetailsResponse
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
     end
     url = "$(config.apiEndpoint)/$(format(nodeEndpoint, config.userId, robotId, sessionId, nodeIdOrLabel))"
-    if(typeof(nodeIdOrLabel) == String)
+    if(typeof(nodeIdOrLabel) in [String, Symbol])
+        nodeIdOrLabel = String(nodeIdOrLabel)
         url = "$(config.apiEndpoint)/$(format(nodeLabelledEndpoint, config.userId, robotId, sessionId, nodeIdOrLabel))"
     end
     response = @mock _sendRestRequest(config, HTTP.get, url)
@@ -305,7 +297,7 @@ $(SIGNATURES)
 Gets a node's details by either its ID or name.
 Return: A node's details.
 """
-function getNode(nodeIdOrLabel::Union{Int, String})::NodeDetailsResponse
+function getNode(nodeIdOrLabel::Union{Int, String, Symbol})::NodeDetailsResponse
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")

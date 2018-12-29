@@ -90,12 +90,14 @@ if getSessionDeadQueueLength() > 0
     @error "This shouldn't happen, please examine the failed messages below to see what went wrong:"
     deadMsgs = getSessionDeadQueueMessages()
     map(d -> println(d["error"]), deadMsgs)
+else
+    @info "No messages in the dead queue (errors) on the server, looks good!"
 end
 # You can ask to reprocess them, or delete them with these commands:
 # reprocessDeadQueueMessages()
 # deleteDeadQueueMessages()
 
-@time nodes = ls()
+@time nodes = GraffSDK.ls()
 
 # # By NeoID
 # node = getNode( nodes.nodes[1].id)
