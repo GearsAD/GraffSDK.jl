@@ -118,7 +118,9 @@ end
     end
     exportSessionJld(file)
     @test isfile(file)
-
+    # New test code!
+    fg = loadjld(;file=file)
+    @test ls(fg)[1] = ["x0", "x1", "l1"]
     # TODO: Import
 end
 

@@ -1,33 +1,6 @@
     # import Base: show
 
 """
-A summary response for a single session.
-"""
-mutable struct SessionResponse
-    id::String
-    links::Dict{String, String}
-end
-
-function show(io::IO, c::SessionResponse)
-    println(io, "GraffSDK Session, ID = $(c.id)")
-end
-
-"""
-A list of session response summaries.
-"""
-mutable struct SessionsResponse
-    sessions::Vector{SessionResponse}
-    links::Dict{String, String}
-end
-
-function show(io::IO, c::SessionsResponse)
-    println(io, "GraffSDK Sessions (count = $(length(c.sessions))):")
-    for s in c.sessions
-        print(io, " - $s")
-    end
-end
-
-"""
 The structure used for detailed session requests.
 """
 mutable struct SessionDetailsRequest
@@ -70,9 +43,20 @@ function show(io::IO, c::SessionDetailsResponse)
     println(io, " - Last Solved: $(c.lastSolvedTimestamp)")
 end
 
-# function show(io::IO, obj::SessionDetailsResponse)
-#     print("\r\nSession: \r\n - ID: $(obj.id)\r\n  - Description: $(obj.description)\r\n  - Node count: $(obj.nodeCount)")
-# end
+"""
+A list of session response summaries.
+"""
+mutable struct SessionsResponse
+    sessions::Vector{SessionDetailsResponse}
+    links::Dict{String, String}
+end
+
+function show(io::IO, c::SessionsResponse)
+    println(io, "GraffSDK Sessions (count = $(length(c.sessions))):")
+    for s in c.sessions
+        print(io, " - $s")
+    end
+end
 
 """
 The structure used to briefly describe a node in a response.
