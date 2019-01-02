@@ -34,9 +34,9 @@ function getSessions(robotId::String)::SessionsResponse
     end
     # Some manual effort done here because it's a vector response.
     rawSessions = JSON.parse(String(response.body))
-    sessions = SessionsResponse(Vector{SessionResponse}(), rawSessions["links"])
+    sessions = SessionsResponse(Vector{SessionDetailsResponse}(), rawSessions["links"])
     for session in rawSessions["sessions"]
-        session = _unmarshallWithLinks(JSON.json(session), SessionResponse)
+        session = _unmarshallWithLinks(JSON.json(session), SessionDetailsResponse)
         push!(sessions.sessions, session)
     end
 
