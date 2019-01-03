@@ -10,7 +10,8 @@ using UUIDs
 cd(joinpath(dirname(pathof(GraffSDK)), "..", "examples"))
 
 # 1a. Create a Configuration
-config = loadGraffConfig();
+config = loadGraffConfig(ENV["HOME"]*"/.graffsdk.json");
+
 #Create a hexagonal sessions
 config.sessionId = "HexDemoSample1_"*replace(string(uuid4()), "-" => "")
 println(getGraffConfig())
