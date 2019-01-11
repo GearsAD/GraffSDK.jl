@@ -13,6 +13,8 @@ cd(joinpath(dirname(pathof(GraffSDK)), "..", "examples"))
 config = loadGraffConfig();
 #Create a hexagonal sessions
 config.sessionId = "HexDemoSample1_"*replace(string(uuid4()), "-" => "")
+config.robotId = "DemoRobot"
+# config.userId = "NewUser"
 println(getGraffConfig())
 
 # 1b. Check the credentials and the service status
@@ -50,17 +52,45 @@ end
 println(session)
 
 # 4. Drive around in a hexagon
-imgRequest = DataHelpers.readFileIntoDataRequest("pexels-photo-1004665.jpeg", "TestImage", "Pretty neat public domain image", "image/jpeg");
-println(" - Adding hexagonal driving pattern to session...")
-@showprogress for i in 1:6
+# imgRequest = DataHelpers.readFileIntoDataRequest("pexels-photo-1004665.jpeg", "TestImage", "Pretty neat public domain image", "image/jpeg");
+# println(" - Adding hexagonal driving pattern to session...")
+# @time @showprogress for i in 1:200
+#     deltaMeasurement = [10.0;0;pi/3]
+#     pOdo = Float64[0.1 0 0; 0 0.1 0; 0 0 0.1]
+#     println(" - Measurement $i: Adding new odometry measurement '$deltaMeasurement'...")
+#     @time addOdometryMeasurement(deltaMeasurement, pOdo)
+#     println("  - Adding a simple (largish) image data to the pose...")
+#     # Adding image data
+#     # @time setData("x$i", imgRequest)
+# end
+
+### START OF TEST
+
+# More representative.
+using Caesar # Need this for Pose2Pose2
+@time @showprogress for i in 1:200
+    psym = Symbol("x$i")
+    nsym = Symbol("x$(i+1)")
+
     deltaMeasurement = [10.0;0;pi/3]
     pOdo = Float64[0.1 0 0; 0 0.1 0; 0 0 0.1]
-    println(" - Measurement $i: Adding new odometry measurement '$deltaMeasurement'...")
-    @time addOdometryMeasurement(deltaMeasurement, pOdo)
-    println("  - Adding a simple (largish) image data to the pose...")
+    pp = Pose2Pose2(MvNormal(deltaMeasurement, pOdo.^2))
+
+    @info " - Measurement $i: Adding new odometry measurement '$deltaMeasurement'..."
+    @time addVariable(nsym, Pose2, String[])
+    @time addFactor([psym;nsym], pp)
+    if i % 10 == 0
+        @info "Put Ready:"
+        @time putReady(true)
+    end
+
+    # println("  - Adding a simple (largish) image data to the pose...")
     # Adding image data
-    setData("x$i", imgRequest)
+    # @time setData("x$i", imgRequest)
 end
+
+##### END OF TEST
+
 
 # 5. Now lets add a couple landmarks
 # Ref: https://github.com/dehann/RoME.jl/blob/master/examples/Slam2dExample.jl#L35
