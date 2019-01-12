@@ -8,6 +8,7 @@ GeometryTypes 0.6.2
 Graphs 0.10.1
 HTTP 0.6.14
 JSON 0.18.0
+JSON2 0.2.3
 Mocking 0.3.4
 ProgressMeter 0.6.1
 Unmarshal

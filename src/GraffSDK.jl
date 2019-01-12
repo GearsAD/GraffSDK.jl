@@ -1,7 +1,7 @@
 module GraffSDK
 
 # Imports
-using HTTP, JSON, Unmarshal
+using HTTP, JSON2, JSON, Unmarshal
 using Graphs
 using DocStringExtensions
 using ProgressMeter

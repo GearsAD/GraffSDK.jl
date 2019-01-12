@@ -80,7 +80,7 @@ putReady(true)
 
 # 5. Checking solver status, getting data
 # Let's wait for all nodes to be processed
-while getSessionBacklog() > 0
+@time while getSessionBacklog() > 0
     @info "...Session backlog currently has $(getSessionBacklog()) entries, waiting until complete..."
     sleep(2)
 end

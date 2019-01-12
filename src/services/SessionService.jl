@@ -229,12 +229,12 @@ function getNodes(robotId::String, sessionId::String)::NodesResponse
         error("Error getting sessions, received $(response.status) with body '$(String(response.body))'.")
     end
     # Some manual effort done here because it's a vector response.
-    rawNodes = JSON.parse(String(response.body))
-    nodes = NodesResponse(Vector{NodeResponse}(), rawNodes["links"])
-    for node in rawNodes["nodes"]
-        node = _unmarshallWithLinks(JSON.json(node), NodeResponse)
-        push!(nodes.nodes, node)
-    end
+    nodes = JSON2.read(String(response.body), NodesResponse)
+    # nodes = NodesResponse(Vector{NodeResponse}(), rawNodes["links"])
+    # for node in rawNodes["nodes"]
+    #     node = _unmarshallWithLinks(JSON.json(node), NodeResponse)
+    #     push!(nodes.nodes, node)
+    # end
 
     sort!(nodes.nodes; by=(n -> n.label))
     return nodes
