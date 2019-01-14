@@ -94,16 +94,26 @@ end
     @test length(getDataEntries(getNode("x0"))) == 0
     data = "TEST DATA.............................................................."
     dataUpdate = "UPDATED"
-    setData(getNode("x0"), "testId", data)
-    @test length(getDataEntries(getNode("x0"))) == 1
+    x0 = getNode("x0")
+    setData(x0, "testId", data)
+    sleep(3)
+    @test length(getDataEntries(x0)) == 1
     setData(getNode("x0"), "testId2", data)
-    @test length(getDataEntries(getNode("x0"))) == 2
-    setData(getNode("x0"), "testId", dataUpdate)
-    @test length(getDataEntries(getNode("x0"))) == 2
-    @test GraffSDK.getData(getNode("x0"), "testId").data == dataUpdate
-    @test getRawData(getNode("x0"), "testId") == dataUpdate
-    deleteData(getNode("x0"), "testId2")
-    @test length(getDataEntries(getNode("x0"))) == 1
+    sleep(3)
+    @test length(getDataEntries(x0)) == 2
+    setData(x0, "testId", dataUpdate)
+    @test length(getDataEntries(x0)) == 2
+    @test GraffSDK.getData(x0, "testId").data == dataUpdate
+    @test getRawData(x0, "testId") == dataUpdate
+    deleteData(x0, "testId2")
+    sleep(3)
+    @test length(getDataEntries(x0)) == 1
+
+    # New method - retrieves all entries for an entire session
+    sessionEntries = getDataEntriesForSession()
+    @test length(sessionEntries) == 3
+    @test haskey(sessionEntries, "x0")
+    @test length(sessionEntries["x0"]) == 1
 end
 
 @testset "Helper Functions" begin

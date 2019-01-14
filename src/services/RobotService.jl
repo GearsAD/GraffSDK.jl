@@ -71,10 +71,11 @@ function getRobot(robotId::String)::RobotResponse
 
     url = "$(config.apiEndpoint)/$(format(robotEndpoint, config.userId, robotId))"
     response = @mock _sendRestRequest(config, HTTP.get, url)
+    body = String(response.body)
     if(response.status != 200)
-        error("Error getting robot, received $(response.status) with body '$(response.body)'.")
+        error("Error getting robot, received $(response.status) with body '$body'.")
     end
-    return _unmarshallWithLinks(String(response.body), RobotResponse)
+    return _unmarshallWithLinks(body, RobotResponse)
 end
 
 """

@@ -1,7 +1,7 @@
 module GraffSDK
 
 # Imports
-using HTTP, JSON, Unmarshal
+using HTTP, JSON2, JSON, Unmarshal
 using Graphs
 using DocStringExtensions
 using ProgressMeter
@@ -140,7 +140,7 @@ export RobotRequest, RobotResponse, RobotsResponse, getRobots, isRobotExisting, 
 export SessionsResponse, SessionResponse, SessionDetailsRequest, SessionDetailsResponse, addSession, getSessions, isSessionExisting, getSession, deleteSession, putReady, requestSessionSolve
 export getSessionBacklog, getSessionDeadQueueLength, getSessionDeadQueueMessages, reprocessDeadQueueMessages, deleteDeadQueueMessages
 export BigDataElementRequest, BigDataEntryResponse, BigDataElementResponse
-export getDataEntries, getData, getRawData, setData, deleteData
+export getDataEntries, getDataEntriesForSession, getData, getRawData, setData, deleteData
 export exportSessionJld
 export getLandmarks, getEstimates
 export encodeJsonData, encodeBinaryData, readFileIntoDataRequest, isSafeToJsonSerialize

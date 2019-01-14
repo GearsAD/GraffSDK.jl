@@ -228,13 +228,7 @@ function getNodes(robotId::String, sessionId::String)::NodesResponse
     if(response.status != 200)
         error("Error getting sessions, received $(response.status) with body '$(String(response.body))'.")
     end
-    # Some manual effort done here because it's a vector response.
-    rawNodes = JSON.parse(String(response.body))
-    nodes = NodesResponse(Vector{NodeResponse}(), rawNodes["links"])
-    for node in rawNodes["nodes"]
-        node = _unmarshallWithLinks(JSON.json(node), NodeResponse)
-        push!(nodes.nodes, node)
-    end
+    nodes = JSON2.read(String(response.body), NodesResponse)
 
     sort!(nodes.nodes; by=(n -> n.label))
     return nodes
@@ -265,6 +259,45 @@ Alias for convenience.
 """
 function ls()::NodesResponse
     return getNodes()
+end
+
+"""
+$(SIGNATURES)
+Get data entries for whole session.
+Return: Summary of all data associated with a session as a dictionary keyed by label ID.
+"""
+function getDataEntriesForSession(robotId::String, sessionId::String)::Dict{String, Vector{BigDataEntryResponse}}
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+
+    url = "$(config.apiEndpoint)/$(format(sessionEndpoint, config.userId, robotId, sessionId))/dataentries"
+    response = @mock _sendRestRequest(config, HTTP.get, url)
+    body = String(response.body)
+    if(response.status != 200)
+        error("Error data entries for session, received $(response.status) with body '$body'.")
+    else
+        bigDataEntries = JSON2.read(body, Dict{String, Vector{BigDataEntryResponse}})
+        return bigDataEntries
+    end
+end
+
+"""
+$(SIGNATURES)
+Get data entries for whole session.
+Return: Summary of all data associated with a session as a dictionary keyed by label ID.
+"""
+function getDataEntriesForSession()::Dict{String, Vector{BigDataEntryResponse}}
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return getDataEntriesForSession(config.robotId, config.sessionId)
 end
 
 """

@@ -11,7 +11,7 @@ mutable struct BigDataElementRequest
 end
 
 function show(io::IO, c::BigDataElementRequest)
-    println(io, "Graff Data Element Request, ID = $(c.id), MIME type = $(c.mimeType), length = $(length(c.data)), description = $(c.description)")
+    println(io, "Graff Data Element Request: ID = $(c.id), MIME type = $(c.mimeType), length = $(length(c.data)), description = $(c.description)")
 end
 
 """
@@ -28,7 +28,7 @@ mutable struct BigDataEntryResponse
 end
 
 function show(io::IO, c::BigDataEntryResponse)
-    println(io, "Graff Data Entry Response, ID = $(c.id), MIME type = $(c.mimeType), description = $(c.description)")
+    println(io, "Graff Data Entry Response: ID = $(c.id), MIME type = $(c.mimeType), description = $(c.description)")
 end
 
 """
@@ -46,5 +46,5 @@ mutable struct BigDataElementResponse
 end
 
 function show(io::IO, c::BigDataElementResponse)
-    println(io, "Graff Data Element Response, ID = $(c.id), MIME type = $(c.mimeType), length = $(length(c.data)), description = $(c.description)")
+    println(io, "Graff Data Element Response: ID = $(c.id), MIME type = $(c.mimeType), length = $(length(c.data)), description = $(c.description)")
 end

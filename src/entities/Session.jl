@@ -64,11 +64,12 @@ The structure used to briefly describe a node in a response.
 mutable struct NodeResponse
     id::Int
     label::String
+    mapEst::Union{Nothing, Vector{Float64}}
     links::Dict{String, String}
 end
 
 function show(io::IO, n::NodeResponse)
-    println(io, "GraffSDK Node - ID: $(n.id), label: $(n.label)")
+    println(io, "GraffSDK Node - ID: $(n.id), label: $(n.label), mapEst: $(n.mapEst != nothing ? n.mapEst : "nothing")")
 end
 
 # function show(io::IO, obj::NodeResponse)
