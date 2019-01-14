@@ -71,8 +71,7 @@ function getRobot(robotId::String)::RobotResponse
 
     url = "$(config.apiEndpoint)/$(format(robotEndpoint, config.userId, robotId))"
     response = @mock _sendRestRequest(config, HTTP.get, url)
-    @show response.status
-    @show body = String(response.body)
+    body = String(response.body)
     if(response.status != 200)
         error("Error getting robot, received $(response.status) with body '$body'.")
     end

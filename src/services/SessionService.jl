@@ -274,7 +274,7 @@ function getDataEntriesForSession(robotId::String, sessionId::String)::Dict{Stri
 
     url = "$(config.apiEndpoint)/$(format(sessionEndpoint, config.userId, robotId, sessionId))/dataentries"
     response = @mock _sendRestRequest(config, HTTP.get, url)
-    @show body = String(response.body)
+    body = String(response.body)
     if(response.status != 200)
         error("Error data entries for session, received $(response.status) with body '$body'.")
     else
