@@ -104,6 +104,11 @@ end
     @test getRawData(getNode("x0"), "testId") == dataUpdate
     deleteData(getNode("x0"), "testId2")
     @test length(getDataEntries(getNode("x0"))) == 1
+
+    sessionEntries = getDataEntriesForSession()
+    @test length(sessionEntries) == 1
+    @test haskey(sessionEntries, "x0")
+    @test length(sessionEntries["x0"]) == 2
 end
 
 @testset "Helper Functions" begin
