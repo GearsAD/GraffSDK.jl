@@ -12,7 +12,7 @@ robotId = "Hexagonal"
 synchronyConfig = loadConfig("synchronyConfig.json")
 
 # 1a. Create a Configuration
-function makeSessionDataWooHoo(synchronyConfig::SynchronyConfig, robotId::String, sessionId::String)
+function makeSessionDataWooHoo(synchronyConfig::GraffConfig, robotId::String, sessionId::String)
 # sessionId = "0xHexDemo2"
 # # synchronyConfig = loadConfig("synchronyConfig_Local.json")
 

@@ -47,7 +47,7 @@ println(session)
 # Adding the data!
 
 # 5. Set up the LCM callbacks
-function lcm_NewOdoAvailable(channel, msg::brookstone_supertype_t, graffConfig::SynchronyConfig)
+function lcm_NewOdoAvailable(channel, msg::brookstone_supertype_t, graffConfig::GraffConfig)
     # @show variable = msg.newvariable
     factor = msg.newfactor
     img = msg.img

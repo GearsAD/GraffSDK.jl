@@ -1,4 +1,4 @@
-mockConfig = SynchronyConfig("http://mock", "9000", "", "", "")
+mockConfig = GraffConfig("http://mock", "9000", "", "", "")
 mockConfig.sessionId = "TestSession"
 mockConfig.robotId = "TestRobot"
 
@@ -11,11 +11,11 @@ mockConfig.robotId = "TestRobot"
     robotConfig = Dict{String, String}()
 
     # Generate our mocks for the actual REST calls
-    sendRequestMock = @patch _sendRestRequest(synchronyConfig::SynchronyConfig, verbFunction, url::String; data::String="", headers::Dict{String, String}=Dict{String, String}(), debug::Bool=false) = mockResponse
-    sendRequestListMock = @patch _sendRestRequest(synchronyConfig::SynchronyConfig, verbFunction, url::String; data::String="", headers::Dict{String, String}=Dict{String, String}(), debug::Bool=false) = mockListResponse
-    sendRequestErrorMock = @patch _sendRestRequest(synchronyConfig::SynchronyConfig, verbFunction, url::String; data::String="", headers::Dict{String, String}=Dict{String, String}(), debug::Bool=false) = mockErrorResponse
+    sendRequestMock = @patch _sendRestRequest(synchronyConfig::GraffConfig, verbFunction, url::String; data::String="", headers::Dict{String, String}=Dict{String, String}(), debug::Bool=false) = mockResponse
+    sendRequestListMock = @patch _sendRestRequest(synchronyConfig::GraffConfig, verbFunction, url::String; data::String="", headers::Dict{String, String}=Dict{String, String}(), debug::Bool=false) = mockListResponse
+    sendRequestErrorMock = @patch _sendRestRequest(synchronyConfig::GraffConfig, verbFunction, url::String; data::String="", headers::Dict{String, String}=Dict{String, String}(), debug::Bool=false) = mockErrorResponse
 
-    sendRequestNodesMock = @patch _sendRestRequest(synchronyConfig::SynchronyConfig, verbFunction, url::String; data::String="", headers::Dict{String, String}=Dict{String, String}(), debug::Bool=false) = mockResponse
+    sendRequestNodesMock = @patch _sendRestRequest(synchronyConfig::GraffConfig, verbFunction, url::String; data::String="", headers::Dict{String, String}=Dict{String, String}(), debug::Bool=false) = mockResponse
 
     # Success criteria
     apply(sendRequestListMock) do

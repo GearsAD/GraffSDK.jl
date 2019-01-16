@@ -7,7 +7,7 @@ using DocStringExtensions
 using ProgressMeter
 using Formatting
 using Dates
-using Nullables
+using Requires
 
 import Base.show
 
@@ -37,14 +37,14 @@ Load a config, internally calls setGraffConfig, and returns the config data.
 2. Otherwise if no filename specified, use '~/.graffsdk.json'
 3. Otherwise if filename specified, use that
 """
-function loadGraffConfig(filename::String="")::SynchronyConfig
+function loadGraffConfig(filename::String="")::GraffConfig
     configData = ""
     if haskey(ENV, "graffconfig")
         configData = ENV["graffconfig"]
     else
         if filename == ""
             !haskey(ENV, "HOME") && error("Can't find a 'HOME' environment variable, please specify one before it can be used to locate the default configuration file")
-            @info "Using default Graff config location (~/.graffsdk.json) because no Graff config file specified  and environment variable 'graffconfig' not set."
+            @info "Using default Graff config location (~/.graffsdk.json). If you want to load a different config file, please specify in parameter or environment variable 'graffconfig' not set."
             filename = ENV["HOME"]*"/.graffsdk.json"
         end
         if !isfile(filename)
@@ -55,7 +55,7 @@ function loadGraffConfig(filename::String="")::SynchronyConfig
         close(configFile)
     end
     configData = JSON.parse(configData)
-    config = Unmarshal.unmarshal(SynchronyConfig, configData)
+    config = Unmarshal.unmarshal(GraffConfig, configData)
     setGraffConfig(config)
     return config
 end
@@ -64,7 +64,7 @@ end
     $(SIGNATURES)
 Set the configuration that the GraffSDK should use.
 """
-function setGraffConfig(graffConfig::SynchronyConfig):Nothing
+function setGraffConfig(graffConfig::GraffConfig):Nothing
     global __graffConfig
     __graffConfig = graffConfig
     return nothing
@@ -73,7 +73,7 @@ end
     $(SIGNATURES)
 Get the current GraffSDK configuration.
 """
-function getGraffConfig()::Union{Nothing, SynchronyConfig}
+function getGraffConfig()::Union{Nothing, GraffConfig}
     return __graffConfig
 end
 
@@ -113,7 +113,7 @@ end
 $SIGNATURES
 Produces the authorization and sends the REST request.
 """
-function _sendRestRequest(synchronyConfig::SynchronyConfig, verbFunction, url::String; data::String="", headers::Dict{String, String}=Dict{String, String}(), debug::Bool=false)::HTTP.Response
+function _sendRestRequest(synchronyConfig::GraffConfig, verbFunction, url::String; data::String="", headers::Dict{String, String}=Dict{String, String}(), debug::Bool=false)::HTTP.Response
     if length(headers) == 0 && data == "" # Special case for HTTP.delete
         verbFunction(url;
             aws_authorization=true,
@@ -131,8 +131,19 @@ function _sendRestRequest(synchronyConfig::SynchronyConfig, verbFunction, url::S
     end
 end
 
+"""
+$SIGNATURES
+Standard handler for errors - tries to parse out an error of form {"error": ""}, produces generic error if can't.
+"""
+function _handleRestError(functionName::String, status::Int, body::String)
+    try
+        #TODO
+    catch ex
+    end
+end
+
 # Exports
-export SynchronyConfig, ErrorResponse
+export GraffConfig, ErrorResponse
 export loadGraffConfig, setGraffConfig, getGraffConfig
 export getStatus, printStatus
 export UserRequest, UserResponse, KafkaConfig, UserConfig, addUser, getUser, updateUser, deleteUser, getUserConfig
@@ -151,4 +162,19 @@ export VariableRequest, VariableResponse, BearingRangeRequest, BearingRangeRespo
 # For testing
 export _unmarshallWithLinks
 export nodeDetail2ExVertex
+
+## REGION: Optional Add-Ins
+
+# If you have include Mongoc, bring in local stores
+function __init__()
+    @require Mongoc="4fe8b98c-fc19-5c23-8ec2-168ff83495f2" begin
+        @info "--- MongoC was included beforehand, so importing local storage extensions..."
+
+        include("./entities/LocalStorage.jl")
+        include("./services/LocalStorage.jl")
+        export LocalStore
+        export setLocalStore, getLocalStore
+    end
+end
+
 end
