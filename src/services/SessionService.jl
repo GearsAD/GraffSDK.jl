@@ -836,20 +836,43 @@ $(SIGNATURES)
 Get data elment associated with a node.
 Return: Full data element associated with the specified node.
 """
-function getData(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::String)::BigDataElementResponse
+function getData(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::Union{String, BigDataEntryResponse})::BigDataElementResponse
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
     end
     # Get the node ID.
     nodeId = typeof(node) != Int ? node.id : node;
+    bigDataKey = typeof(bigDataKey) == BigDataEntryResponse ? bigDataKey.id : bigDataKey
+
+    # Check if caching enabled,
+    if isdefined(GraffSDK, :__localCache)
+        @info "Looking in cache..."
+        elem = getElement("$(config.userId)|$robotId|$sessionId|$bigDataKey")
+        elem != nothing && @info "Found in cache!"
+        __forceOnlyLocalCache && return elem
+        if elem != nothing  # If element is not nothing return it
+            return elem
+        end
+    end
+
 
     url = "$(config.apiEndpoint)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataKey))"
     response = @mock _sendRestRequest(config, HTTP.get, url)
     if(response.status != 200)
         error("Error getting node data entries, received $(response.status) with body '$(String(response.body))'.")
     end
-    return _unmarshallWithLinks(String(response.body), BigDataElementResponse)
+    bde = _unmarshallWithLinks(String(response.body), BigDataElementResponse)
+    # Update the cache
+    if isdefined(GraffSDK, :__localCache)
+        @info "Updating cache..."
+        try
+            setElement("$(config.userId)|$robotId|$sessionId|$bigDataKey", bde)
+        catch ex
+            @info "Unable to cache - $ex"
+        end
+    end
+    return bde
 end
 
 """
@@ -857,7 +880,7 @@ $(SIGNATURES)
 Get data elment associated with a node.
 Return: Full data element associated with the specified node.
 """
-function getData(node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::String)::BigDataElementResponse
+function getData(node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::Union{String, BigDataEntryResponse})::BigDataElementResponse
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -874,13 +897,14 @@ $(SIGNATURES)
 Get data elment associated with a node.
 Return: Full data element associated with the specified node.
 """
-function getRawData(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::String)::String
+function getRawData(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::Union{String, BigDataEntryResponse})::String
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
     end
     # Get the node ID.
     nodeId = typeof(node) != Int ? node.id : node;
+    bigDataKey = typeof(bigDataKey) == BigDataEntryResponse ? bigDataKey.id : bigDataKey
 
     url = "$(config.apiEndpoint)/$(format(bigDataRawElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataKey))"
     response = @mock _sendRestRequest(config, HTTP.get, url)
@@ -895,7 +919,7 @@ $(SIGNATURES)
 Get data elment associated with a node.
 Return: Full data element associated with the specified node.
 """
-function getRawData(node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::String)::String
+function getRawData(node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::Union{String, BigDataEntryResponse})::String
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -920,6 +944,23 @@ function setData(robotId::String, sessionId::String, node::Union{Int, String, Sy
     # Get the node ID.
     nodeId = typeof(node) == NodeResponse || typeof(node) == NodeDetailsResponse ? node.id : node;
     nodeId = typeof(nodeId) == Symbol ? String(nodeId) : nodeId;
+
+    # Update the cache
+    if isdefined(GraffSDK, :__localCache)
+        @info "Updating cache..."
+        try
+            bde = BigDataElementResponse(bigDataElement.id, "SOURCEID2", nothing, bigDataElement.sourceName, bigDataElement.description, bigDataElement.data, bigDataElement.mimeType, "LASTSAVED", Dict{String, String}())
+            setElement("$(config.userId)|$robotId|$sessionId|$(bigDataElement.id)", bde)
+            if __forceOnlyLocalCache
+                @info "Cleaning out data because forcing local cache..."
+                # Clean out the actual data
+                bigDataElement = deepcopy(bigDataElement)
+                bigDataElement.data = ""
+            end
+        catch ex
+            @info "Unable to cache - $ex"
+        end
+    end
 
     url = "$(config.apiEndpoint)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataElement.id))"
     response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(bigDataElement))

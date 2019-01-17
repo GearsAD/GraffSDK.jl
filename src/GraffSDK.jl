@@ -168,12 +168,13 @@ export nodeDetail2ExVertex
 # If you have include Mongoc, bring in local stores
 function __init__()
     @require Mongoc="4fe8b98c-fc19-5c23-8ec2-168ff83495f2" begin
-        @info "--- MongoC was included beforehand, so importing local storage extensions..."
+        @info "--- MongoC was included beforehand, so importing local caching extensions. Call setLocalCache(cache::LocalCache) to set up local caching..."
 
-        include("./entities/LocalStorage.jl")
-        include("./services/LocalStorage.jl")
-        export LocalStore
-        export setLocalStore, getLocalStore
+        include("./entities/LocalCache.jl")
+        include("./services/LocalCache.jl")
+        export LocalCache
+        export setLocalCache, getLocalCache
+        export forceOnlyLocalCache
     end
 end
 
