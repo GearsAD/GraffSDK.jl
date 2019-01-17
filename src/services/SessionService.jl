@@ -836,7 +836,7 @@ $(SIGNATURES)
 Get data elment associated with a node.
 Return: Full data element associated with the specified node.
 """
-function getData(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::Union{String, BigDataEntryResponse})::BigDataElementResponse
+function getData(robotId::String, sessionId::String, node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::Union{String, BigDataEntryResponse})::Union{BigDataElementResponse, Nothing}
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -850,12 +850,13 @@ function getData(robotId::String, sessionId::String, node::Union{Int, NodeRespon
         @info "Looking in cache..."
         elem = getElement("$(config.userId)|$robotId|$sessionId|$bigDataKey")
         elem != nothing && @info "Found in cache!"
-        __forceOnlyLocalCache && return elem
-        if elem != nothing  # If element is not nothing return it
+        if __forceOnlyLocalCache
+            elem == nothing && @warn "Element doesn't exist in local cache and forceOnlyLocalCache is true, so returning nothing!"
             return elem
         end
+        # Otherwise if cache hit, return it.
+        elem != nothing  && return elem
     end
-
 
     url = "$(config.apiEndpoint)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataKey))"
     response = @mock _sendRestRequest(config, HTTP.get, url)
@@ -880,7 +881,7 @@ $(SIGNATURES)
 Get data elment associated with a node.
 Return: Full data element associated with the specified node.
 """
-function getData(node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::Union{String, BigDataEntryResponse})::BigDataElementResponse
+function getData(node::Union{Int, NodeResponse, NodeDetailsResponse}, bigDataKey::Union{String, BigDataEntryResponse})::Union{BigDataElementResponse, Nothing}
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")

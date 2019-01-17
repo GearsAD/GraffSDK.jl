@@ -2,7 +2,7 @@
     $(SIGNATURES)
 Set the local cache.
 """
-function setLocalCache(cache::LocalCache)::Nothing
+function setLocalCache(cache::Union{LocalCache, Nothing})::Nothing
     global __localCache
     __localCache = cache
     return nothing
