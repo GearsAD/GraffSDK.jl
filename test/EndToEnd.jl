@@ -1,7 +1,9 @@
 using Test
+using Mongoc
 using GraffSDK
 using UUIDs
 using Caesar
+using HTTP
 
 @testset "End-To-End Tests" begin
 
@@ -96,17 +98,17 @@ end
     dataUpdate = "UPDATED"
     x0 = getNode("x0")
     setData(x0, "testId", data)
-    sleep(3)
+    sleep(10)
     @test length(getDataEntries(x0)) == 1
     setData(getNode("x0"), "testId2", data)
-    sleep(3)
+    sleep(10)
     @test length(getDataEntries(x0)) == 2
     setData(x0, "testId", dataUpdate)
     @test length(getDataEntries(x0)) == 2
     @test GraffSDK.getData(x0, "testId").data == dataUpdate
     @test getRawData(x0, "testId") == dataUpdate
     deleteData(x0, "testId2")
-    sleep(3)
+    sleep(10)
     @test length(getDataEntries(x0)) == 1
 
     # New method - retrieves all entries for an entire session
@@ -114,6 +116,59 @@ end
     @test length(sessionEntries) == 3
     @test haskey(sessionEntries, "x0")
     @test length(sessionEntries["x0"]) == 1
+end
+
+@testset "Data Caching" begin
+    dataUpdate = "UPDATED"
+    x0 = getNode("x0")
+    # Make sure cloud data is set.
+    setData(x0, "testId", dataUpdate)
+    sleep(10)
+
+    # Set up a local cache
+    client = Mongoc.Client("localhost", 27017)
+    database = client["GraffLocal"]
+    collection = database["GraffLocal"]
+    localCache = LocalCache(client, collection)
+    setLocalCache(localCache)
+    @test getLocalCache() == localCache
+    # Force local caching only
+    forceOnlyLocalCache(true)
+
+    @test GraffSDK.getData(x0, "testId") == nothing # Not in cache
+    forceOnlyLocalCache(false)
+    @test GraffSDK.getData(x0, "testId").data == dataUpdate
+    # Now it should be cached
+    forceOnlyLocalCache(true)
+    @test GraffSDK.getData(x0, "testId").data == dataUpdate
+
+    # Now try the mirroring
+    newData = "Testing Dataaaaaaa...."
+    forceOnlyLocalCache(false)
+    GraffSDK.setData(x0, "testId2", newData)
+    sleep(10)
+    # Now should be cached...
+    @test GraffSDK.getData(x0, "testId2").data == newData
+    @test GraffSDK.getData(x0, "testId2").data == newData
+    # Turn off upstream
+    forceOnlyLocalCache(true)
+    @test GraffSDK.getData(x0, "testId2").data == newData
+    # Turn off cache and check that it's upstream
+    forceOnlyLocalCache(false)
+    setLocalCache(nothing)
+    @test GraffSDK.getData(x0, "testId2").data == newData
+    # Now delete on both and make sure it's gone
+    setLocalCache(localCache)
+    GraffSDK.deleteData(x0, "testId")
+    GraffSDK.deleteData(x0, "testId2")
+    @test_throws HTTP.ExceptionRequest.StatusError GraffSDK.getData(x0, "testId2")
+    # And local only too...
+    forceOnlyLocalCache(true)
+    @test GraffSDK.getData(x0, "testId2") == nothing
+
+    # Now turn caching off again and carry on.
+    forceOnlyLocalCache(false)
+    setLocalCache(nothing)
 end
 
 @testset "Helper Functions" begin

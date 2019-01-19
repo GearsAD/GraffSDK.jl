@@ -133,6 +133,7 @@ function _handleRestError(functionName::String, status::Int, body::String)
     try
         #TODO
     catch ex
+        # Can't parse, show the whole error.
     end
 end
 

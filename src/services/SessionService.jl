@@ -847,8 +847,9 @@ function getData(robotId::String, sessionId::String, node::Union{Int, NodeRespon
 
     # Check if caching enabled,
     if isdefined(GraffSDK, :__localCache)
-        @info "Looking in cache..."
-        elem = getElement("$(config.userId)|$robotId|$sessionId|$bigDataKey")
+        cacheKey = "$(config.userId)|$robotId|$sessionId|$bigDataKey"
+        @debug "Looking in cache for '$cacheKey'..."
+        elem = getElement(cacheKey)
         elem != nothing && @info "Found in cache!"
         if __forceOnlyLocalCache
             elem == nothing && @warn "Element doesn't exist in local cache and forceOnlyLocalCache is true, so returning nothing!"
@@ -866,12 +867,8 @@ function getData(robotId::String, sessionId::String, node::Union{Int, NodeRespon
     bde = _unmarshallWithLinks(String(response.body), BigDataElementResponse)
     # Update the cache
     if isdefined(GraffSDK, :__localCache)
-        @info "Updating cache..."
-        try
-            setElement("$(config.userId)|$robotId|$sessionId|$bigDataKey", bde)
-        catch ex
-            @info "Unable to cache - $ex"
-        end
+        @debug "Updating cache..."
+        setElement("$(config.userId)|$robotId|$sessionId|$bigDataKey", bde)
     end
     return bde
 end
@@ -946,21 +943,11 @@ function setData(robotId::String, sessionId::String, node::Union{Int, String, Sy
     nodeId = typeof(node) == NodeResponse || typeof(node) == NodeDetailsResponse ? node.id : node;
     nodeId = typeof(nodeId) == Symbol ? String(nodeId) : nodeId;
 
-    # Update the cache
-    if isdefined(GraffSDK, :__localCache)
-        @info "Updating cache..."
-        try
-            bde = BigDataElementResponse(bigDataElement.id, "SOURCEID2", nothing, bigDataElement.sourceName, bigDataElement.description, bigDataElement.data, bigDataElement.mimeType, "LASTSAVED", Dict{String, String}())
-            setElement("$(config.userId)|$robotId|$sessionId|$(bigDataElement.id)", bde)
-            if __forceOnlyLocalCache
-                @info "Cleaning out data because forcing local cache..."
-                # Clean out the actual data
-                bigDataElement = deepcopy(bigDataElement)
-                bigDataElement.data = ""
-            end
-        catch ex
-            @info "Unable to cache - $ex"
-        end
+    tempData = bigDataElement.data
+    if __forceOnlyLocalCache # Emtpy out the data if it's only going local.
+        @debug "Cleaning out data because forcing local cache, only saving entry..."
+        bigDataElement = deepcopy(bigDataElement)
+        bigDataElement.data = ""
     end
 
     url = "$(config.apiEndpoint)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataElement.id))"
@@ -968,6 +955,19 @@ function setData(robotId::String, sessionId::String, node::Union{Int, String, Sy
     if(response.status != 200)
         error("Error adding data element, received $(response.status) with body '$(String(response.body))'.")
     end
+
+    # TODO: Return the data entry when setting...
+    # Update the cache
+    if isdefined(GraffSDK, :__localCache)
+        cacheKey = "$(config.userId)|$robotId|$sessionId|$(bigDataElement.id)"
+        @debug "Updating cache key '$cacheKey'..."
+        bde = BigDataElementResponse(bigDataElement.id, "LOCAL_CACHE", nothing, bigDataElement.sourceName, bigDataElement.description, bigDataElement.data, bigDataElement.mimeType, string(now), Dict{String, String}())
+        if __forceOnlyLocalCache
+            bde.data = tempData
+        end
+        setElement(cacheKey, bde)
+    end
+
     return nothing
 end
 
@@ -1025,6 +1025,14 @@ function deleteData(robotId::String, sessionId::String, node::Union{Int, String,
     if(response.status != 200)
         error("Error deleting data element '$dataId', received $(response.status) with body '$(String(response.body))'.")
     end
+
+    # Update the cache
+    if isdefined(GraffSDK, :__localCache)
+        cacheKey = "$(config.userId)|$robotId|$sessionId|$dataId"
+        @debug "Deleting cache key '$cacheKey'..."
+        deleteElement(cacheKey)
+    end
+
     return nothing
 end
 
