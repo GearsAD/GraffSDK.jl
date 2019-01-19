@@ -90,12 +90,6 @@ include("./services/DataHelpers.jl")
 include("./services/SessionService.jl")
 include("./services/StatusService.jl")
 
-include("./entities/User.jl")
-include("./services/UserService.jl")
-# include("./services/VisualizationService.jl")
-
-include("./entities/Cyphon.jl")
-
 include("./services/HelperFunctionService.jl")
 
 # Exported functions

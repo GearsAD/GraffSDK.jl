@@ -1,4 +1,4 @@
-using Mongoc
+using .Mongoc
 
 """
 The client and collection to use for this local cache.
