@@ -9,7 +9,7 @@ cd(joinpath(Pkg.dir("SynchronySDK"),"examples"))
 configFile = open("synchronyConfig_Local.json")
 configData = JSON.parse(readstring(configFile))
 close(configFile)
-synchronyConfig = Unmarshal.unmarshal(SynchronyConfig, configData)
+synchronyConfig = Unmarshal.unmarshal(GraffConfig, configData)
 
 # 2a. User creation and retrieval
 # In Synchrony, users are the root of all robots,

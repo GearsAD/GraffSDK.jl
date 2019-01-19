@@ -10,7 +10,8 @@ makedocs(
             "Introduction" => "getting_started.md",
             "Making Robust Calls" => "handling_errors.md",
             "Common Structures and Functions" => "ref_common.md",
-            "Working with Data" => "working_with_data.md"
+            "Working with Data" => "working_with_data.md",
+            "Caching Data Locally" => "local_caching.md"
         ],
         "Examples" => [
             "Introduction" => "examples/examples.md",

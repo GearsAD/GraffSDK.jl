@@ -3,7 +3,7 @@ The following are common structures and functions that are used across all the s
 
 ## Structures
 ```@docs
-SynchronyConfig
+GraffConfig
 ErrorResponse
 ```
 
