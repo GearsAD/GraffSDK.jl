@@ -4,6 +4,23 @@ using GraffSDK
 using UUIDs
 using Caesar
 using HTTP
+using JSON2
+
+function waitForQueueToEmpty()
+    waitsLeft = 10
+    while getSessionBacklog() > 0 && waitsLeft > 0
+        @info "...Session backlog currently has $(getSessionBacklog()) entries, waiting until complete..."
+        sleep(3)
+        waitsLeft-=1;
+    end
+    if getSessionBacklog() > 0
+        error("Nope, graph was not completely consumed in time - failing!")
+    end
+    if getSessionDeadQueueLength() > 0
+        error("Nope, some messages ended up in dead queue... check it:")
+        @info getSessionDeadQueueMessages()
+    end
+end
 
 @testset "End-To-End Tests" begin
 
@@ -16,6 +33,7 @@ using HTTP
     config.userId = "QA"
     config.robotId = "QARobot_"*replace(string(uuid4()), "-" => "")
     config.sessionId = "QASession_"*replace(string(uuid4()), "-" => "")
+    @info config
 end
 
 @testset "User and User Config" begin
@@ -32,10 +50,19 @@ end
     @test isRobotExisting() == true
 
     robotConfig = getRobotConfig()
+
     @test robotConfig != nothing
+    robotConfig["DepthCameraModel"] = "{\"width\":640,\"height\":480,\"fc\":[387.205,387.205],\"f\":387.205,\"cc\":[322.042,238.544],\"skew\":0.0,\"kc\":[0.0],\"K\":[387.205,0.0,0.0,0.0,387.205,0.0,322.042,238.544,1.0],\"Ki\":[0.0025826112782634525,0.0,0.0,0.0,0.0025826112782634525,0.0,-0.8317093012745187,-0.6160664247620771,1.0]}"
+    robotConfig["RGBCameraModel"] = "{\"width\":640,\"height\":480,\"fc\":[387.205,387.205],\"f\":387.205,\"cc\":[322.042,238.544],\"skew\":0.0,\"kc\":[0.0],\"K\":[387.205,0.0,0.0,0.0,387.205,0.0,322.042,238.544,1.0],\"Ki\":[0.0025826112782634525,0.0,0.0,0.0,0.0025826112782634525,0.0,-0.8317093012745187,-0.6160664247620771,1.0]}"
     robotConfig["TestParam"] = "This is a test configuration parameter"
-    #updateRobotConfig(robotConfig)
-    #@test haskey(getRobotConfig(), "TestParam")
+    updateRobotConfig(robotConfig)
+    retConfig = getRobotConfig()
+
+    @test retConfig == robotConfig
+
+    #Clear it out and test that works too
+    updateRobotConfig(Dict{Any, Any}())
+    @test getRobotConfig() == Dict{Any, Any}()
 end
 
 @testset "Session Creation" begin
@@ -60,19 +87,8 @@ end
     p2br = Pose2Point2BearingRange(Normal(0.1,0.1), Normal(0.1, 0.1))
     addFactor([:x0; :l1], p2br)
     # Waiting for completion
-    waitsLeft = 10
-    while getSessionBacklog() > 0 && waitsLeft > 0
-        @info "...Session backlog currently has $(getSessionBacklog()) entries, waiting until complete..."
-        sleep(3)
-        waitsLeft-=1;
-    end
-    if getSessionBacklog() > 0
-        error("Nope, graph was not completely consumed in time - failing!")
-    end
-    if getSessionDeadQueueLength() > 0
-        error("Nope, some messages ended up in dead queue... check it:")
-        @info getSessionDeadQueueMessages()
-    end
+    waitForQueueToEmpty()
+
     nodes = GraffSDK.ls()
     @test length(nodes.nodes) == 3
 
@@ -98,17 +114,18 @@ end
     dataUpdate = "UPDATED"
     x0 = getNode("x0")
     setData(x0, "testId", data)
-    sleep(10)
+    waitForQueueToEmpty()
     @test length(getDataEntries(x0)) == 1
     setData(getNode("x0"), "testId2", data)
-    sleep(10)
+    waitForQueueToEmpty()
     @test length(getDataEntries(x0)) == 2
     setData(x0, "testId", dataUpdate)
+    waitForQueueToEmpty()
     @test length(getDataEntries(x0)) == 2
     @test GraffSDK.getData(x0, "testId").data == dataUpdate
     @test getRawData(x0, "testId") == dataUpdate
     deleteData(x0, "testId2")
-    sleep(10)
+    # This is synchronous
     @test length(getDataEntries(x0)) == 1
 
     # New method - retrieves all entries for an entire session
@@ -123,7 +140,7 @@ end
     x0 = getNode("x0")
     # Make sure cloud data is set.
     setData(x0, "testId", dataUpdate)
-    sleep(10)
+    waitForQueueToEmpty()
 
     # Set up a local cache
     client = Mongoc.Client("localhost", 27017)
@@ -146,7 +163,7 @@ end
     newData = "Testing Dataaaaaaa...."
     forceOnlyLocalCache(false)
     GraffSDK.setData(x0, "testId2", newData)
-    sleep(10)
+    waitForQueueToEmpty()
     # Now should be cached...
     @test GraffSDK.getData(x0, "testId2").data == newData
     @test GraffSDK.getData(x0, "testId2").data == newData
