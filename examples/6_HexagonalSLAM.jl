@@ -12,7 +12,7 @@ cd(joinpath(dirname(pathof(GraffSDK)), "..", "examples"))
 # 1a. Create a Configuration
 config = loadGraffConfig();
 #Create a hexagonal sessions
-config.sessionId = "HexDemoSample1_"*replace(string(uuid4()), "-" => "")
+config.sessionId = "HexDemoSample1_"*replace(string(uuid4())[1:6], "-" => "")
 println(getGraffConfig())
 
 # 1b. Check the credentials and the service status
