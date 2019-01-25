@@ -138,6 +138,7 @@ end
 @testset "Data Caching" begin
     dataUpdate = "UPDATED"
     x0 = getNode("x0")
+    x1 = getNode("x1")
     # Make sure cloud data is set.
     setData(x0, "testId", dataUpdate)
     waitForQueueToEmpty()
@@ -153,8 +154,10 @@ end
     forceOnlyLocalCache(true)
 
     @test GraffSDK.getData(x0, "testId") == nothing # Not in cache
+    @test GraffSDK.getData(x1, "testId") == nothing # Not in cache
     forceOnlyLocalCache(false)
     @test GraffSDK.getData(x0, "testId").data == dataUpdate
+    @test_throws HTTP.ExceptionRequest.StatusError GraffSDK.getData(x1, "testId") == nothing
     # Now it should be cached
     forceOnlyLocalCache(true)
     @test GraffSDK.getData(x0, "testId").data == dataUpdate
