@@ -847,7 +847,7 @@ function getData(robotId::String, sessionId::String, node::Union{Int, NodeRespon
 
     # Check if caching enabled,
     if isdefined(GraffSDK, :__localCache)
-        cacheKey = "$(config.userId)|$robotId|$sessionId|$bigDataKey"
+        cacheKey = "$(config.userId)|$robotId|$sessionId|$nodeId|$bigDataKey"
         @debug "Looking in cache for '$cacheKey'..."
         elem = getElement(cacheKey)
         elem != nothing && @info "Found in cache!"
@@ -857,6 +857,7 @@ function getData(robotId::String, sessionId::String, node::Union{Int, NodeRespon
         end
         # Otherwise if cache hit, return it.
         elem != nothing  && return elem
+        @debug "Cache miss - retrieving from global server..."
     end
 
     url = "$(config.apiEndpoint)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataKey))"
@@ -868,7 +869,7 @@ function getData(robotId::String, sessionId::String, node::Union{Int, NodeRespon
     # Update the cache
     if isdefined(GraffSDK, :__localCache)
         @debug "Updating cache..."
-        setElement("$(config.userId)|$robotId|$sessionId|$bigDataKey", bde)
+        setElement("$(config.userId)|$robotId|$sessionId|$nodeId|$bigDataKey", bde)
     end
     return bde
 end
@@ -959,7 +960,7 @@ function setData(robotId::String, sessionId::String, node::Union{Int, String, Sy
     # TODO: Return the data entry when setting...
     # Update the cache
     if isdefined(GraffSDK, :__localCache)
-        cacheKey = "$(config.userId)|$robotId|$sessionId|$(bigDataElement.id)"
+        cacheKey = "$(config.userId)|$robotId|$sessionId|$nodeId|$(bigDataElement.id)"
         @debug "Updating cache key '$cacheKey'..."
         bde = BigDataElementResponse(bigDataElement.id, "LOCAL_CACHE", nothing, bigDataElement.sourceName, bigDataElement.description, bigDataElement.data, bigDataElement.mimeType, string(now), Dict{String, String}())
         if __forceOnlyLocalCache
@@ -1028,7 +1029,7 @@ function deleteData(robotId::String, sessionId::String, node::Union{Int, String,
 
     # Update the cache
     if isdefined(GraffSDK, :__localCache)
-        cacheKey = "$(config.userId)|$robotId|$sessionId|$dataId"
+        cacheKey = "$(config.userId)|$robotId|$sessionId|$nodeId|$dataId"
         @debug "Deleting cache key '$cacheKey'..."
         deleteElement(cacheKey)
     end
