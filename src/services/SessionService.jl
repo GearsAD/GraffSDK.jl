@@ -647,6 +647,85 @@ function addVariable(label::Symbol, varType::Type, additionalLabels::Vector{Stri
     return addVariable(VariableRequest(String(label), string(varType), additionalLabels))
 end
 
+
+"""
+$(SIGNATURES)
+Create a variable in Graff.
+"""
+function addVariable(config::GraffConfig, variableRequest::VariableRequest)
+
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return addVariable(config.robotId, config.sessionId, variableRequest)
+end
+
+"""
+$(SIGNATURES)
+Create a variable in Graff.
+"""
+function addVariable(config::GraffConfig, label::String, varType::String, additionalLabels::Vector{String}=Vector{String}())::Nothing
+    return addVariable(config,VariableRequest(label, varType, additionalLabels))
+end
+
+"""
+$(SIGNATURES)
+Create a variable in Graff.
+"""
+function addVariable(config::GraffConfig, label::Symbol, varType::Type, additionalLabels::Vector{String}=Vector{String}())::Nothing
+    return addVariable(config, VariableRequest(String(label), string(varType), additionalLabels))
+end
+
+
+
+"""
+$(SIGNATURES)
+Create a factor in Graff.
+"""
+function addFactor(config::GraffConfig, factorRequest::FactorRequest)::Nothing
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+    url = "$(config.apiEndpoint)/$(format(factorsEndpoint, config.userId, config.robotId, config.sessionId))"
+    response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(factorRequest))
+    if (response.status != 200)
+        error("Error creating factor, received $(response.status) with body '$(String(response.body))'.")
+    end
+    return nothing
+    # return _unmarshallWithLinks(String(response.body), NodeResponse)
+end
+
+
+"""
+$(SIGNATURES)
+Create a factor in Graff as you do in RoME.
+Return: Returns the ID+label of the created factor.
+"""
+function addFactor(config::GraffConfig, variables::Vector{Symbol}, romeFactor)::Nothing
+
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    try
+        # Try pack quickly here.
+        fctType = typeof(romeFactor).name # Simply 'prior', as example
+        fctPackedType = getfield(Main, Symbol("Packed$(fctType)") )#eval(Meta.parse("Packed$(fctType)"))
+        @info "Trying to encode factor $fctType into PackedType $fctPackedType..."
+        fctRequest = FactorRequest(String.(variables), string(fctType), convert(fctPackedType, romeFactor))
+        @info "Successfully encoded - sending to Graff..."
+        return addFactor(config, fctRequest)
+    catch ex
+        @info "Unable to pack and send factor - did you include RoME and/or Caesar? Please check your factor type is valid and has a PackedType."
+        showerror(stderr, ex, catch_backtrace())
+        error(ex)
+    end
+end
+
 """
 $(SIGNATURES)
 Create a factor in Synchrony.
@@ -659,7 +738,7 @@ function addFactor(robotId::String, sessionId::String, factorRequest::FactorRequ
     end
     url = "$(config.apiEndpoint)/$(format(factorsEndpoint, config.userId, robotId, sessionId))"
     response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(factorRequest))
-    if(response.status != 200)
+    if (response.status != 200)
         error("Error creating factor, received $(response.status) with body '$(String(response.body))'.")
     end
     return nothing
