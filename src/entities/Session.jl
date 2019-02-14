@@ -43,7 +43,7 @@ function show(io::IO, c::SessionDetailsResponse)
     println(io, " - Solve Count: $(c.solveCount)")
     println(io, " - Created: $(c.createdTimestamp)")
     println(io, " - Last Solved: $(c.lastSolvedTimestamp)")
-    println(io, " - Last Solved Result: $(c.lastSolvedResult != nothing ? c.lastSolvedResult : "")")
+    # println(io, " - Last Solved Result: $(c.lastSolvedResult != nothing ? c.lastSolvedResult : "")")
 end
 
 """
