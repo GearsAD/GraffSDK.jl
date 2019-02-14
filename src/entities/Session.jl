@@ -22,7 +22,7 @@ mutable struct SessionDetailsResponse
     initialPoseType::String
     nodeCount::Int
     solveCount::Int
-    lastSolvedResult::Union{Nothing, String}
+    # lastSolvedResult::Union{Nothing, String}
     # solveTimes::Vector{Any}
     createdTimestamp::String
     lastSolvedTimestamp::String # Can remove nullable as soon as we stabilize.
