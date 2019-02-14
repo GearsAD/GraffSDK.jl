@@ -122,7 +122,16 @@ function getSession(robotId::String, sessionId::String)::SessionDetailsResponse
     if(response.status != 200)
         error("Error getting session, received $(response.status) with body '$(String(response.body))'.")
     end
-    return _unmarshallWithLinks(String(response.body), SessionDetailsResponse)
+    return JSON2.read(@show String(response.body), SessionDetailsResponse)
+end
+
+"""
+$(SIGNATURES)
+Get a specific session given a session response (update).
+Return: The session details for the provided user ID, robot ID, and session ID.
+"""
+function getSession(session::SessionDetailsResponse)::SessionDetailsResponse
+    return getSession(session.robotId, session.id)
 end
 
 """
@@ -158,6 +167,15 @@ function deleteSession(robotId::String, sessionId::String)::Nothing
         error("Error deleting session, received $(response.status) with body '$(String(response.body))'.")
     end
     return nothing
+end
+
+"""
+$(SIGNATURES)
+Delete a specific session given a session response.
+Return: Nothing if success, error if failed.
+"""
+function deleteSession(session::SessionDetailsResponse)::Nothing
+    return deleteSession(session.robotId, session.id)
 end
 
 """
@@ -320,8 +338,7 @@ function getNode(robotId::String, sessionId::String, nodeIdOrLabel::Union{Int, S
         error("Error getting node, received $(response.status) with body '$(String(response.body))'.")
     end
     # Some manual effort done
-    rawNode = JSON.parse(String(response.body))
-    node = NodeDetailsResponse(rawNode["id"], rawNode["label"], rawNode["sessionIndex"], rawNode["properties"], rawNode["packed"], rawNode["labels"], rawNode["links"])
+    node = JSON2.read(String(response.body), NodeDetailsResponse)
     return node
 end
 
