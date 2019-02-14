@@ -22,6 +22,7 @@ mutable struct SessionDetailsResponse
     initialPoseType::String
     nodeCount::Int
     solveCount::Int
+    # lastSolvedResult::Union{Nothing, String}
     # solveTimes::Vector{Any}
     createdTimestamp::String
     lastSolvedTimestamp::String # Can remove nullable as soon as we stabilize.
@@ -35,12 +36,14 @@ function show(io::IO, c::SessionDetailsResponse)
     println(io, " - Description: $(c.description)")
     println(io, " - User ID: $(c.userId)")
     println(io, " - Robot ID: $(c.robotId)")
+    # println(io, " - Environment: $(c.environment != nothing ? c.environment : "")")
     println(io, " - Initial Pose Type: $(c.initialPoseType)")
     println(io, " - Node Count: $(c.nodeCount)")
     println(io, " - Solver Enabled: $(c.isSolverEnabled)")
     println(io, " - Solve Count: $(c.solveCount)")
     println(io, " - Created: $(c.createdTimestamp)")
     println(io, " - Last Solved: $(c.lastSolvedTimestamp)")
+    # println(io, " - Last Solved Result: $(c.lastSolvedResult != nothing ? c.lastSolvedResult : "")")
 end
 
 """
@@ -102,6 +105,7 @@ mutable struct NodeDetailsResponse
     id::Int
     label::String
     sessionIndex::Int
+    type::String
     properties::Dict{String, Any}
     packed::Dict{String, Any}
     labels::Vector{String}
