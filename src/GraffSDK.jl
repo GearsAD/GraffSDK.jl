@@ -38,7 +38,7 @@ Load a config, internally calls setGraffConfig, and returns the config data.
 3. Otherwise if filename specified, use that
 """
 function loadGraffConfig(;filename::String="",
-                          console::Vector{Symbol}=[]  )::GraffConfig
+                        consoleParams::Vector{Symbol}=Symbol[]  )::GraffConfig
     #
     configData = ""
     if haskey(ENV, "graffconfig")
@@ -59,10 +59,13 @@ function loadGraffConfig(;filename::String="",
     configData = JSON.parse(configData)
     config = Unmarshal.unmarshal(GraffConfig, configData)
 
-    :region in console ? (println("region: "); config.region = readline(stdin);) : nothing
-    :userId in console ? (println("userId: "); config.userId = readline(stdin);) : nothing
-    :robotId in console ? (println("robotId: "); config.robotId = readline(stdin);) : nothing
-    :sessionId in console ? (println("sessionId: "); config.sessionId = readline(stdin);) : nothing
+    :apiEndpoint in consoleParams ? (println("API Endpoint: "); config.apiEndpoint = readline(stdin);) : nothing
+    :accessKey in consoleParams ? (println("Access Key: "); config.accessKey = readline(stdin);) : nothing
+    :secretKey in consoleParams ? (println("Secret Key: "); config.secretKey = readline(stdin);) : nothing
+    :region in consoleParams ? (println("region: "); config.region = readline(stdin);) : nothing
+    :userId in consoleParams ? (println("User ID: "); config.userId = readline(stdin);) : nothing
+    :robotId in consoleParams ? (println("Robot ID: "); config.robotId = readline(stdin);) : nothing
+    :sessionId in consoleParams ? (println("Session ID: "); config.sessionId = readline(stdin);) : nothing
 
     setGraffConfig(config)
     return config

@@ -19,20 +19,14 @@ using GraffSDK
 ```
 
 ## Loading a Graff Configuration
-In the same location as the new script, create a file called 'synchronyConfig.json', and paste in your SlamInDb/Graff endpoint which was provided when you created your account:
-```json
-{
-  "apiEndpoint":"...",
-  "accessKey":"...",
-  "secretKey":"...",
-  "region":"...",
-  "userId":"...",
-  "robotId":"...",
-  "sessionId":"..."
-}
-```
+The first step in connecting to a Graff system is by loading a configuration.
 
-The robotId and sessionId fields are optional, you can leave them blank if you like. They are defaults that can be set so you can call convenience methods and don't need to specify the robot and session every time. If you don't have a robot or session set up, no worries! Pick anything you like (no spaces or special characters) and in the later examples this robot and session will be created.
+GraffSDK configurations are loaded by default from `~/.graffsdk.json)` when you call `config = loadGraffConfig()`. There are also other ways of loading configurations:
+* If you want to load a different configuration file, please specify with the named parameter `filename`, e.g. `config =loadGraffConfig(filename="./LocalGraffConfig.json")`
+* You can also set a local environment variable `graffconfig` with the JSON data (e.g. good for docker images)
+* You can ask the user to feed in the parameters in the command-line by specifying a list of variables that should be requested (listed symbols), e.g. `config = loadGraffConfig(;consoleParams=[:userId, :apiEndpoint])`. The remaining parameters will be read by the file
+
+Note that in the configuration file, the robotId and sessionId fields are optional. They are defaults that can be set so you can call convenience methods and don't need to specify the robot and session every time. If you don't have a robot or session set up, no worries! Pick anything you like (no spaces or special characters) and in the later examples this robot and session will be created.
 
 It is assumed that Julia was started in the same folder as the script, so add the following code to the script to load the configuration:
 
