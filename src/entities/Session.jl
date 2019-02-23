@@ -18,6 +18,7 @@ mutable struct SessionDetailsResponse
     sessionId::String
     userId::String
     robotId::String
+    environmentIds::Union{Nothing, Vector{String}}
     initialPoseType::String
     nodeCount::Int
     solveCount::Int
@@ -39,7 +40,7 @@ function show(io::IO, c::SessionDetailsResponse)
     println(io, " - Description: $(c.description)")
     println(io, " - User ID: $(c.userId)")
     println(io, " - Robot ID: $(c.robotId)")
-    # println(io, " - Environment: $(c.environment != nothing ? c.environment : "")")
+    println(io, " - Environments: $(c.environmentIds != nothing ? c.environmentIds : "")")
     println(io, " - Initial Pose Type: $(c.initialPoseType)")
     println(io, " - Node Count: $(c.nodeCount)")
     println(io, " - Solver Enabled: $(c.isSolverEnabled)")
