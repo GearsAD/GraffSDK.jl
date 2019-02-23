@@ -10,12 +10,10 @@ using UUIDs
 cd(joinpath(dirname(pathof(GraffSDK)), "..", "examples"))
 
 # 1a. Create a Configuration
-config = loadGraffConfig();
-#Create a hexagonal sessions
+config = loadGraffConfig()
 config.sessionId = "HexDemoSample1_"*replace(string(uuid4())[1:6], "-" => "")
-println(getGraffConfig())
 
-getNode("x0")
+println(getGraffConfig())
 
 # 1b. Check the credentials and the service status
 printStatus()
@@ -59,28 +57,25 @@ println(" - Adding hexagonal driving pattern to session...")
     pOdo = Float64[0.1 0 0; 0 0.1 0; 0 0 0.1]
     println(" - Measurement $i: Adding new odometry measurement '$deltaMeasurement'...")
     @time addOdometryMeasurement(deltaMeasurement, pOdo)
-    println("  - Adding a simple (largish) image data to the pose...")
+    # println("  - Adding a simple (largish) image data to the pose...")
     # Adding image data
     # setData("x$i", imgRequest)
 end
 
 # 5. Now lets add a couple landmarks
 # Ref: https://github.com/dehann/RoME.jl/blob/master/examples/Slam2dExample.jl#L35
-for l in [1,2,3,4]
-    response = addVariable("l$l", "Point2", ["LANDMARK"])
-    newBearingRangeFactor = BearingRangeRequest("x$l", "l$l",
-                              DistributionRequest("Normal", Float64[0; 0.1]),
-                              DistributionRequest("Normal", Float64[20; 1.0]))
-    addBearingRangeFactor(newBearingRangeFactor)
-    # newBearingRangeFactor2 = BearingRangeRequest("x6", "l1",
-    #                            DistributionRequest("Normal", Float64[0; 0.1]),
-    #                            DistributionRequest("Normal", Float64[20; 1.0]))
-    # addBearingRangeFactor(newBearingRangeFactor2)
-end
+response = addVariable("l0", "Point2", ["LANDMARK", "TESTLABEL"])
+newBearingRangeFactor = BearingRangeRequest("x0", "l0",
+                          DistributionRequest("Normal", Float64[0; 0.1]),
+                          DistributionRequest("Normal", Float64[20; 1.0]))
+addBearingRangeFactor(newBearingRangeFactor)
+newBearingRangeFactor2 = BearingRangeRequest("x6", "l0",
+                           DistributionRequest("Normal", Float64[0; 0.1]),
+                           DistributionRequest("Normal", Float64[20; 1.0]))
+addBearingRangeFactor(newBearingRangeFactor2)
 # Landmarks generally require more work once they're created, e.g. creating factors,
 # so they are not set to ready by default. Once you've completed all the factor links and want to solve,
 # call putReady to tell the solver it can use the new nodes. This is added to the end of the processing queue.
-response = addVariable("l0", "Point2", ["LANDMARK"])
 putReady(true)
 
 # 5. Checking solver status, getting data

@@ -31,9 +31,9 @@ Note that in the configuration file, the robotId and sessionId fields are option
 It is assumed that Julia was started in the same folder as the script, so add the following code to the script to load the configuration:
 
 ```julia
-# 1. Get a Synchrony configuration
-# Assume that you're running in local directory
-config = loadGraffConfig("synchronyConfig.json")
+# 1. Get a Graff configuration
+# Assume that you're loading a default configuration
+config = loadGraffConfig()
 #Change your session or robot if you like
 #config.sessionId = "HexDemoSample1"
 println(getGraffConfig())
