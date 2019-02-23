@@ -15,19 +15,22 @@ end
 The structure used for detailed session responses.
 """
 mutable struct SessionDetailsResponse
-    id::String
-    description::String
-    robotId::String
+    sessionId::String
     userId::String
+    robotId::String
     initialPoseType::String
     nodeCount::Int
     solveCount::Int
+    lastSolvedTimestamp::String
+    isSolverEnabled::Bool # If 1 then the ad-hoc solver will pick up on it, otherwise will ignore this session.
+    shouldInitialize::Bool
+    id::String
+    description::String
     # lastSolvedResult::Union{Nothing, String}
     # solveTimes::Vector{Any}
     createdTimestamp::String
-    lastSolvedTimestamp::String # Can remove nullable as soon as we stabilize.
-    isSolverEnabled::Int # If 1 then the ad-hoc solver will pick up on it, otherwise will ignore this session.
-    links::Dict{String, String}
+    lastUpdatedTimestamp::String
+    links::Dict{String, Any}
 end
 
 function show(io::IO, c::SessionDetailsResponse)
@@ -105,11 +108,11 @@ mutable struct NodeDetailsResponse
     id::Int
     label::String
     sessionIndex::Int
-    type::String
+    type::Union{Nothing, String}
     properties::Dict{String, Any}
     packed::Dict{String, Any}
     labels::Vector{String}
-    links::Dict{String, String}
+    links::Dict{String, Any}
 end
 
 function show(io::IO, n::NodeDetailsResponse)

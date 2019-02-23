@@ -22,7 +22,7 @@ $(SIGNATURES)
 Gets all sessions for the current robot.
 Return: A vector of sessions for the current robot.
 """
-function getSessions(robotId::String)::SessionsResponse
+function getSessions(robotId::String)::Vector{SessionDetailsResponse}
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -32,16 +32,9 @@ function getSessions(robotId::String)::SessionsResponse
     if(response.status != 200)
         error("Error getting sessions, received $(response.status) with body '$(String(response.body))'.")
     end
-    # Some manual effort done here because it's a vector response.
-    rawSessions = JSON.parse(String(response.body))
-    sessions = SessionsResponse(Vector{SessionDetailsResponse}(), rawSessions["links"])
-    for session in rawSessions["sessions"]
-        session = _unmarshallWithLinks(JSON.json(session), SessionDetailsResponse)
-        push!(sessions.sessions, session)
-    end
-
-    #Sort
-    sort!(sessions.sessions, by=(s -> s.id))
+    @show sessions = JSON2.read(String(response.body), Vector{SessionDetailsResponse})
+    # #Sort
+    sort!(sessions, by=(s -> s.id))
     return sessions
 end
 
@@ -50,7 +43,8 @@ $(SIGNATURES)
 Gets all sessions for the current robot.
 Return: A vector of sessions for the current robot.
 """
-function getSessions()::SessionsResponse
+function getSessions()::Vector{SessionDetailsResponse}
+
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -122,7 +116,7 @@ function getSession(robotId::String, sessionId::String)::SessionDetailsResponse
     if(response.status != 200)
         error("Error getting session, received $(response.status) with body '$(String(response.body))'.")
     end
-    return JSON2.read(@show String(response.body), SessionDetailsResponse)
+    return _unmarshallWithLinks(String(response.body), SessionDetailsResponse)
 end
 
 """
@@ -207,7 +201,8 @@ function addSession(robotId::String, session::SessionDetailsRequest)::SessionDet
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
     end
     url = "$(config.apiEndpoint)/$(format(sessionEndpoint, config.userId, robotId, session.id))"
-    response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(session))
+    @show body = JSON.json(session)
+    response = @mock _sendRestRequest(config, HTTP.post, url, data=body)
     if(response.status != 200)
         error("Error creating session, received $(response.status) with body '$(String(response.body))'.")
     end
@@ -246,7 +241,8 @@ function getNodes(robotId::String, sessionId::String)::NodesResponse
     if(response.status != 200)
         error("Error getting sessions, received $(response.status) with body '$(String(response.body))'.")
     end
-    nodes = JSON2.read(String(response.body), NodesResponse)
+    body = String(response.body)
+    nodes = JSON2.read(body, NodesResponse)
 
     sort!(nodes.nodes; by=(n -> n.label))
     return nodes
@@ -337,8 +333,9 @@ function getNode(robotId::String, sessionId::String, nodeIdOrLabel::Union{Int, S
     if(response.status != 200)
         error("Error getting node, received $(response.status) with body '$(String(response.body))'.")
     end
+    @show body = String(response.body)
     # Some manual effort done
-    node = JSON2.read(String(response.body), NodeDetailsResponse)
+    node = JSON2.read(body, NodeDetailsResponse)
     return node
 end
 
