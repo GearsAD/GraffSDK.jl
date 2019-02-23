@@ -37,7 +37,9 @@ Load a config, internally calls setGraffConfig, and returns the config data.
 2. Otherwise if no filename specified, use '~/.graffsdk.json'
 3. Otherwise if filename specified, use that
 """
-function loadGraffConfig(filename::String="")::GraffConfig
+function loadGraffConfig(;filename::String="",
+                        consoleParams::Vector{Symbol}=Symbol[]  )::GraffConfig
+    #
     configData = ""
     if haskey(ENV, "graffconfig")
         configData = ENV["graffconfig"]
@@ -56,6 +58,15 @@ function loadGraffConfig(filename::String="")::GraffConfig
     end
     configData = JSON.parse(configData)
     config = Unmarshal.unmarshal(GraffConfig, configData)
+
+    :apiEndpoint in consoleParams ? (println("API Endpoint: "); config.apiEndpoint = readline(stdin);) : nothing
+    :accessKey in consoleParams ? (println("Access Key: "); config.accessKey = readline(stdin);) : nothing
+    :secretKey in consoleParams ? (println("Secret Key: "); config.secretKey = readline(stdin);) : nothing
+    :region in consoleParams ? (println("region: "); config.region = readline(stdin);) : nothing
+    :userId in consoleParams ? (println("User ID: "); config.userId = readline(stdin);) : nothing
+    :robotId in consoleParams ? (println("Robot ID: "); config.robotId = readline(stdin);) : nothing
+    :sessionId in consoleParams ? (println("Session ID: "); config.sessionId = readline(stdin);) : nothing
+
     setGraffConfig(config)
     return config
 end

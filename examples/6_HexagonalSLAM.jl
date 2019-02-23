@@ -10,9 +10,9 @@ using UUIDs
 cd(joinpath(dirname(pathof(GraffSDK)), "..", "examples"))
 
 # 1a. Create a Configuration
-config = loadGraffConfig();
-#Create a hexagonal sessions
+config = loadGraffConfig()
 config.sessionId = "HexDemoSample1_"*replace(string(uuid4())[1:6], "-" => "")
+
 println(getGraffConfig())
 
 # 1b. Check the credentials and the service status
@@ -50,26 +50,26 @@ end
 println(session)
 
 # 4. Drive around in a hexagon
-imgRequest = DataHelpers.readFileIntoDataRequest("pexels-photo-1004665.jpeg", "TestImage", "Pretty neat public domain image", "image/jpeg");
+# imgRequest = DataHelpers.readFileIntoDataRequest("pexels-photo-1004665.jpeg", "TestImage", "Pretty neat public domain image", "image/jpeg");
 println(" - Adding hexagonal driving pattern to session...")
 @showprogress for i in 1:6
     deltaMeasurement = [10.0;0;pi/3]
     pOdo = Float64[0.1 0 0; 0 0.1 0; 0 0 0.1]
     println(" - Measurement $i: Adding new odometry measurement '$deltaMeasurement'...")
     @time addOdometryMeasurement(deltaMeasurement, pOdo)
-    println("  - Adding a simple (largish) image data to the pose...")
+    # println("  - Adding a simple (largish) image data to the pose...")
     # Adding image data
-    setData("x$i", imgRequest)
+    # setData("x$i", imgRequest)
 end
 
 # 5. Now lets add a couple landmarks
 # Ref: https://github.com/dehann/RoME.jl/blob/master/examples/Slam2dExample.jl#L35
-response = addVariable("l1", "Point2", ["LANDMARK"])
-newBearingRangeFactor = BearingRangeRequest("x0", "l1",
+response = addVariable("l0", "Point2", ["LANDMARK", "TESTLABEL"])
+newBearingRangeFactor = BearingRangeRequest("x0", "l0",
                           DistributionRequest("Normal", Float64[0; 0.1]),
                           DistributionRequest("Normal", Float64[20; 1.0]))
 addBearingRangeFactor(newBearingRangeFactor)
-newBearingRangeFactor2 = BearingRangeRequest("x6", "l1",
+newBearingRangeFactor2 = BearingRangeRequest("x6", "l0",
                            DistributionRequest("Normal", Float64[0; 0.1]),
                            DistributionRequest("Normal", Float64[20; 1.0]))
 addBearingRangeFactor(newBearingRangeFactor2)
