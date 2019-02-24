@@ -104,11 +104,12 @@ function addRobot(robot::RobotRequest)::RobotResponse
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
     end
     url = "$(config.apiEndpoint)/$(format(robotEndpoint, config.userId, robot.id))"
-    response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(robot))
+    response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(robot), headers=Dict{String, String}("Content-Type" => "application/json"))
     if(response.status != 200)
         error("Error creating robot, received $(response.status) with body '$(String(response.body))'.")
     end
-    return _unmarshallWithLinks(String(response.body), RobotResponse)
+    body = String(response.body)
+    return JSON2.read(body, RobotResponse)
 end
 
 """
@@ -122,11 +123,12 @@ function updateRobot(robot::RobotRequest)::RobotResponse
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
     end
     url = "$(config.apiEndpoint)/$(format(robotEndpoint, config.userId, robot.id))"
-    response = @mock _sendRestRequest(config, HTTP.put, url, data=JSON.json(robot))
+    response = @mock _sendRestRequest(config, HTTP.put, url, data=JSON.json(robot), headers=Dict{String, String}("Content-Type" => "application/json"))
     if(response.status != 200)
         error("Error updating robot, received $(response.status) with body '$(String(response.body))'.")
     end
-    return _unmarshallWithLinks(String(response.body), RobotResponse)
+    body = String(response.body)
+    return JSON2.read(body, RobotResponse)
 end
 
 """
@@ -144,7 +146,8 @@ function deleteRobot(robotId::String)::RobotResponse
     if(response.status != 200)
         error("Error deleting robot, received $(response.status) with body '$(String(response.body))'.")
     end
-    return _unmarshallWithLinks(String(response.body), RobotResponse)
+    body = String(response.body)
+    return JSON2.read(body, RobotResponse)
 end
 
 """

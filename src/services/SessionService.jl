@@ -119,7 +119,7 @@ function getSession(robotId::String, sessionId::String)::SessionDetailsResponse
     if(response.status != 200)
         error("Error getting session, received $(response.status) with body '$(String(response.body))'.")
     end
-    return _unmarshallWithLinks(String(response.body), SessionDetailsResponse)
+    return JSON2.read(String(response.body), SessionDetailsResponse)
 end
 
 """
@@ -205,11 +205,12 @@ function addSession(robotId::String, session::SessionDetailsRequest)::SessionDet
     end
     url = "$(config.apiEndpoint)/$(format(sessionEndpoint, config.userId, robotId, session.id))"
     body = JSON.json(session)
-    response = @mock _sendRestRequest(config, HTTP.post, url, data=body)
+    response = @mock _sendRestRequest(config, HTTP.post, url, data=body, headers=Dict{String, String}("Content-Type" => "application/json"))
     if(response.status != 200)
         error("Error creating session, received $(response.status) with body '$(String(response.body))'.")
     end
-    return _unmarshallWithLinks(String(response.body), SessionDetailsResponse)
+    @show body = String(response.body)
+    return JSON2.read(body, SessionDetailsResponse)
 end
 
 """
@@ -437,7 +438,7 @@ function addVariable(robotId::String, sessionId::String, variableRequest::Variab
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
     end
     url = "$(config.apiEndpoint)/$(format(variableEndpoint, config.userId, robotId, sessionId, variableRequest.label))"
-    response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(variableRequest))
+    response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(variableRequest), headers=Dict{String, String}("Content-Type" => "application/json"))
     if(response.status != 200)
         error("Error creating variable, received $(response.status) with body '$(String(response.body))'.")
     end
@@ -521,7 +522,7 @@ function addFactor(config::GraffConfig, factorRequest::FactorRequest)::Nothing
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
     url = "$(config.apiEndpoint)/$(format(factorsEndpoint, config.userId, config.robotId, config.sessionId))"
-    response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(factorRequest))
+    response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(factorRequest), headers=Dict{String, String}("Content-Type" => "application/json"))
     if (response.status != 200)
         error("Error creating factor, received $(response.status) with body '$(String(response.body))'.")
     end
@@ -570,7 +571,7 @@ function addFactor(robotId::String, sessionId::String, factorRequest::FactorRequ
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
     end
     url = "$(config.apiEndpoint)/$(format(factorsEndpoint, config.userId, robotId, sessionId))"
-    response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(factorRequest))
+    response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(factorRequest), headers=Dict{String, String}("Content-Type" => "application/json"))
     if (response.status != 200)
         error("Error creating factor, received $(response.status) with body '$(String(response.body))'.")
     end
@@ -635,7 +636,7 @@ function addBearingRangeFactor(robotId::String, sessionId::String, bearingRangeR
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
     end
     url = "$(config.apiEndpoint)/$(format(bearingRangeEndpoint, config.userId, robotId, sessionId))"
-    response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(bearingRangeRequest))
+    response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(bearingRangeRequest), headers=Dict{String, String}("Content-Type" => "application/json"))
     if(response.status != 200)
         error("Error creating bearing range factor, received $(response.status) with body '$(String(response.body))'.")
     end
@@ -671,7 +672,7 @@ function addOdometryMeasurement(robotId::String, sessionId::String, addOdoReques
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
     end
     url = "$(config.apiEndpoint)/$(format(odoEndpoint, config.userId, robotId, sessionId))"
-    response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(addOdoRequest))
+    response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(addOdoRequest), headers=Dict{String, String}("Content-Type" => "application/json"))
     if(response.status != 200)
         error("Error creating odometry, received $(response.status) with body '$(String(response.body))'.")
     end
@@ -875,7 +876,7 @@ function setData(robotId::String, sessionId::String, node::Union{Int, String, Sy
     end
 
     url = "$(config.apiEndpoint)/$(format(bigDataElementEndpoint, config.userId, robotId, sessionId, nodeId, bigDataElement.id))"
-    response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(bigDataElement))
+    response = @mock _sendRestRequest(config, HTTP.post, url, data=JSON.json(bigDataElement), headers=Dict{String, String}("Content-Type" => "application/json"))
     if(response.status != 200)
         error("Error adding data element, received $(response.status) with body '$(String(response.body))'.")
     end

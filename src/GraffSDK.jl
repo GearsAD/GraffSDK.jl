@@ -119,21 +119,21 @@ end
 $SIGNATURES
 Produces the authorization and sends the REST request.
 """
-function _sendRestRequest(synchronyConfig::GraffConfig, verbFunction, url::String; data::String="", headers::Dict{String, String}=Dict{String, String}(), debug::Bool=false)::HTTP.Response
+function _sendRestRequest(config::GraffConfig, verbFunction, url::String; data::String="", headers::Dict{String, String}=Dict{String, String}(), debug::Bool=false)::HTTP.Response
     if length(headers) == 0 && data == "" # Special case for HTTP.delete
         verbFunction(url;
             aws_authorization=true,
             aws_service="execute-api",
-            aws_region=synchronyConfig.region,
-            aws_access_key_id=synchronyConfig.accessKey,
-            aws_secret_access_key=synchronyConfig.secretKey)
+            aws_region=config.region,
+            aws_access_key_id=config.accessKey,
+            aws_secret_access_key=config.secretKey)
     else
         verbFunction(url, headers, data;
             aws_authorization=true,
             aws_service="execute-api",
-            aws_region=synchronyConfig.region,
-            aws_access_key_id=synchronyConfig.accessKey,
-            aws_secret_access_key=synchronyConfig.secretKey)
+            aws_region=config.region,
+            aws_access_key_id=config.accessKey,
+            aws_secret_access_key=config.secretKey)
     end
 end
 

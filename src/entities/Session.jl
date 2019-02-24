@@ -16,13 +16,13 @@ The structure used for detailed session responses.
 """
 mutable struct SessionDetailsResponse
     sessionId::String
-    userId::String
-    robotId::String
+    userId::Union{Nothing, String}
+    robotId::Union{Nothing, String}
     environmentIds::Union{Nothing, Vector{String}}
     initialPoseType::String
     nodeCount::Int
     solveCount::Int
-    lastSolvedTimestamp::String
+    lastSolvedTimestamp::Union{Nothing, String}
     isSolverEnabled::Bool # If 1 then the ad-hoc solver will pick up on it, otherwise will ignore this session.
     shouldInitialize::Bool
     id::String
@@ -38,15 +38,15 @@ function show(io::IO, c::SessionDetailsResponse)
     println(io, "GraffSDK Session:")
     println(io, " - ID: $(c.id)")
     println(io, " - Description: $(c.description)")
-    println(io, " - User ID: $(c.userId)")
-    println(io, " - Robot ID: $(c.robotId)")
+    println(io, " - User ID: $(c.userId != nothing ? c.userId : "")")
+    println(io, " - Robot ID: $(c.robotId != nothing ? c.robotId : "")")
     println(io, " - Environments: $(c.environmentIds != nothing ? c.environmentIds : "")")
     println(io, " - Initial Pose Type: $(c.initialPoseType)")
     println(io, " - Node Count: $(c.nodeCount)")
     println(io, " - Solver Enabled: $(c.isSolverEnabled)")
     println(io, " - Solve Count: $(c.solveCount)")
     println(io, " - Created: $(c.createdTimestamp)")
-    println(io, " - Last Solved: $(c.lastSolvedTimestamp)")
+    println(io, " - Last Solved: $(c.lastSolvedTimestamp != nothing ? c.lastSolvedTimestamp : "")")
     # println(io, " - Last Solved Result: $(c.lastSolvedResult != nothing ? c.lastSolvedResult : "")")
 end
 
