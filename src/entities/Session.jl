@@ -72,35 +72,14 @@ mutable struct NodeResponse
     id::Int
     label::String
     mapEst::Union{Nothing, Vector{Float64}}
-    links::Dict{String, String}
+    createdTimestamp::String
+    lastUpdatedTimestamp::String
+    links::Dict{String, Any}
 end
 
 function show(io::IO, n::NodeResponse)
     println(io, "GraffSDK Node - ID: $(n.id), label: $(n.label), mapEst: $(n.mapEst != nothing ? n.mapEst : "nothing")")
 end
-
-# function show(io::IO, obj::NodeResponse)
-#     print("\r\nNode: \r\n - ID: $(obj.id)\r\n  - Name: $(obj.name)")
-# end
-
-"""
-The structure used to briefly describe a set of nodes in a response.
-"""
-mutable struct NodesResponse
-    nodes::Vector{NodeResponse}
-    links::Dict{String, String}
-end
-
-function show(io::IO, n::NodesResponse)
-    println(io, "GraffSDK Nodes (count = $(length(n.nodes))):")
-    for node in n.nodes
-        print(io, " - $node")
-    end
-end
-
-# function show(io::IO, obj::NodesResponse)
-#     print("\r\n$(obj.nodes)")
-# end
 
 """
 The structure describing a complete node in a response.

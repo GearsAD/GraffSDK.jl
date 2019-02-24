@@ -1,7 +1,8 @@
 using Mocking
 
-userEndpoint = "api/v0/users/{1}"
-configEndpoint = "api/v0/users/{1}/config"
+curVersion = "v0"
+userEndpoint = "api/$(curVersion)/users/{1}"
+configEndpoint = "api/$(curVersion)/users/{1}/config"
 
 """
 $(SIGNATURES)
@@ -37,7 +38,7 @@ function getUser(userId::String)::UserResponse
     if(response.status != 200)
         error("Error getting user, received $(response.status) with body '$(body)'.")
     end
-    return _unmarshallWithLinks(body, UserResponse)
+    return JSON2.read(body, UserResponse)
 end
 
 """

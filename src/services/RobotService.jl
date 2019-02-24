@@ -1,12 +1,13 @@
-robotsEndpoint = "api/v0/users/{1}/robots"
-robotEndpoint = "api/v0/users/{1}/robots/{2}"
+curVersion = "v0"
+robotsEndpoint = "api/$(curVersion)/users/{1}/robots"
+robotEndpoint = "api/$(curVersion)/users/{1}/robots/{2}"
 
 """
 $(SIGNATURES)
 Gets all robots managed by the specified user.
 Return: A vector of robots for a given user.
 """
-function getRobots()::RobotsResponse
+function getRobots()::Vector{RobotResponse}
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -18,12 +19,7 @@ function getRobots()::RobotsResponse
         error("Error getting robots, received $(response.status) with body '$(String(response.body))'.")
     end
     # Some manual effort done here because it's a vector response.
-    rawRobots = JSON.parse(String(response.body))
-    robots = RobotsResponse(Vector{RobotResponse}(), rawRobots["links"])
-    for robot in rawRobots["robots"]
-        robot = _unmarshallWithLinks(JSON.json(robot), RobotResponse)
-        push!(robots.robots, robot)
-    end
+    robots = JSON2.read(String(response.body), Vector{RobotResponse})
     return robots
 end
 
@@ -32,12 +28,13 @@ $(SIGNATURES)
 Return: Returns true if the robot exists already.
 """
 function isRobotExisting(robotId::String)::Bool
-    config = getGraffConfig()
-    if config == nothing
-        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    url = "$(config.apiEndpoint)/$(format(robotEndpoint, config.userId, robotId))/exists"
+    response = @mock _sendRestRequest(config, HTTP.get, url)
+    body = String(response.body)
+    if(response.status != 200)
+        error("Error getting robot existence, received $(response.status) with body '$body'.")
     end
-    robots = getRobots()
-    return robotId in map(robot -> robot.id, robots.robots)
+    return lowercase(body) == "true"
 end
 
 """
@@ -75,7 +72,7 @@ function getRobot(robotId::String)::RobotResponse
     if(response.status != 200)
         error("Error getting robot, received $(response.status) with body '$body'.")
     end
-    return _unmarshallWithLinks(body, RobotResponse)
+    return JSON2.read(body, RobotResponse)
 end
 
 """
@@ -155,17 +152,17 @@ $(SIGNATURES)
 Will retrieve the robot configuration (user settings) for the given robot ID.
 Return: The robot config for the provided user ID and robot ID.
 """
-function getRobotConfig(robotId::String)::Dict{Any, Any}
+function getRobotConfig(robotId::String)::String
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
     end
     url = "$(config.apiEndpoint)/$(format(robotEndpoint, config.userId, robotId))/config"
     response = @mock _sendRestRequest(config, HTTP.get, url)
-    if(response.status != 200)
+    if(response.status != 200 && response.status != 204)
         error("Error getting robot, received $(response.status) with body '$(String(response.body))'.")
     end
-    return JSON.parse(String(response.body))
+    return String(response.body)
 end
 
 """
@@ -173,7 +170,7 @@ $(SIGNATURES)
 Will retrieve the robot configuration (user settings) for the default robot ID.
 Return: The robot config for the provided user ID and robot ID.
 """
-function getRobotConfig()::Dict{Any, Any}
+function getRobotConfig()::String
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -191,7 +188,7 @@ $(SIGNATURES)
 Update a robot configuration.
 Return: The updated robot configuration from the service.
 """
-function updateRobotConfig(robotId::String, robotConfig::Dict{Any, Any})::Dict{Any, Any}
+function updateRobotConfig(robotId::String, robotConfig::String)::String
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -201,7 +198,7 @@ function updateRobotConfig(robotId::String, robotConfig::Dict{Any, Any})::Dict{A
     if(response.status != 200)
         error("Error updating robot config, received $(response.status) with body '$(String(response.body))'.")
     end
-    return JSON.parse(String(response.body))
+    return String(response.body)
 end
 
 """
@@ -209,7 +206,7 @@ $(SIGNATURES)
 Update a robot configuration.
 Return: The updated robot configuration from the service.
 """
-function updateRobotConfig(robotConfig::Dict{Any, Any})::Dict{Any, Any}
+function updateRobotConfig(robotConfig::String)::String
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")

@@ -157,11 +157,11 @@ export RobotRequest, RobotResponse, RobotsResponse, getRobots, isRobotExisting, 
 export SessionsResponse, SessionResponse, SessionDetailsRequest, SessionDetailsResponse, addSession, getSessions, isSessionExisting, getSession, deleteSession, putReady, requestSessionSolve
 export getSessionBacklog, getSessionDeadQueueLength, getSessionDeadQueueMessages, reprocessDeadQueueMessages, deleteDeadQueueMessages
 export BigDataElementRequest, BigDataEntryResponse, BigDataElementResponse
-export getDataEntries, getDataEntriesForSession, getData, getRawData, setData, deleteData
+export getDataEntries, getSessionDataEntries, getData, getRawData, setData, deleteData
 export exportSessionJld
 export getLandmarks, getEstimates
 export encodeJsonData, encodeBinaryData, readFileIntoDataRequest, isSafeToJsonSerialize
-export NodeResponse, NodesResponse, BigDataElementResponse, NodeDetailsResponse, getNodes, ls, getNode
+export NodeResponse, NodesResponse, BigDataElementResponse, NodeDetailsResponse, getVariables, ls, getVariable
 export AddOdometryRequest, AddOdometryResponse, NodeResponseInfo, addOdometryMeasurement
 export VariableRequest, VariableResponse, BearingRangeRequest, BearingRangeResponse, DistributionRequest, FactorBody, FactorRequest, addVariable, addBearingRangeFactor, addFactor
 # export VisualizationRequest, visualizeSession
