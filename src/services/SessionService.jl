@@ -234,12 +234,12 @@ $(SIGNATURES)
 Gets all nodes for a given session.
 Return: A vector of nodes for a given robot.
 """
-function getVariables(robotId::String, sessionId::String)::Vector{NodeResponse}
+function getVariables(robotId::String, sessionId::String; details=false)::Vector{NodeResponse}
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
     end
-    url = "$(config.apiEndpoint)/$(format(variablesEndpoint, config.userId, robotId, sessionId))"
+    url = "$(config.apiEndpoint)/$(format(variablesEndpoint, config.userId, robotId, sessionId))$(details ? "?details=true" : "")"
     response = @mock _sendRestRequest(config, HTTP.get, url)
     if(response.status != 200)
         error("Error getting sessions, received $(response.status) with body '$(String(response.body))'.")
@@ -256,7 +256,7 @@ $(SIGNATURES)
 Gets all nodes for a given session.
 Return: A vector of nodes for a given robot.
 """
-function getVariables()::Vector{NodeResponse}
+function getVariables(;details=false)::Vector{NodeResponse}
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -265,7 +265,7 @@ function getVariables()::Vector{NodeResponse}
         error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
     end
 
-    return getVariables(config.robotId, config.sessionId)
+    return getVariables(config.robotId, config.sessionId; details=details)
 end
 
 """
@@ -274,8 +274,8 @@ Gets all nodes for a given session.
 Return: A vector of nodes for a given robot.
 Alias for convenience.
 """
-function ls()::Vector{NodeResponse}
-    return getVariables()
+function ls(;details=false)::Vector{NodeResponse}
+    return getVariables(details=details)
 end
 
 """
