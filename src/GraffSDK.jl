@@ -100,6 +100,7 @@ include("./entities/Data.jl")
 include("./services/DataHelpers.jl")
 include("./services/SessionService.jl")
 include("./services/StatusService.jl")
+include("./services/QueueService.jl")
 
 include("./services/HelperFunctionService.jl")
 
