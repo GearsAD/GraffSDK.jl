@@ -3,7 +3,7 @@ $(SIGNATURES)
 Returns a summary list of all landmarks for a given robot and session.
 """
 function getLandmarks(robotId::String, sessionId::String)::Vector{NodeResponse}
-    landmarkList = filter(n -> occursin(r"[l][0-9]+", n.label), getNodes().nodes)
+    landmarkList = filter(n -> occursin(r"[l][0-9]+", n.label), getVariables().nodes)
     return landmarkList
 end
 
@@ -31,7 +31,7 @@ Gets the estimates (if available) for a session or a filtered list if one is pro
 function getEstimates(robotId::String, sessionId::String, nodes::Union{Vector{Union{String, Symbol}}, Vector{NodeResponse}, Nothing}=nothing)::Dict{String, Union{Array{Float64}, Nothing}}
     if nodes == nothing
         # Easy solve
-        nodes = getNodes(robotId, sessionId)
+        nodes = getVariables(robotId, sessionId)
         nodes = nodes.nodes
         return Dict(map(n -> n.label, nodes) .=> map(n -> n.mapEst, nodes))
     end
@@ -40,8 +40,8 @@ function getEstimates(robotId::String, sessionId::String, nodes::Union{Vector{Un
     end
     # Cleaning up if symbols
     nodes = map(n -> String(n), nodes)
-    # Now do a getNodes
-    respNodes = getNodes(robotId, sessionId).nodes
+    # Now do a getVariables
+    respNodes = getVariables(robotId, sessionId).nodes
     respDict = Dict(map(n -> n.label, respNodes) .=> map(n -> n.mapEst, respNodes))
     # And map them - keeping order.
     ests = Dict{String, Union{Array{Any}, Nothing}}()
