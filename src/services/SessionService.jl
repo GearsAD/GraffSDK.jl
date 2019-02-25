@@ -209,7 +209,7 @@ function addSession(robotId::String, session::SessionDetailsRequest)::SessionDet
     if(response.status != 200)
         error("Error creating session, received $(response.status) with body '$(String(response.body))'.")
     end
-    @show body = String(response.body)
+    body = String(response.body)
     return JSON2.read(body, SessionDetailsResponse)
 end
 
