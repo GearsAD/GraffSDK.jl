@@ -1,6 +1,6 @@
 using Mocking
 
-statusEndpoint = "api/v0/status"
+statusEndpoint = "api/$curApiVersion/status"
 
 """
 $(SIGNATURES)

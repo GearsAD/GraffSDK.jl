@@ -14,13 +14,15 @@ end
 The structure returned when any robot requests are made.
 """
 mutable struct RobotResponse
+  robotId::String
+  userId::Union{Nothing, String}
+  status::String
   id::String
   name::String
   description::String
-  status::String
   createdTimestamp::String
   lastUpdatedTimestamp::String
-  links::Dict{String, String}
+  links::Dict{String, Any}
 end
 
 function show(io::IO, r::RobotResponse)
@@ -31,19 +33,4 @@ function show(io::IO, r::RobotResponse)
     println(io, "   - Status: $(r.status)")
     println(io, "   - Created: $(r.createdTimestamp)")
     println(io, "   - Last Updated: $(r.lastUpdatedTimestamp)")
-end
-
-"""
-A list of robots provided by the /robots request.
-"""
-struct RobotsResponse
-    robots::Vector{RobotResponse}
-    links::Dict{String, String}
-end
-
-function show(io::IO, r::RobotsResponse)
-    println(io, "GraffSDK Robots (count = $(length(r.robots))):")
-    for robot in r.robots
-        print(io, " - $robot")
-    end
 end

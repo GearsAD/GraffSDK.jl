@@ -11,6 +11,10 @@ using Requires
 
 import Base.show
 
+
+curApiVersion = "v0b"
+
+
 # Base includes
 include("./entities/GraffSDK.jl")
 
@@ -56,8 +60,7 @@ function loadGraffConfig(;filename::String="",
         configData = read(configFile, String)
         close(configFile)
     end
-    configData = JSON.parse(configData)
-    config = Unmarshal.unmarshal(GraffConfig, configData)
+    config = JSON2.read(configData, GraffConfig)
 
     :apiEndpoint in consoleParams ? (println("API Endpoint: "); config.apiEndpoint = readline(stdin);) : nothing
     :accessKey in consoleParams ? (println("Access Key: "); config.accessKey = readline(stdin);) : nothing
@@ -100,6 +103,7 @@ include("./entities/Data.jl")
 include("./services/DataHelpers.jl")
 include("./services/SessionService.jl")
 include("./services/StatusService.jl")
+include("./services/QueueService.jl")
 
 include("./services/HelperFunctionService.jl")
 
@@ -118,21 +122,21 @@ end
 $SIGNATURES
 Produces the authorization and sends the REST request.
 """
-function _sendRestRequest(synchronyConfig::GraffConfig, verbFunction, url::String; data::String="", headers::Dict{String, String}=Dict{String, String}(), debug::Bool=false)::HTTP.Response
+function _sendRestRequest(config::GraffConfig, verbFunction, url::String; data::String="", headers::Dict{String, String}=Dict{String, String}(), debug::Bool=false)::HTTP.Response
     if length(headers) == 0 && data == "" # Special case for HTTP.delete
         verbFunction(url;
             aws_authorization=true,
             aws_service="execute-api",
-            aws_region=synchronyConfig.region,
-            aws_access_key_id=synchronyConfig.accessKey,
-            aws_secret_access_key=synchronyConfig.secretKey)
+            aws_region=config.region,
+            aws_access_key_id=config.accessKey,
+            aws_secret_access_key=config.secretKey)
     else
         verbFunction(url, headers, data;
             aws_authorization=true,
             aws_service="execute-api",
-            aws_region=synchronyConfig.region,
-            aws_access_key_id=synchronyConfig.accessKey,
-            aws_secret_access_key=synchronyConfig.secretKey)
+            aws_region=config.region,
+            aws_access_key_id=config.accessKey,
+            aws_secret_access_key=config.secretKey)
     end
 end
 
@@ -157,11 +161,11 @@ export RobotRequest, RobotResponse, RobotsResponse, getRobots, isRobotExisting, 
 export SessionsResponse, SessionResponse, SessionDetailsRequest, SessionDetailsResponse, addSession, getSessions, isSessionExisting, getSession, deleteSession, putReady, requestSessionSolve
 export getSessionBacklog, getSessionDeadQueueLength, getSessionDeadQueueMessages, reprocessDeadQueueMessages, deleteDeadQueueMessages
 export BigDataElementRequest, BigDataEntryResponse, BigDataElementResponse
-export getDataEntries, getDataEntriesForSession, getData, getRawData, setData, deleteData
+export getDataEntries, getSessionDataEntries, getData, getRawData, setData, deleteData
 export exportSessionJld
 export getLandmarks, getEstimates
 export encodeJsonData, encodeBinaryData, readFileIntoDataRequest, isSafeToJsonSerialize
-export NodeResponse, NodesResponse, BigDataElementResponse, NodeDetailsResponse, getNodes, ls, getNode
+export NodeResponse, NodesResponse, BigDataElementResponse, NodeDetailsResponse, getVariables, ls, getVariable
 export AddOdometryRequest, AddOdometryResponse, NodeResponseInfo, addOdometryMeasurement
 export VariableRequest, VariableResponse, BearingRangeRequest, BearingRangeResponse, DistributionRequest, FactorBody, FactorRequest, addVariable, addBearingRangeFactor, addFactor
 # export VisualizationRequest, visualizeSession

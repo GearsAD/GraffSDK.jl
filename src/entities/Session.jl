@@ -15,34 +15,38 @@ end
 The structure used for detailed session responses.
 """
 mutable struct SessionDetailsResponse
-    id::String
-    description::String
-    robotId::String
-    userId::String
+    sessionId::String
+    userId::Union{Nothing, String}
+    robotId::Union{Nothing, String}
+    environmentIds::Union{Nothing, Vector{String}}
     initialPoseType::String
     nodeCount::Int
     solveCount::Int
+    lastSolvedTimestamp::Union{Nothing, String}
+    isSolverEnabled::Bool # If 1 then the ad-hoc solver will pick up on it, otherwise will ignore this session.
+    shouldInitialize::Bool
+    id::String
+    description::String
     # lastSolvedResult::Union{Nothing, String}
     # solveTimes::Vector{Any}
     createdTimestamp::String
-    lastSolvedTimestamp::String # Can remove nullable as soon as we stabilize.
-    isSolverEnabled::Int # If 1 then the ad-hoc solver will pick up on it, otherwise will ignore this session.
-    links::Dict{String, String}
+    lastUpdatedTimestamp::String
+    links::Dict{String, Any}
 end
 
 function show(io::IO, c::SessionDetailsResponse)
     println(io, "GraffSDK Session:")
     println(io, " - ID: $(c.id)")
     println(io, " - Description: $(c.description)")
-    println(io, " - User ID: $(c.userId)")
-    println(io, " - Robot ID: $(c.robotId)")
-    # println(io, " - Environment: $(c.environment != nothing ? c.environment : "")")
+    println(io, " - User ID: $(c.userId != nothing ? c.userId : "")")
+    println(io, " - Robot ID: $(c.robotId != nothing ? c.robotId : "")")
+    println(io, " - Environments: $(c.environmentIds != nothing ? c.environmentIds : "")")
     println(io, " - Initial Pose Type: $(c.initialPoseType)")
     println(io, " - Node Count: $(c.nodeCount)")
     println(io, " - Solver Enabled: $(c.isSolverEnabled)")
     println(io, " - Solve Count: $(c.solveCount)")
     println(io, " - Created: $(c.createdTimestamp)")
-    println(io, " - Last Solved: $(c.lastSolvedTimestamp)")
+    println(io, " - Last Solved: $(c.lastSolvedTimestamp != nothing ? c.lastSolvedTimestamp : "")")
     # println(io, " - Last Solved Result: $(c.lastSolvedResult != nothing ? c.lastSolvedResult : "")")
 end
 
@@ -68,35 +72,14 @@ mutable struct NodeResponse
     id::Int
     label::String
     mapEst::Union{Nothing, Vector{Float64}}
-    links::Dict{String, String}
+    createdTimestamp::String
+    lastUpdatedTimestamp::String
+    links::Dict{String, Any}
 end
 
 function show(io::IO, n::NodeResponse)
     println(io, "GraffSDK Node - ID: $(n.id), label: $(n.label), mapEst: $(n.mapEst != nothing ? n.mapEst : "nothing")")
 end
-
-# function show(io::IO, obj::NodeResponse)
-#     print("\r\nNode: \r\n - ID: $(obj.id)\r\n  - Name: $(obj.name)")
-# end
-
-"""
-The structure used to briefly describe a set of nodes in a response.
-"""
-mutable struct NodesResponse
-    nodes::Vector{NodeResponse}
-    links::Dict{String, String}
-end
-
-function show(io::IO, n::NodesResponse)
-    println(io, "GraffSDK Nodes (count = $(length(n.nodes))):")
-    for node in n.nodes
-        print(io, " - $node")
-    end
-end
-
-# function show(io::IO, obj::NodesResponse)
-#     print("\r\n$(obj.nodes)")
-# end
 
 """
 The structure describing a complete node in a response.
@@ -105,11 +88,11 @@ mutable struct NodeDetailsResponse
     id::Int
     label::String
     sessionIndex::Int
-    type::String
+    type::Union{Nothing, String}
     properties::Dict{String, Any}
     packed::Dict{String, Any}
     labels::Vector{String}
-    links::Dict{String, String}
+    links::Dict{String, Any}
 end
 
 function show(io::IO, n::NodeDetailsResponse)

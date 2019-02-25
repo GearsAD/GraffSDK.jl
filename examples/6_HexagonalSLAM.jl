@@ -5,13 +5,13 @@ using GraffSDK
 using GraffSDK.DataHelpers
 using ProgressMeter
 using UUIDs
-
-# 1. Import the initialization code.
-cd(joinpath(dirname(pathof(GraffSDK)), "..", "examples"))
+using Caesar
 
 # 1a. Create a Configuration
 config = loadGraffConfig()
 config.sessionId = "HexDemoSample1_"*replace(string(uuid4())[1:6], "-" => "")
+# config.apiEndpoint = "http://174.129.80.136:5000"
+# config.apiEndpoint = "http://localhost:5000"
 
 println(getGraffConfig())
 
@@ -50,13 +50,19 @@ end
 println(session)
 
 # 4. Drive around in a hexagon
+addVariable(:x0, Pose2)
+# Add at a fixed location PriorPose2 to pin :x0 to a starting location (10,10, pi/4)
+addFactor([:x0], IIF.Prior( MvNormal([10; 10; pi/6.0], Matrix(Diagonal([0.1;0.1;0.05].^2)) )))
+
 # imgRequest = DataHelpers.readFileIntoDataRequest("pexels-photo-1004665.jpeg", "TestImage", "Pretty neat public domain image", "image/jpeg");
 println(" - Adding hexagonal driving pattern to session...")
-@showprogress for i in 1:6
-    deltaMeasurement = [10.0;0;pi/3]
-    pOdo = Float64[0.1 0 0; 0 0.1 0; 0 0 0.1]
-    println(" - Measurement $i: Adding new odometry measurement '$deltaMeasurement'...")
-    @time addOdometryMeasurement(deltaMeasurement, pOdo)
+@showprogress for i in 0:5
+    psym = Symbol("x$i")
+    nsym = Symbol("x$(i+1)")
+    addVariable(nsym, Pose2)
+
+    pp = Pose2Pose2(MvNormal([10.0;0;pi/3], Matrix(Diagonal([0.1;0.1;0.1].^2))))
+    addFactor([psym;nsym], pp )
     # println("  - Adding a simple (largish) image data to the pose...")
     # Adding image data
     # setData("x$i", imgRequest)
@@ -64,15 +70,11 @@ end
 
 # 5. Now lets add a couple landmarks
 # Ref: https://github.com/dehann/RoME.jl/blob/master/examples/Slam2dExample.jl#L35
-response = addVariable("l0", "Point2", ["LANDMARK", "TESTLABEL"])
-newBearingRangeFactor = BearingRangeRequest("x0", "l0",
-                          DistributionRequest("Normal", Float64[0; 0.1]),
-                          DistributionRequest("Normal", Float64[20; 1.0]))
-addBearingRangeFactor(newBearingRangeFactor)
-newBearingRangeFactor2 = BearingRangeRequest("x6", "l0",
-                           DistributionRequest("Normal", Float64[0; 0.1]),
-                           DistributionRequest("Normal", Float64[20; 1.0]))
-addBearingRangeFactor(newBearingRangeFactor2)
+response = addVariable(:l0, Point2)
+p2br2 = Pose2Point2BearingRange(Normal(0,0.1),Normal(20.0,1.0))
+addFactor([:x0; :l0], p2br2)
+addFactor([:x6; :l0], p2br2)
+
 # Landmarks generally require more work once they're created, e.g. creating factors,
 # so they are not set to ready by default. Once you've completed all the factor links and want to solve,
 # call putReady to tell the solver it can use the new nodes. This is added to the end of the processing queue.

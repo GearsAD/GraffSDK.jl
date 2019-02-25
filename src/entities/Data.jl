@@ -20,12 +20,12 @@ Summary of data entry returned from request.
 mutable struct BigDataEntryResponse
     id::String
     sourceId::String
-    nodeId::Union{Nothing, Int}
+    nodeId::Int
     sourceName::String
     description::String
     mimeType::String
     lastSavedTimestamp::String
-    links::Dict{String, String}
+    links::Union{Nothing, Dict{String, Any}}
 end
 
 function show(io::IO, c::BigDataEntryResponse)
