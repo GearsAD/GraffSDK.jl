@@ -10,8 +10,6 @@ using Caesar
 # 1a. Create a Configuration
 config = loadGraffConfig()
 config.sessionId = "HexDemoSample1_"*replace(string(uuid4())[1:6], "-" => "")
-# config.apiEndpoint = "http://174.129.80.136:5000"
-# config.apiEndpoint = "http://localhost:5000"
 
 println(getGraffConfig())
 
