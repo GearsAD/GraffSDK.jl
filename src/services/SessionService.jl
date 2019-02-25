@@ -1,22 +1,20 @@
-curVersion = "v0"
-sessionsEndpoint = "api/$curVersion/users/{1}/robots/{2}/sessions"
-sessionEndpoint = "api/$curVersion/users/{1}/robots/{2}/sessions/{3}"
-variablesEndpoint = "api/$curVersion/users/{1}/robots/{2}/sessions/{3}/variables"
+sessionsEndpoint = "api/$curApiVersion/users/{1}/robots/{2}/sessions"
+sessionEndpoint = "api/$curApiVersion/users/{1}/robots/{2}/sessions/{3}"
+variablesEndpoint = "api/$curApiVersion/users/{1}/robots/{2}/sessions/{3}/variables"
 variableLabelledEndpoint = "$variablesEndpoint/labelled/{4}"
 variableEndpoint = "$variablesEndpoint/{4}"
-factorsEndpoint = "api/$curVersion/users/{1}/robots/{2}/sessions/{3}/factors"
+factorsEndpoint = "api/$curApiVersion/users/{1}/robots/{2}/sessions/{3}/factors"
 factorEndpoint = "$factorsEndpoint/{4}"
 bigDataEndpoint = "$variablesEndpoint/{4}/data"
 bigDataElementEndpoint = "$bigDataEndpoint/{5}"
 bigDataRawElementEndpoint = "$bigDataEndpoint/{5}/raw"
+sessionReadyEndpoint = "api/$curApiVersion/users/{1}/robots/{2}/sessions/{3}/ready/{4}"
 
 odoEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/odometry"
-sessionReadyEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/ready/{4}"
 sessionSolveEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/solve"
 sessionQueueLengthEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/queue/status"
 sessionDeadQueueLengthEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/queue/dead"
 sessionExportJldEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/export/jld"
-variableEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/variables/{4}"
 bearingRangeEndpoint = "api/v0/users/{1}/robots/{2}/sessions/{3}/factors/bearingrange"
 
 """
@@ -63,6 +61,11 @@ $(SIGNATURES)
 Return: Returns true if the session exists already.
 """
 function isSessionExisting(robotId::String, sessionId::String)::Bool
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+
     url = "$(config.apiEndpoint)/$(format(sessionEndpoint, config.userId, robotId, sessionId))/exists"
     response = @mock _sendRestRequest(config, HTTP.get, url)
     body = String(response.body)

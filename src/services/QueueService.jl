@@ -1,6 +1,5 @@
-curVersion = "v0"
-sessionQueueLengthEndpoint = "api/$curVersion/users/{1}/robots/{2}/sessions/{3}/queue/status"
-sessionDeadQueueLengthEndpoint = "api/$curVersion/users/{1}/robots/{2}/sessions/{3}/queue/dead"
+sessionQueueLengthEndpoint = "api/$curApiVersion/users/{1}/robots/{2}/sessions/{3}/queue/status"
+sessionDeadQueueLengthEndpoint = "api/$curApiVersion/users/{1}/robots/{2}/sessions/{3}/queue/dead"
 
 """
 $(SIGNATURES)

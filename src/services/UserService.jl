@@ -1,8 +1,7 @@
 using Mocking
 
-curVersion = "v0"
-userEndpoint = "api/$(curVersion)/users/{1}"
-configEndpoint = "api/$(curVersion)/users/{1}/config"
+userEndpoint = "api/$curApiVersion/users/{1}"
+configEndpoint = "api/$curApiVersion/users/{1}/config"
 
 """
 $(SIGNATURES)

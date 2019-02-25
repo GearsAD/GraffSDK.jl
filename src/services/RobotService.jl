@@ -1,6 +1,5 @@
-curVersion = "v0"
-robotsEndpoint = "api/$(curVersion)/users/{1}/robots"
-robotEndpoint = "api/$(curVersion)/users/{1}/robots/{2}"
+robotsEndpoint = "api/$(curApiVersion)/users/{1}/robots"
+robotEndpoint = "api/$(curApiVersion)/users/{1}/robots/{2}"
 
 """
 $(SIGNATURES)
@@ -28,6 +27,11 @@ $(SIGNATURES)
 Return: Returns true if the robot exists already.
 """
 function isRobotExisting(robotId::String)::Bool
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+
     url = "$(config.apiEndpoint)/$(format(robotEndpoint, config.userId, robotId))/exists"
     response = @mock _sendRestRequest(config, HTTP.get, url)
     body = String(response.body)

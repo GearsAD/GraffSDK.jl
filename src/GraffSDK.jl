@@ -11,6 +11,10 @@ using Requires
 
 import Base.show
 
+
+curApiVersion = "v0b"
+
+
 # Base includes
 include("./entities/GraffSDK.jl")
 
@@ -56,8 +60,7 @@ function loadGraffConfig(;filename::String="",
         configData = read(configFile, String)
         close(configFile)
     end
-    configData = JSON.parse(configData)
-    config = Unmarshal.unmarshal(GraffConfig, configData)
+    config = JSON2.read(configData, GraffConfig)
 
     :apiEndpoint in consoleParams ? (println("API Endpoint: "); config.apiEndpoint = readline(stdin);) : nothing
     :accessKey in consoleParams ? (println("Access Key: "); config.accessKey = readline(stdin);) : nothing
