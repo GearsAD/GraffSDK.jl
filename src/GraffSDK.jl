@@ -98,10 +98,14 @@ include("./services/RobotService.jl")
 
 include("./entities/Data.jl")
 include("./entities/Session.jl")
+include("./entities/Factor.jl")
+
 include("./services/DataHelpers.jl")
 include("./services/SessionService.jl")
 include("./services/StatusService.jl")
 include("./services/QueueService.jl")
+
+
 
 include("./services/HelperFunctionService.jl")
 
@@ -166,10 +170,7 @@ export encodeJsonData, encodeBinaryData, readFileIntoDataRequest, isSafeToJsonSe
 export NodeResponse, NodesResponse, BigDataElementResponse, NodeDetailsResponse, getVariables, ls, getVariable
 export AddOdometryRequest, AddOdometryResponse, NodeResponseInfo, addOdometryMeasurement
 export VariableRequest, VariableResponse, BearingRangeRequest, BearingRangeResponse, DistributionRequest, FactorBody, FactorRequest, addVariable, addBearingRangeFactor, addFactor
-# export VisualizationRequest, visualizeSession
-# For testing
-export _unmarshallWithLinks
-export nodeDetail2ExVertex
+export FactorSummary, getVariableFactors
 
 ## REGION: Optional Add-Ins
 

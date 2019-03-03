@@ -365,6 +365,46 @@ end
 
 """
 $(SIGNATURES)
+Gets a node's factors by its ID.
+Return: List of factor summaries.
+"""
+function getVariableFactors(robotId::String, sessionId::String, variableId::Union{Int, NodeDetailsResponse, NodeResponse})::Vector{FactorSummary}
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    if(typeof(variableId) in [NodeDetailsResponse, NodeResponse])
+        variableId = variableId.id
+    end
+    url = "$(config.apiEndpoint)/$(format(variableEndpoint, config.userId, robotId, sessionId, variableId))/factors"
+    response = @mock _sendRestRequest(config, HTTP.get, url)
+    if(response.status != 200)
+        error("Error getting factors, received $(response.status) with body '$(String(response.body))'.")
+    end
+    body = String(response.body)
+    factors = JSON2.read(body, Vector{FactorSummary})
+    return factors
+end
+
+"""
+$(SIGNATURES)
+Gets a node's factors by its ID.
+Return: List of factor summaries.
+"""
+function getVariableFactors(variableId::Union{Int, NodeDetailsResponse, NodeResponse})::Vector{FactorSummary}
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    if config.robotId == "" || config.sessionId == ""
+        error("Your config doesn't have a robot or a session specified, please attach your config to a valid robot or session by setting the robotId and sessionId fields. Robot = $(config.robotId), Session = $(config.sessionId)")
+    end
+
+    return getVariableFactors(config.robotId, config.sessionId, variableId)
+end
+
+"""
+$(SIGNATURES)
 Set the ready status for a session.
 """
 function putReady(robotId::String, sessionId::String, isReady::Bool)::Nothing
