@@ -11,9 +11,7 @@ using Requires
 
 import Base.show
 
-
 curApiVersion = "v0b"
-
 
 # Base includes
 include("./entities/GraffSDK.jl")
@@ -98,12 +96,16 @@ include("./services/UserService.jl")
 include("./entities/Robot.jl")
 include("./services/RobotService.jl")
 
-include("./entities/Session.jl")
 include("./entities/Data.jl")
+include("./entities/Session.jl")
+include("./entities/Factor.jl")
+
 include("./services/DataHelpers.jl")
 include("./services/SessionService.jl")
 include("./services/StatusService.jl")
 include("./services/QueueService.jl")
+
+
 
 include("./services/HelperFunctionService.jl")
 
@@ -122,7 +124,7 @@ end
 $SIGNATURES
 Produces the authorization and sends the REST request.
 """
-function _sendRestRequest(config::GraffConfig, verbFunction, url::String; data::String="", headers::Dict{String, String}=Dict{String, String}(), debug::Bool=false)::HTTP.Response
+function _sendRestRequest(config::GraffConfig, verbFunction, url::String; data::Union{String, Vector{UInt8}}="", headers::Dict{String, String}=Dict{String, String}(), debug::Bool=false)::HTTP.Response
     if length(headers) == 0 && data == "" # Special case for HTTP.delete
         verbFunction(url;
             aws_authorization=true,
@@ -168,10 +170,7 @@ export encodeJsonData, encodeBinaryData, readFileIntoDataRequest, isSafeToJsonSe
 export NodeResponse, NodesResponse, BigDataElementResponse, NodeDetailsResponse, getVariables, ls, getVariable
 export AddOdometryRequest, AddOdometryResponse, NodeResponseInfo, addOdometryMeasurement
 export VariableRequest, VariableResponse, BearingRangeRequest, BearingRangeResponse, DistributionRequest, FactorBody, FactorRequest, addVariable, addBearingRangeFactor, addFactor
-# export VisualizationRequest, visualizeSession
-# For testing
-export _unmarshallWithLinks
-export nodeDetail2ExVertex
+export FactorSummary, getVariableFactors
 
 ## REGION: Optional Add-Ins
 

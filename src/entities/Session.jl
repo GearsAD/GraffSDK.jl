@@ -8,7 +8,7 @@ mutable struct SessionDetailsRequest
     description::String
     initialPoseType::String
     shouldInitialize::Bool
-    SessionDetailsRequest(id::String, description::String, initialPoseType::String="Pose2", shouldInitialize::Bool=true) = new(id, description, initialPoseType, shouldInitialize)
+    SessionDetailsRequest(id::String, description::String, initialPoseType::String="Pose2", shouldInitialize::Bool=false) = new(id, description, initialPoseType, shouldInitialize)
 end
 
 """
@@ -85,21 +85,26 @@ end
 The structure describing a complete node in a response.
 """
 mutable struct NodeDetailsResponse
+    dataEntries::Union{Nothing, Vector{BigDataEntryResponse}}
+    type::String
+    packed::Dict{String, Any}
+    smalldata::String
+    ready::Int
+    backendset::Int
     id::Int
     label::String
-    sessionIndex::Int
-    type::Union{Nothing, String}
-    properties::Dict{String, Any}
-    packed::Dict{String, Any}
-    labels::Vector{String}
-    links::Dict{String, Any}
+    mapEst::Union{Nothing, Vector{Float64}}
+    createdTimestamp::String
+    lastUpdatedTimestamp::String
+    tags::Vector{String}
+    # links::Union{Nothing, Dict{String, Any}}
 end
 
 function show(io::IO, n::NodeDetailsResponse)
     println(io, "GraffSDK Node:")
     println(io, " - ID: $(n.id)")
     println(io, " - Label: $(n.label)")
-    println(io, " - Graph Labels: $(n.labels)")
+    println(io, " - Graph Labels: $(n.tags)")
 end
 
 """

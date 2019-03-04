@@ -1,75 +1,50 @@
 using GraffSDK
+using GraffSDK.DataHelpers
+using ProgressMeter
+using UUIDs
+using Caesar
 
-# Example to show a user can retrieve node summaries from the server using the SynchronySDK
+# 1a. Create a Configuration
+config = loadGraffConfig()
+# config.sessionId = "HexDemoSample1_"*replace(string(uuid4())[1:6], "-" => "")
+config.sessionId = "HexDemoSample1_3529fd"
 
-# 1. Import the initialization code
-# This will create a synchronyConfig structure.
-cd(joinpath(Pkg.dir("GraffSDK"),"examples"))
-include("0_Initialization.jl")
-config = loadGraffConfig("synchronyConfig.json")
-config.sessionId = "HexDemoSample1"
+println(getGraffConfig())
 
-# 2a. Get all node summaries in the default session
-nodes = getNodes()
-if length(nodes.nodes) == 0
-    error("The current session '$(config.sessionId)' doesn't contain any nodes, so this example won't be able to continue. Please run either 6_HexagonalSlam.jl or another example to populate data in this session.")
+# 1b. Check the credentials and the service status
+printStatus()
+# 1c. Check the session queue length
+@info "Session backlog (queue length) = $(getSessionBacklog())"
+
+# Variable data
+GraffSDK.ls()
+x0 = getVariable(:x0)
+x0.packed
+x0.type
+
+## Getting all data entries for the whole session.
+sessionDataEntries = getSessionDataEntries()
+
+## Getting individual elements
+# By variable
+dataEntries = getDataEntries(getVariable(:x1))
+@info dataEntries
+dataEntry = GraffSDK.getData(getVariable("x1"), dataEntries[1])
+# This is raw bytestream now, but we can convert it if we know it's JSON.
+if dataEntry.mimeType == "application/json"
+    @info String(dataEntry.data)
 end
-println("We retrieved the nodes summary for this session, containing $(length(nodes.nodes)) nodes.")
-println("Node summaries contain minimal information about a node, i.e. only the following information:\r\n$(fieldnames(nodes.nodes[1]))")
-println()
+dataEntry = GraffSDK.getData(getVariable("x1"), dataEntries[2])
+# TODO: Show as PNG
 
-# 2b. Retrieving details on the first node
-println("Let's focus on the first node, which is named '$(nodes.nodes[1].label)', and retrieve more detail...")
-exampleNode = getNode(nodes.nodes[1].id)
-println("Node details contain more information, namely:\r\n$(fieldnames(exampleNode))")
-println("We can expand properties to see what is associated with the graph-portion of the node:")
-exampleNode.properties
-println("We can also look more into the solver information, which is stored in packed:")
-exampleNode.packed
-println("Lastly, we can look at more REST-like information, which is found in links:")
-exampleNode.links
-println()
+## Making a new element
+# Now lets make a new element
+newElement = BigDataElementRequest(
+    "NewElement"*replace(string(uuid4())[1:6], "-" => ""),
+    "Mongo", "A simple description", rand(UInt8, 100), "application/octet-stream")
+GraffSDK.setData(getVariable("x1"), newElement)
+dataEntries = getDataEntries(getVariable(:x1))
+# Now let's get it back...
+dataEntry = GraffSDK.getData(getVariable("x1"), newElement.id)
 
-# 3. Adding and retrieving data from the nodes
-println("We can now check if there is any sensory data associated with a node by getting the data link...")
-dataEntries = getDataEntries(exampleNode.id)
-println("There are currently $(length(dataEntries)) data entries associated with this node.")
-map(entry -> println(" - $entry"), dataEntries)
-println()
-
-println("Let's add or update data to it in a couple ways...")
-println(" - A simple JSON encoding example:")
-struct TestStruct
-    aString::String
-    bInt::Int
-    cDouble::Float64
-    dDict::Dict{String, String}
-end
-testJsonStruct = TestStruct("A String", 5, 64.41, Dict{String, String}("aTest" => "testing", "bTest" => "Something Else"))
-dataJsonRequest = DataHelpers.encodeJsonData("TestJSON", "A test JSON structure", testJsonStruct)
-# Now send it
-addOrUpdateDataElement(robotId, sessionId, exampleNode.id, dataJsonRequest)
-println()
-
-println("Done! Now let's retrieve it...")
-getElementJson = getDataElement(robotId, sessionId, exampleNode.id, dataJsonRequest.id)
-println(" - Retrieved data for ID '$(dataJsonRequest.id)': $(JSON.parse(getElementJson.data))")
-println(" - Updated timestamp: $(getElementJson.lastSavedTimestamp)")
-println()
-
-println("We can also get the raw data directly, MIME type already applied, which is great for web browsers...")
-rawData = getRawDataElement(robotId, sessionId, exampleNode.id, dataJsonRequest.id)
-println(" - Raw data: $rawData")
-println()
-
-println("Let's do something more exciting - upload an image against a node...")
-cd(joinpath(Pkg.dir("SynchronySDK"),"examples"))
-imgRequest = DataHelpers.readFileIntoDataRequest("pexels-photo-1004665.jpeg", "TestImage", "Pretty neat public domain image", "image/jpeg");
-addOrUpdateDataElement(robotId, sessionId, exampleNode.id, imgRequest)
-println()
-
-println("Images are Base64 encoded so that they can be transmitted, and when retrieved using the 'raw' endpoint, they are automatically Base64 decoded. The API calls don't perform automatic decoding though, so you will have to follow these steps:")
-getElementImg = getDataElement(robotId, sessionId, exampleNode.id, imgRequest.id);
-println(" - Retrieved data for ID '$(getElementImg.id)': $(floor(length(getElementImg.data)/1024)) kb")
-println(" - Updated timestamp: $(getElementImg.lastSavedTimestamp)")
-println()
+# Kablam!!! :D

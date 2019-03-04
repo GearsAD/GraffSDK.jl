@@ -5,9 +5,9 @@ mutable struct BigDataElementRequest
     id::String
     sourceName::String
     description::String
-    data::String
+    data::Vector{UInt8}
     mimeType::String
-    BigDataElementRequest(id::String, sourceName::String, description::String, data::String, mimeType::String="application/octet-stream") = new(id, sourceName, description, data, mimeType)
+    BigDataElementRequest(id::String, sourceName::String, description::String, data::Vector{UInt8}, mimeType::String="application/octet-stream") = new(id, sourceName, description, data, mimeType)
 end
 
 function show(io::IO, c::BigDataElementRequest)
@@ -33,20 +33,14 @@ function show(io::IO, c::BigDataEntryResponse)
 end
 
 """
-Complete data element response (including data).
+Complete data element response.
 """
 mutable struct BigDataElementResponse
     id::String
-    sourceId::String
-    nodeId::Union{Nothing, Int}
-    sourceName::String
-    description::String
-    data::String
     mimeType::String
-    lastSavedTimestamp::String
-    links::Dict{String, String}
+    data::Union{Nothing, Vector{UInt8}}
 end
 
 function show(io::IO, c::BigDataElementResponse)
-    println(io, "Graff Data Element Response: ID = $(c.id), MIME type = $(c.mimeType), length = $(length(c.data)), description = $(c.description)")
+    println(io, "Graff Data Element Response: ID = $(c.id), MIME type = $(c.mimeType), length = $(length(c.data))")
 end
