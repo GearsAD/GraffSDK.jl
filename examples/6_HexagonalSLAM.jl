@@ -10,7 +10,6 @@ using Caesar
 # 1a. Create a Configuration
 config = loadGraffConfig()
 config.sessionId = "HexDemoSample1_"*replace(string(uuid4())[1:6], "-" => "")
-
 println(getGraffConfig())
 
 # 1b. Check the credentials and the service status
@@ -52,18 +51,15 @@ addVariable(:x0, Pose2)
 # Add at a fixed location PriorPose2 to pin :x0 to a starting location (10,10, pi/4)
 addFactor([:x0], IIF.Prior( MvNormal([10; 10; pi/6.0], Matrix(Diagonal([0.1;0.1;0.05].^2)) )))
 
-# imgRequest = DataHelpers.readFileIntoDataRequest("pexels-photo-1004665.jpeg", "TestImage", "Pretty neat public domain image", "image/jpeg");
 println(" - Adding hexagonal driving pattern to session...")
-@showprogress for i in 0:5
-    psym = Symbol("x$i")
-    nsym = Symbol("x$(i+1)")
+numVariables = 6
+@showprogress for i in 1:numVariables
+    psym = Symbol("x$(i-1)")
+    nsym = Symbol("x$(i)")
     addVariable(nsym, Pose2)
 
     pp = Pose2Pose2(MvNormal([10.0;0;pi/3], Matrix(Diagonal([0.1;0.1;0.1].^2))))
     addFactor([psym;nsym], pp )
-    # println("  - Adding a simple (largish) image data to the pose...")
-    # Adding image data
-    # setData("x$i", imgRequest)
 end
 
 # 5. Now lets add a couple landmarks
@@ -99,8 +95,19 @@ end
 # reprocessDeadQueueMessages()
 # deleteDeadQueueMessages()
 
+# Now add some data - we need to make this asynchronous as well. ASAP
+imgRequest = DataHelpers.readFileIntoDataRequest(joinpath(dirname(pathof(GraffSDK)), "..", "examples", "pexels-photo-1004665.jpeg"), "TestImage", "Pretty neat public domain image", "image/jpeg");
+@showprogress for i in 1:numVariables
+    println("  - Adding a simple (largish) image data to the pose x$(i)...")
+    # Adding image data
+    setData("x$i", imgRequest)
+end
+
 # Now get a list of all the variables in the graph
 @time nodes = GraffSDK.ls()
+
+# Get all data
+getSessionDataEntries()
 
 # Get the estimates to see how far along it is (this just retrieves node.properties["MAP_est"])
 # but simplifies getting info
