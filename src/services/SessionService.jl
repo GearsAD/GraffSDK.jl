@@ -879,7 +879,7 @@ function setData(robotId::String, sessionId::String, node::Union{Int, String, Sy
         if __forceOnlyLocalCache # Emtpy out the data if it's only going local.
             @debug "Cleaning out data because forcing local cache, only saving entry..."
             bigDataElement = deepcopy(bigDataElement)
-            bigDataElement.data = ""
+            bigDataElement.data = Vector{UInt8}
         end
     end
 
