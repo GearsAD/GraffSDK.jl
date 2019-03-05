@@ -96,8 +96,8 @@ mutable struct NodeDetailsResponse
     mapEst::Union{Nothing, Vector{Float64}}
     createdTimestamp::String
     lastUpdatedTimestamp::String
+    links::Union{Nothing, Dict{String, Any}}
     tags::Vector{String}
-    # links::Union{Nothing, Dict{String, Any}}
 end
 
 function show(io::IO, n::NodeDetailsResponse)

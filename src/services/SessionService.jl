@@ -238,7 +238,7 @@ $(SIGNATURES)
 Gets all nodes for a given session.
 Return: A vector of nodes for a given robot.
 """
-function getVariables(robotId::String, sessionId::String; details=false)::Vector{NodeResponse}
+function getVariables(robotId::String, sessionId::String; details=false)::Union{Vector{NodeResponse}, Vector{NodeDetailsResponse}}
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -249,7 +249,7 @@ function getVariables(robotId::String, sessionId::String; details=false)::Vector
         error("Error getting sessions, received $(response.status) with body '$(String(response.body))'.")
     end
     body = String(response.body)
-    nodes = JSON2.read(body, Vector{NodeResponse})
+    nodes = JSON2.read(body, details==false ? Vector{NodeResponse} : Vector{NodeDetailsResponse})
 
     # sort!(nodes; by=(n -> n.label))
     return nodes
@@ -260,7 +260,7 @@ $(SIGNATURES)
 Gets all nodes for a given session.
 Return: A vector of nodes for a given robot.
 """
-function getVariables(;details=false)::Vector{NodeResponse}
+function getVariables(;details=false)::Union{Vector{NodeResponse}, Vector{NodeDetailsResponse}}
     config = getGraffConfig()
     if config == nothing
         error("Graff config is not set, please call setGraffConfig with a valid configuration.")
@@ -278,7 +278,7 @@ Gets all nodes for a given session.
 Return: A vector of nodes for a given robot.
 Alias for convenience.
 """
-function ls(;details=false)::Vector{NodeResponse}
+function ls(;details=false)::Union{Vector{NodeResponse}, Vector{NodeDetailsResponse}}
     return getVariables(details=details)
 end
 
