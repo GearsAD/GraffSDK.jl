@@ -20,8 +20,9 @@ Summary of data entry returned from request.
 mutable struct BigDataEntryResponse
     id::String
     sourceId::String
-    nodeId::Int
+    neoNodeId::Int
     sourceName::String
+    sourceParams::Dict{String, Any}
     description::String
     mimeType::String
     lastSavedTimestamp::String
