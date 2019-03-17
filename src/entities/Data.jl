@@ -5,9 +5,9 @@ mutable struct BigDataElementRequest
     id::String
     sourceName::String
     description::String
-    data::Vector{UInt8}
+    data::String
     mimeType::String
-    BigDataElementRequest(id::String, sourceName::String, description::String, data::Vector{UInt8}, mimeType::String="application/octet-stream") = new(id, sourceName, description, data, mimeType)
+    BigDataElementRequest(id::String, sourceName::String, description::String, data::String, mimeType::String="application/octet-stream") = new(id, sourceName, description, data, mimeType)
 end
 
 function show(io::IO, c::BigDataElementRequest)
@@ -39,7 +39,7 @@ Complete data element response.
 mutable struct BigDataElementResponse
     id::String
     mimeType::String
-    data::Union{Nothing, Vector{UInt8}}
+    data::String
 end
 
 function show(io::IO, c::BigDataElementResponse)

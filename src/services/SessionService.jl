@@ -833,7 +833,7 @@ function getData(robotId::String, sessionId::String, node::Union{Int, NodeRespon
         error("Error getting node data entries, received $(response.status) with body '$(String(response.body))'.")
     end
     contentHeaderIndex = findfirst(v -> v[1] == "Content-Type", response.headers)
-    bde = BigDataElementResponse(bigDataKey, response.headers[contentHeaderIndex][2], response.body)
+    bde = BigDataElementResponse(bigDataKey, response.headers[contentHeaderIndex][2], String(response.body))
 
     # Update the cache
     if isdefined(GraffSDK, :__localCache)
