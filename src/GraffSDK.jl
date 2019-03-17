@@ -11,7 +11,7 @@ using Requires
 
 import Base.show
 
-curApiVersion = "v0b"
+curApiVersion = "v0"
 
 # Base includes
 include("./entities/GraffSDK.jl")
@@ -48,7 +48,7 @@ function loadGraffConfig(;filename::String="",
     else
         if filename == ""
             !haskey(ENV, "HOME") && error("Can't find a 'HOME' environment variable, please specify one before it can be used to locate the default configuration file")
-            @info "Using default Graff config location (~/.graffsdk.json). If you want to load a different config file, please specify in parameter or environment variable 'graffconfig' not set."
+            @info "Using default Graff config location (~/.graffsdk.json). If you want to load a different config file, please specify in parameter or environment variable 'graffconfig'."
             filename = ENV["HOME"]*"/.graffsdk.json"
         end
         if !isfile(filename)
@@ -99,12 +99,13 @@ include("./services/RobotService.jl")
 include("./entities/Data.jl")
 include("./entities/Session.jl")
 include("./entities/Factor.jl")
+include("./entities/Environment.jl")
 
 include("./services/DataHelpers.jl")
 include("./services/SessionService.jl")
 include("./services/StatusService.jl")
 include("./services/QueueService.jl")
-
+include("./services/EnvironmentService.jl")
 
 
 include("./services/HelperFunctionService.jl")
@@ -171,19 +172,22 @@ export NodeResponse, NodesResponse, BigDataElementResponse, NodeDetailsResponse,
 export AddOdometryRequest, AddOdometryResponse, NodeResponseInfo, addOdometryMeasurement
 export VariableRequest, VariableResponse, BearingRangeRequest, BearingRangeResponse, DistributionRequest, FactorBody, FactorRequest, addVariable, addBearingRangeFactor, addFactor
 export FactorSummary, getVariableFactors
+export getEnvironments, getEnvironment, deleteEnvironment, addEnvironment
 
 ## REGION: Optional Add-Ins
 
 # If you have include Mongoc, bring in local stores
 function __init__()
     @require Mongoc="4fe8b98c-fc19-5c23-8ec2-168ff83495f2" begin
-        @info "--- MongoC was included beforehand, so importing local caching extensions. Call setLocalCache(cache::LocalCache) to set up local caching..."
+        if isdefined(Main, :Mongoc)
+            @info "--- MongoC was included beforehand, so importing local caching extensions. Call setLocalCache(cache::LocalCache) to set up local caching..."
 
-        include("./entities/LocalCache.jl")
-        include("./services/LocalCache.jl")
-        export LocalCache
-        export setLocalCache, getLocalCache
-        export forceOnlyLocalCache
+            include("./entities/LocalCache.jl")
+            include("./services/LocalCache.jl")
+            export LocalCache
+            export setLocalCache, getLocalCache
+            export forceOnlyLocalCache
+        end
     end
 end
 
