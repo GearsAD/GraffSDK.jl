@@ -172,7 +172,7 @@ export NodeResponse, NodesResponse, BigDataElementResponse, NodeDetailsResponse,
 export AddOdometryRequest, AddOdometryResponse, NodeResponseInfo, addOdometryMeasurement
 export VariableRequest, VariableResponse, BearingRangeRequest, BearingRangeResponse, DistributionRequest, FactorBody, FactorRequest, addVariable, addBearingRangeFactor, addFactor
 export FactorSummary, getVariableFactors
-export getEnvironments, getEnvironment, deleteEnvironment, addEnvironment
+export getEnvironments, getEnvironment, deleteEnvironment, addEnvironment, bindSessionToEnvironment, unbindSessionToEnvironment, requestMultisessionSolve
 
 ## REGION: Optional Add-Ins
 

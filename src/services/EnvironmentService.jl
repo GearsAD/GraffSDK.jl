@@ -59,7 +59,7 @@ end
 """
 $(SIGNATURES)
 Create an environment in Graff.
-Return: Returns the created session.
+Return: Returns the created environment.
 """
 function addEnvironment(environment::EnvironmentRequest)::EnvironmentResponse
     config = getGraffConfig()
@@ -73,5 +73,66 @@ function addEnvironment(environment::EnvironmentRequest)::EnvironmentResponse
         error("Error creating session, received $(response.status) with body '$(String(response.body))'.")
     end
     body = String(response.body)
-    return JSON2.read(body, SessionDetailsResponse)
+    return JSON2.read(body, EnvironmentResponse)
+end
+
+"""
+$(SIGNATURES)
+Bind a session to an environment.
+Return: Returns nothing for the moment.
+"""
+function bindSessionToEnvironment(environment::EnvironmentResponse, session::SessionDetailsResponse)::Nothing
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    url = "$(config.apiEndpoint)/$(format(environmentEndpoint, environment.id))/sessions"
+    body = JSON.json(session)
+    response = @mock _sendRestRequest(config, HTTP.post, url, data=body, headers=Dict{String, String}("Content-Type" => "application/json"))
+    if(response.status != 200)
+        error("Error creating session, received $(response.status) with body '$(String(response.body))'.")
+    end
+    return nothing
+    # body = String(response.body)
+    # return JSON2.read(body, EnvironmentResponse)
+end
+
+"""
+$(SIGNATURES)
+Unbind a session from an environment.
+Return: Returns the updated environment.
+"""
+function unbindSessionToEnvironment(environment::EnvironmentResponse, session::SessionDetailsResponse)::EnvironmentResponse
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    url = "$(config.apiEndpoint)/$(format(environmentEndpoint, environment.id))/sessions"
+    body = JSON.json(session)
+    response = @mock _sendRestRequest(config, HTTP.delete, url, data=body, headers=Dict{String, String}("Content-Type" => "application/json"))
+    if(response.status != 200)
+        error("Error creating session, received $(response.status) with body '$(String(response.body))'.")
+    end
+    body = String(response.body)
+    return JSON2.read(body, EnvironmentResponse)
+end
+
+"""
+$(SIGNATURES)
+Request a multisession solve for a given environment.
+Return: Nothing for now - should return a multisessionsolvestatus.
+"""
+function requestMultisessionSolve(environment::EnvironmentResponse)::Nothing
+    config = getGraffConfig()
+    if config == nothing
+        error("Graff config is not set, please call setGraffConfig with a valid configuration.")
+    end
+    url = "$(config.apiEndpoint)/$(format(environmentEndpoint, environment.id))/solves"
+    response = @mock _sendRestRequest(config, HTTP.post, url, headers=Dict{String, String}("Content-Type" => "application/json"))
+    if(response.status != 200)
+        error("Error creating session, received $(response.status) with body '$(String(response.body))'.")
+    end
+    # body = String(response.body)
+    # return JSON2.read(body, EnvironmentResponse)
+    return nothing
 end
